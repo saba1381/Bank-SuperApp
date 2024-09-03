@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 export default function SignIn() {
     const [email, setEmail] = useState('');
@@ -12,7 +13,7 @@ export default function SignIn() {
         e.preventDefault();
         
         if (email && password) {
-            navigate('/profile');
+            navigate('/cp');
         } else {
             setError('نام کاربری یا رمز عبور وارد نشده است!');
         }
@@ -20,6 +21,9 @@ export default function SignIn() {
 
     return (
         <div className='flex items-center justify-center bg-slate-100 py-[200px] sm:p-0'>
+            <Helmet>
+                <title>ورود به موبایل بانک</title>
+            </Helmet>
             <div className='max-w-xl w-full sm:w-[60%] md:w-[70%] rounded-xl shadow-md max-h-screen bg-white  md:mt-[80px] lg:mt-[60px] md:p-10 p-6'>
                 <div className='text-3xl font-semibold items-center text-center'>  
                     <span className='text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-purple-700 drop-shadow-sm'>همراه </span> 
@@ -54,6 +58,7 @@ export default function SignIn() {
 
                     <button
                         type='submit'
+                        
                         className='sm:w-full w-[80%] px-4 py-2 mt-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full shadow-md hover:bg-gradient-to-r hover:from-blue-700 hover:to-blue-800 transition-all ease-in-out duration-300 text-md'
                     >
                         ورود به موبایل بانک

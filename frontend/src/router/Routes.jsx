@@ -22,8 +22,8 @@ export const router = createBrowserRouter([
                 ]
             },
             {
-                path: "", // Root path
-                element: <Navigate to="/sign-in" /> // Redirect to SignIn
+                path: "",
+                element: <Navigate to="/sign-in" /> 
             },
             { path: "server-error", element: <ServerError /> },
             { path: "not-found", element: <NotFound /> },

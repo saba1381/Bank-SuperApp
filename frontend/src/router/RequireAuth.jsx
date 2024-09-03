@@ -7,7 +7,7 @@ export default function RequireAuth() {
 
     console.log(user);
     if (!user || user?.role!=="admin") {
-        return <Navigate to='/' state={{ from: location }} />
+        return <Navigate to='/sign-in' state={{ from: location }} />
     }
 
     return <Outlet />

@@ -16,6 +16,7 @@ import createCache from "@emotion/cache";
 import { theme } from "./theme";
 import * as serviceWorkerRegistration from "./serviceWorkerResgistration";
 import SplashScreenBox from './SplashScreenBox';
+import { Helmet } from 'react-helmet';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 if (process.env.NODE_ENV === 'production') {
@@ -46,6 +47,9 @@ function App() {
 
   return (
     <StrictMode>
+      <Helmet>
+                <title>  موبایل بانک</title>
+            </Helmet>
       <Provider store={store}>
         <CacheProvider value={cacheRtl}>
           <ThemeProvider theme={theme}>
