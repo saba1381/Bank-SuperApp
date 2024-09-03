@@ -34,7 +34,7 @@ export default function App() {
     <Box sx={{display:"flex",flexDirection:"column",minHeight:"100vh",width:"100%"}}>
       <Box
       component={"main"}
-      sx={{mt:8,pt:3,flexGrow:1}}
+      sx={{flexGrow:1}}
       >
             <Outlet />
       </Box>

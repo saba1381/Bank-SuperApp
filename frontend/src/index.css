@@ -13,7 +13,7 @@
   @font-face {
     font-family: IRANSans;
     font-style: normal;
-    font-weight: 400;
+    font-weight:600;
     src: local("IRANSans"),local("IRANSans-regular"),url('./fonts/IRANSans/woff/IRANSansWeb\(FaNum\).woff') format("woff")
   }
   
