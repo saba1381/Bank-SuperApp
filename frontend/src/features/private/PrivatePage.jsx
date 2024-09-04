@@ -1,68 +1,112 @@
-import { Box, Container, Grid, Paper } from "@mui/material";
+import { Box, Container, Grid, Paper, useMediaQuery } from "@mui/material";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux"; // Ensure this import matches your Redux setup
-import { motion } from 'framer-motion';
+import { useDispatch } from "react-redux";
 import Link from "@mui/material/Link";
-import { CiMobile1 } from "react-icons/ci";
 import { BsCreditCard } from "react-icons/bs";
-import { MdOutlineListAlt } from "react-icons/md";
-import { FaRegChartBar } from "react-icons/fa";
-import { BiTransfer } from "react-icons/bi";
-import { BsBank2 } from "react-icons/bs";
-import { FaMoneyCheckDollar } from "react-icons/fa6";
+import { MdHistory } from "react-icons/md";
 import { ImProfile } from "react-icons/im";
+import { CgProfile } from "react-icons/cg";
 import { TbCreditCardPay } from "react-icons/tb";
-import { FaMoneyCheck } from "react-icons/fa6";
-import { GoChecklist } from "react-icons/go";
 import { RiSimCard2Line } from "react-icons/ri";
-import { CiClock2 } from "react-icons/ci";
+import { useTheme } from '@mui/material/styles';
+import React from 'react';
 
 const systems = [
-    { title: "گردش حساب", icon: <FaRegChartBar size={46}/> },
-    { title: 'لیست حساب', icon: <MdOutlineListAlt size={46}/> },
-    { title: 'لیست کارت', icon: <BsCreditCard size={46}/> },
-    { title: 'انتقال وجه داخلی', icon: <BiTransfer size={46}/> },
-    { title: 'انتقال وجه بین بانکی', icon: <BsBank2 size={46}/> },
-    { title: 'چک صیادی', icon: <FaMoneyCheckDollar size={46}/> },
-    { title: 'حساب کاربری', icon: <ImProfile size={46}/> },
-    { title: 'کارت به کارت', icon: <TbCreditCardPay size={46}/> },
-    { title: 'پرداخت قبض', icon: <FaMoneyCheck size={46}/> },
-    { title: 'لیست تسهیلات', icon: <GoChecklist size={46}/> },
-    { title: 'خرید شارژ', icon: <RiSimCard2Line size={46}/> },
-    { title: 'سوابق تراکنش', icon: <CiClock2 size={46}/> },
+    { title: 'لیست کارت', icon: BsCreditCard, color: '#1976d2' },
+    { title: 'سوابق تراکنش', icon: MdHistory, color: '#388e3c' },
+    { title: 'ویرایش پروفایل', icon: ImProfile, color: '#f57c00' },
+    { title: 'حساب کاربری', icon: CgProfile, color: '#7b1fa2' },
+    { title: 'کارت به کارت', icon: TbCreditCardPay, color: '#d32f2f' },
+    { title: 'خرید شارژ', icon: RiSimCard2Line, color: '#0288d1' },
 ];
 
 const PrivatePage = () => {
     const dispatch = useDispatch();
+    const theme = useTheme();
+
+    const isXs = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMd = useMediaQuery(theme.breakpoints.up('md'));
+    const isLg = useMediaQuery(theme.breakpoints.up('lg'));
 
     useEffect(() => {
         const loadDataAsync = async () => {
-            // Load your data here
+            
         };
         loadDataAsync();
     }, [dispatch]);
 
+    const getIconSize = () => {
+        if (isXs) return 27;
+        if (isMd) return 40;
+        return 45; 
+    };
+
+    const getPaperSize = () => {
+        if (isXs) return 120;
+        if (isMd) return 180;
+        return 230;
+    };
+
+    const getTitleFontSize = () => {
+        if (isXs) return '0.8rem';
+        if (isMd) return '1rem';
+        return '1.2rem';
+    };
+
     return (
-        <Container maxWidth="xl" sx={{ py: 5 }}>
-            <Grid container spacing={3}>
+        <Container
+            maxWidth="xl"
+            sx={{
+                py: 25,
+                px: 3,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
+            <Grid container spacing={3} justifyContent="center">
                 {systems.map((system, index) => (
-                    <Grid item key={index} xs={12} sm={6} md={4} lg={3}>
-                        <Paper elevation={3} sx={{ p: 2, textAlign: 'center', cursor: 'pointer', transition: '0.3s', '&:hover': { transform: 'scale(0.95)' } }}>
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                whileHover={{ scale: 0.9 }}
-                                transition={{ duration: 0.05, ease: "easeOut" }}
-                            >
-                                <Box display="flex" flexDirection="column" alignItems="center">
-                                    <Link href="#" underline="none" color="inherit">
-                                        {system.icon}
+                    <Grid item key={index} xs={4} sm={4} md={3} lg={2} sx={{display:'flex' , justifyContent :"center" }}>
+                        <Paper
+                            elevation={3}
+                            sx={{
+                                width: getPaperSize(),
+                                height: getPaperSize(),
+                                p: 3,
+                                textAlign: 'center',
+                                cursor: 'pointer',
+                                transition: '0.3s',
+                                borderRadius: 5,
+                                display: 'flex',
+                                justifyContent:'center',
+                                alignItems:'center',
+                                flexDirection: 'column',
+                                
+                                '&:hover': { transform: 'scale(0.96)' }
+                            }}
+                        >
+                           
+                                <Box
+                                    display="flex"
+                                    flexDirection="column"
+                                    alignItems="center"
+                                    justifyContent="center"
+                                >
+                                    <Link href="#" underline="none" color="inherit" sx={{ color: system.color }}>
+                                        {React.createElement(system.icon, { size: getIconSize() })}
                                     </Link>
-                                    <Box mt={2} color="text.primary" sx={{ '&:hover': { color: 'primary.main' } }}>
+                                    <Box
+                                        mt={2}
+                                        color="text.primary"
+                                        sx={{ 
+                                            fontSize: getTitleFontSize(), 
+                                            '&:hover': { color: 'primary.main' } 
+                                        }}
+                                    >
                                         {system.title}
                                     </Box>
                                 </Box>
-                            </motion.div>
+                          
                         </Paper>
                     </Grid>
                 ))}

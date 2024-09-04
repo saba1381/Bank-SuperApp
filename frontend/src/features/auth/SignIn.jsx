@@ -20,7 +20,7 @@ export default function SignIn() {
     };
 
     return (
-        <div className='flex items-center justify-center bg-slate-100 py-[200px] sm:p-0'>
+        <div className='flex items-center justify-center bg-slate-100 py-[200px] sm:py-[200px] lg:py-[10px] sm:p-0'>
             <Helmet>
                 <title>ورود به موبایل بانک</title>
             </Helmet>

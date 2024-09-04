@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { RouterProvider } from "react-router-dom";
-import { router } from "./router/Routes";
 import { Provider } from "react-redux";
 import { store } from "./store/configureStore";
 import { StrictMode } from "react";
@@ -17,6 +16,8 @@ import { theme } from "./theme";
 import * as serviceWorkerRegistration from "./serviceWorkerResgistration";
 import SplashScreenBox from './SplashScreenBox';
 import { Helmet } from 'react-helmet';
+import Header from './components/Header'; // ایمپورت کردن Header
+import { router } from "./router/Routes"; // دوباره ایمپورت کردن router
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 if (process.env.NODE_ENV === 'production') {
@@ -48,12 +49,12 @@ function App() {
   return (
     <StrictMode>
       <Helmet>
-                <title>  موبایل بانک</title>
-            </Helmet>
+        <title>موبایل بانک</title>
+      </Helmet>
       <Provider store={store}>
         <CacheProvider value={cacheRtl}>
           <ThemeProvider theme={theme}>
-            <Box component="div" dir="rtl" sx={{ display: "flex" }}>
+            <Box component="div" dir="rtl" sx={{ display: "flex", flexDirection: "column" }}>
               <ToastContainer
                 position="top-center"
                 rtl
@@ -62,6 +63,7 @@ function App() {
                 theme="colored"
               />
               <CssBaseline />
+              {!showSplash && <Header />} {/* اضافه کردن Header */}
               {showSplash ? (
                 <SplashScreenBox />
               ) : (
