@@ -2,20 +2,36 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import { BiErrorCircle } from "react-icons/bi";
 
 export default function SignIn() {
-    const [email, setEmail] = useState('');
+    const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [userNameError, setUserNameError] = useState('');
+    const [passwordError , setPasswordError] = useState('');
     const navigate = useNavigate(); 
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        let isValid = true;
         
-        if (email && password) {
-            navigate('/cp');
-        } else {
-            setError('نام کاربری یا رمز عبور وارد نشده است!');
+        if(!userName){
+            setUserNameError('نام کاربری را وارد کنید');
+            isValid = false;
+        }else{
+            setUserNameError('')
+        }
+
+        if(!password){
+            setPasswordError('رمز عبور را وارد کنید');
+            isValid = false;
+        }else{
+            setPasswordError('')
+        }
+
+        if(isValid){
+            navigate('/cp')
         }
     };
 
@@ -34,26 +50,38 @@ export default function SignIn() {
                 <form onSubmit={handleSubmit} >
                     <div className='flex py-2 mt-10 items-center justify-center'>
                         <input
-                            className='p-2 md:w-full rounded-lg shadow-b-lg border border-gray-300 placeholder:text-sm lg:placeholder:text-md w-[80%] placeholder:text-right text-right bg-slate-100  text-gray-600 focus:outline-none focus:border-pink-500 focus:placeholder:text-pink-500'
+                            className={`p-2 md:w-full rounded-lg shadow-b-lg border  placeholder:text-sm lg:placeholder:text-md w-[80%] placeholder:text-right text-right bg-slate-100  text-gray-600 focus:outline-none focus:border-pink-500 focus:placeholder:text-pink-500 ${userNameError ? 'border-red-400' : 'border-gray-300'}`}
                             type='text'
                             name='email'
-                            placeholder='شماره موبایل '
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder='نام کاربری'
+                            value={userName}
+                            onChange={(e) => setUserName(e.target.value)}
                         />
                     </div>
+                    {userNameError && (
+                        <div className='mb-4 bg-red-100 py-2 rounded-lg px-4 flex justify-start items-right gap-1'>
+                        <BiErrorCircle className='text-pink-500' />
+                          <p className='text-pink-500 text-sm text-right '>{userNameError}</p>
+                    </div>
+                    )}
                     <div className='flex items-center justify-center'>
                         <input
-                            className='p-2 md:w-full rounded-lg shadow-b-lg placeholder:text-sm w-[80%] lg:placeholder:text-md border border-gray-300 placeholder:text-right text-right bg-slate-100 text-gray-600 focus:outline-none focus:border-pink-500 focus:placeholder:text-pink-500'
+                            className={`p-2 md:w-full rounded-lg shadow-b-lg placeholder:text-sm w-[80%] lg:placeholder:text-md border placeholder:text-right text-right bg-slate-100 text-gray-600 focus:outline-none focus:border-pink-500 focus:placeholder:text-pink-500 ${passwordError ? 'border-red-400' : 'border-gray-300'}`}
                             type='password'
                             name='password'
-                            placeholder=' کد ملی'
+                            placeholder=' رمز عبور '
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
+                    {passwordError && (
+                        <div className='mb-4 mt-2 bg-red-100 py-2 rounded-lg px-4 flex justify-start items-right gap-1'>
+                        <BiErrorCircle className='text-pink-500' />
+                          <p className='text-pink-500 text-sm text-right '>{passwordError}</p>
+                    </div>
+                    )}
                     
-                    {error && <p className='text-red-500 font-bold text-right mt-4 flex justify-center items-right'>{error}</p>}
+                   
                     <div className='flex items-center justify-center'>
 
                     <button
@@ -67,7 +95,7 @@ export default function SignIn() {
 
                     <div className='mt-6 flex justify-between gap-3 items-center'>
                         <Link className='text-blue-500 w-full text-center hover:text-gray-600 shadow-lg border border-gray-100 p-3 rounded-full text-sm' to="/forgot-password">فراموشی رمز</Link>
-                        <Link className='text-blue-500 w-full text-center hover:text-gray-600 shadow-lg border border-gray-100 p-3 rounded-full text-sm' to="/sign-up">ثبت نام</Link>
+                        <Link className='text-blue-500 w-full text-center hover:text-gray-600 shadow-lg border border-gray-100 p-3 rounded-full text-sm' to="/register">ثبت نام</Link>
                     </div>
                     <div className='flex mt-[40px] justify-between text-gray-600'>
                         
