@@ -1,31 +1,22 @@
 import React, { useState, useRef } from 'react';
 import { FaLongArrowAltLeft } from "react-icons/fa";
-import { Link, useLocation, Navigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
 export default function ActivationCode() {
     const [code, setCode] = useState(['', '', '', '']);
     const [error, setError] = useState('');
     const inputRefs = useRef([]);
-
-
-    const location = useLocation();
-   const fromRegister = location.state?.fromRegister;
-
-    if (!fromRegister) {
-        return <Navigate to='/register' />;
-    }
+    const navigate = useNavigate();
 
     const handleCodeChange = (e, index) => {
         const value = e.target.value;
 
-      
         if (/^\d{1}$/.test(value)) {
             const newCode = [...code];
             newCode[index] = value;
             setCode(newCode);
 
-       
             if (index < 3) {
                 inputRefs.current[index + 1].focus();
             }
@@ -44,12 +35,12 @@ export default function ActivationCode() {
         if (e.key === 'Backspace') {
             const newCode = [...code];
             
-            // اگر مقدار فعلی خالی بود، به input قبلی برگردیم
+            
             if (!newCode[index] && index > 0) {
                 inputRefs.current[index - 1].focus();
             }
 
-            // مقدار فعلی را پاک کنیم
+          
             newCode[index] = '';
             setCode(newCode);
         }
@@ -59,14 +50,52 @@ export default function ActivationCode() {
         handleBackspace(e, index);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const fullCode = code.join('');
+
         if (fullCode.length !== 4 || !/^\d{4}$/.test(fullCode)) {
             setError('لطفا یک کد فعالسازی معتبر با ۴ رقم وارد کنید.');
         } else {
             setError('');
-            // اینجا می‌توانید درخواست خود را ارسال کنید
+
+            
+            const phone_number = localStorage.getItem('phone_number');
+            const national_code = localStorage.getItem('national_code');
+
+            if (!phone_number || !national_code) {
+                setError('اطلاعات ثبت‌نام یافت نشد. لطفا دوباره ثبت‌نام کنید.');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:8000/api/users/verify-otp/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        phone_number: phone_number,
+                        otp: fullCode,
+                        national_code: national_code,
+                        
+                    }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data);      
+                    localStorage.setItem('access_token', data.access);
+                    localStorage.setItem('refresh_token', data.refresh);
+                    navigate('/cp');
+                } else {
+                    const errorData = await response.json();
+                    setError(errorData.detail || 'خطا در تأیید کد.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                setError('خطایی در ارتباط با سرور رخ داد.');
+            }
         }
     };
 

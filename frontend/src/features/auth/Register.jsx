@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+// features/auth/Register.jsx
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { FaLongArrowAltLeft, FaLongArrowAltRight } from "react-icons/fa";
 import { BiErrorCircle } from "react-icons/bi";
@@ -9,12 +10,13 @@ export default function Register() {
     const [nationalId, setNationalId] = useState('');
     const [mobileError, setMobileError] = useState('');
     const [nationalIdError, setNationalIdError] = useState('');
-    const [isActivation, setIsActivation] = useState(false); // State to toggle the ActivationCode component
+    const [isActivation, setIsActivation] = useState(false); 
+    const [generalError, setGeneralError] = useState(''); 
     const navigate = useNavigate();
     const numberPattern = /^[0-9]*$/;
     const iranMobilePattern = /^(09)[0-9]{9}$/;
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         
         let isValid = true;
@@ -29,12 +31,13 @@ export default function Register() {
             setMobileError('شماره موبایل معتبر نیست.');
             isValid = false;
         } else if (mobile.length !== 11) {
-            setMobileError('طول شماره موبایل صحیح نمی باشد');
+            setMobileError('طول شماره موبایل صحیح نمی‌باشد');
             isValid = false;
         } else {
             setMobileError('');
         }
 
+           
         if (!nationalId) {
             setNationalIdError('کد ملی را وارد کنید');
             isValid = false;
@@ -42,22 +45,43 @@ export default function Register() {
             setNationalIdError('کد ملی باید شامل اعداد باشد');
             isValid = false;
         } else if (nationalId.length !== 10) {
-            setNationalIdError('کدملی باید 10 رقم باشد');
+            setNationalIdError('کد ملی باید ۱۰ رقم باشد');
             isValid = false;  
         } else {
             setNationalIdError('');
         }
 
         if (isValid) {
-            setIsActivation(true);
+            try {
+                const response = await fetch('http://localhost:8000/api/users/register/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        phone_number: mobile,
+                        national_code: nationalId,
+                    }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data);      
+                           
+                    localStorage.setItem('phone_number', mobile);
+                    localStorage.setItem('national_code', nationalId);
+                    setIsActivation(true);  
+                    navigate('/activation-code');
+                } else {
+                    const errorData = await response.json();
+                    setGeneralError(errorData.detail || 'خطایی رخ داده است.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                setGeneralError('خطایی در ارتباط با سرور رخ داد.');
+            }
         }
     };
-
-    useEffect(() => {
-        if (isActivation) {
-            navigate('/activation-code', { state: { fromRegister: true } });
-        }
-    }, [isActivation, navigate]);
 
     return (
         <div className='flex items-center justify-center bg-slate-100 py-[200px] sm:py-[400px] lg:py-[10px] p-0 min-h-screen'>
@@ -70,13 +94,20 @@ export default function Register() {
                     <span className='text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-700 drop-shadow-sm'>نام</span>
                 </div>
 
+                {generalError && (
+                    <div className='mb-4 mt-4 bg-red-100 py-2 rounded-lg px-4 flex justify-start items-right gap-1'>
+                        <BiErrorCircle className='text-pink-500' />
+                        <p className='text-pink-500 text-sm text-right'>{generalError}</p>
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit}>
                     <div className='flex items-center justify-center'>
                         <input
                             className={`p-2 md:w-full mt-10 rounded-lg shadow-b-lg placeholder:text-sm w-[80%] lg:placeholder:text-md border placeholder:text-right text-right bg-slate-100 text-gray-600 focus:outline-none focus:border-pink-500 focus:placeholder:text-pink-500 ${
                                 nationalIdError ? 'border-red-500' : 'border-gray-300'
                             }`}
-                            type='password'
+                            type='text'
                             name='nationalId'
                             placeholder='کد ملی'
                             value={nationalId}

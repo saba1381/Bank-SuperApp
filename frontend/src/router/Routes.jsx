@@ -26,6 +26,36 @@ export const router = createBrowserRouter([
                 element: <ActivationCode /> 
             },
             {
+                path: "cp",
+                element: <PrivatePage />
+            },
+            { path: "", element: <Navigate to="/sign-in" /> },
+            { path: "server-error", element: <ServerError /> },
+            { path: "not-found", element: <NotFound /> },
+            { path: "*", element: <Navigate replace to="not-found" /> },
+        ]
+    },
+]);
+
+{/* 
+export const router = createBrowserRouter([
+    {
+        path: "/",
+        element: <App />,
+        children: [
+            {
+                path: "sign-in",
+                element: <SignIn />
+            },
+            {
+                path: "register", 
+                element: <Register />
+            },
+            {
+                path: "activation-code", 
+                element: <ActivationCode /> 
+            },
+            {
                 element: <RequireAuth />, children: [
                     { path: "cp", element: <PrivatePage /> }
                 ]
@@ -37,3 +67,4 @@ export const router = createBrowserRouter([
         ]
     },
 ]);
+*/}
