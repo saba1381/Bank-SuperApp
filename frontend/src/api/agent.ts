@@ -84,12 +84,16 @@ const requests = {
 };
 
 const UserProfile = {
-  login: (values:object) => requests.post("auth/registerCalendarUser",values),
+  login: (values:object) => requests.post("users/login/",values),
   verifyOTP: (values:object) => requests.post("auth/verifyOtp", values),
   refreshTokens: (values:object) => requests.post("auth/refresh-tokens", values),
   register: (values:object) => requests.post("account/register", values),
   currentUser: () => requests.get("account/currentUser"),
 };
+
+const Card={
+  Transfer: (values:object) => requests.post("Cards/Transfer/",values),
+}
 
 
 const agent = {

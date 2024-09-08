@@ -1,157 +1,179 @@
-import React, { useState, useRef } from 'react';
-import { FaLongArrowAltLeft } from "react-icons/fa";
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import { TextField, Button, Box, Typography } from '@mui/material';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { FaLongArrowAltLeft } from 'react-icons/fa';
+
+// Validation schema
+const validationSchema = Yup.object({
+    code: Yup.string()
+        .length(4, 'کد فعالسازی باید ۴ رقم باشد')
+        .matches(/^\d{4}$/, 'لطفا فقط عدد وارد کنید.')
+        .required('کد فعالسازی را وارد کنید'),
+});
 
 export default function ActivationCode() {
-    const [code, setCode] = useState(['', '', '', '']);
-    const [error, setError] = useState('');
     const inputRefs = useRef([]);
     const navigate = useNavigate();
 
-    const handleCodeChange = (e, index) => {
-        const value = e.target.value;
-
-        if (/^\d{1}$/.test(value)) {
-            const newCode = [...code];
-            newCode[index] = value;
-            setCode(newCode);
-
-            if (index < 3) {
-                inputRefs.current[index + 1].focus();
-            }
-
-            if (error) setError('');
-        } else if (value === '') {
-            const newCode = [...code];
-            newCode[index] = '';
-            setCode(newCode);
-        } else {
-            setError('لطفا فقط عدد وارد کنید.');
-        }
-    };
-
-    const handleBackspace = (e, index) => {
-        if (e.key === 'Backspace') {
-            const newCode = [...code];
-            
-            
-            if (!newCode[index] && index > 0) {
-                inputRefs.current[index - 1].focus();
-            }
-
-          
-            newCode[index] = '';
-            setCode(newCode);
-        }
-    };
-
-    const handleKeyDown = (e, index) => {
-        handleBackspace(e, index);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const fullCode = code.join('');
-
-        if (fullCode.length !== 4 || !/^\d{4}$/.test(fullCode)) {
-            setError('لطفا یک کد فعالسازی معتبر با ۴ رقم وارد کنید.');
-        } else {
-            setError('');
-
-            
+    const formik = useFormik({
+        initialValues: { code: '' },
+        validationSchema,
+        validateOnChange: false,
+        validateOnBlur: false,
+        onSubmit: async (values, { setSubmitting }) => {
+            const { code } = values;
             const phone_number = localStorage.getItem('phone_number');
             const national_code = localStorage.getItem('national_code');
 
             if (!phone_number || !national_code) {
-                setError('اطلاعات ثبت‌نام یافت نشد. لطفا دوباره ثبت‌نام کنید.');
+                formik.setErrors({ code: 'اطلاعات ثبت‌نام یافت نشد. لطفا دوباره ثبت‌نام کنید.' });
+                setSubmitting(false);
                 return;
             }
 
             try {
                 const response = await fetch('http://localhost:8000/api/users/verify-otp/', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        phone_number: phone_number,
-                        otp: fullCode,
-                        national_code: national_code,
-                        
-                    }),
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone_number, otp: code, national_code }),
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log(data);      
                     localStorage.setItem('access_token', data.access);
                     localStorage.setItem('refresh_token', data.refresh);
                     navigate('/cp');
                 } else {
                     const errorData = await response.json();
-                    setError(errorData.detail || 'خطا در تأیید کد.');
+                    formik.setErrors({ code: errorData.detail || 'خطا در تأیید کد.' });
                 }
             } catch (error) {
                 console.error('Error:', error);
-                setError('خطایی در ارتباط با سرور رخ داد.');
+                formik.setErrors({ code: 'خطایی در ارتباط با سرور رخ داد.' });
+            }
+
+            setSubmitting(false);
+        },
+    });
+
+    const handleCodeChange = (e, index) => {
+        const value = e.target.value;
+
+        if (/^\d{1}$/.test(value)) {
+            const newCode = formik.values.code.split('');
+            newCode[index] = value;
+            formik.setFieldValue('code', newCode.join(''));
+
+            if (index < 3) {
+                inputRefs.current[index + 1].focus();
+            }
+        } else if (value === '') {
+            const newCode = formik.values.code.split('');
+            newCode[index] = '';
+            formik.setFieldValue('code', newCode.join(''));
+
+            if (index > 0) {
+                inputRefs.current[index - 1].focus();
+            }
+        }
+    };
+
+    const handleBackspace = (e, index) => {
+        if (e.key === 'Backspace') {
+            const newCode = formik.values.code.split('');
+            newCode[index] = '';
+            formik.setFieldValue('code', newCode.join(''));
+
+            if (index > 0 && !newCode[index]) {
+                inputRefs.current[index - 1].focus();
             }
         }
     };
 
     return (
-        <div className='flex items-center justify-center bg-slate-100 py-[200px] sm:py-[200px] lg:py-[20px] sm:p-0 min-h-screen'>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', bgcolor: 'grey.100' }}>
             <Helmet>
                 <title>کد فعالسازی</title>
             </Helmet>
-            <div className='max-w-xl w-full sm:w-[60%] md:w-[70%] rounded-xl shadow-md max-h-screen bg-white md:mt-[80px] lg:mt-[60px] md:p-10 p-6'>
-                <div className='text-3xl font-semibold items-center text-center'>
-                    <span className='text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-purple-700 drop-shadow-sm'>کد </span>
-                    <span className='text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-purple-800 drop-shadow-sm'>فعالسازی</span>
-                </div>
+            <Box sx={{ maxWidth: '500px', width: '100%', p: 4, bgcolor: 'white', borderRadius: '8px', boxShadow: 3 }}>
+                <Typography variant="h4" align="center" gutterBottom>
+                    <span style={{ background: 'linear-gradient(to right, #6B46C1, #6B46C1, #4299E1, #3182CE)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>کد فعالسازی</span>
+                </Typography>
 
-                <form onSubmit={handleSubmit}>
-                    <p className='text-center text-gray-500 mt-5 mb-10'>لطفا کد ارسال شده را وارد نمایید</p>
+                <form onSubmit={formik.handleSubmit} dir="ltr">
+                    <Typography variant="body2" color="primary" align="center" mb={3}>
+                        لطفا کد ارسال شده را وارد نمایید
+                    </Typography>
 
-                    <div className='flex justify-center gap-4 mb-6' dir="ltr">
-                        {code.map((digit, index) => (
-                            <input
+                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>
+                        {[0, 1, 2, 3].map((index) => (
+                            <TextField
                                 key={index}
-                                ref={(el) => (inputRefs.current[index] = el)}
-                                type="text"
-                                inputMode="numeric"
-                                maxLength={1}
-                                value={digit}
+                                inputRef={(el) => (inputRefs.current[index] = el)}
+                                value={formik.values.code[index] || ''}
                                 onChange={(e) => handleCodeChange(e, index)}
-                                onKeyDown={(e) => handleKeyDown(e, index)}
-                                className='text-center p-2 w-12 rounded-xl border border-b-gray-300 bg-slate-100 text-gray-600 focus:outline-none focus:border-purple-500'
+                                onKeyDown={(e) => handleBackspace(e, index)}
+                                inputProps={{ maxLength: 1, style: { textAlign: 'center' } }}
+                                variant="outlined"
+                                sx={{ width: '40px' }}
                             />
                         ))}
-                    </div>
+                    </Box>
 
-                    {error && <p className='text-red-500 text-center mb-4'>{error}</p>}
+                    {formik.errors.code && formik.touched.code && (
+                        <Typography variant="body2" color="error" align="center" mb={2}>
+                            {formik.errors.code}
+                        </Typography>
+                    )}
 
-                    <div className='flex items-center justify-center '>
-                        <button
-                            type='submit'
-                            className='group w-[50%] flex justify-center items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-full shadow-md hover:bg-gradient-to-r hover:from-purple-400 hover:to-purple-600 transition duration-300 text-md'
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            disabled={formik.isSubmitting}
+                            sx={{ width: '50%', bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' } }}
                         >
                             تایید
-                        </button>
-                    </div>
+                        </Button>
+                    </Box>
 
-                    <div className='flex items-center justify-center mt-4'>
+                    <Box sx={{ display: 'flex', justifyContent: 'center'}}>
                         <Link
                             to="/register"
-                            className='group w-[50%] flex justify-center items-center px-4 py-2 bg-slate-100 text-gray-700 rounded-full shadow-md hover:opacity-65 transition duration-300 text-md'
-                        >
-                            بازگشت
-                            <FaLongArrowAltLeft className='mr-2 group-hover:text-opacity-60' />
-                        </Link>
-                    </div>
+                            style={{
+                                textDecoration: 'none',
+                                color: '#1976d2',
+                                display: 'flex',
+                                alignItems: 'center',
+                                border: '1px solid #1976d2',
+                                padding: '10px 20px',
+                                borderRadius: '20px',
+                                transition: 'all 0.3s ease',
+                                position: 'relative',
+                                textAlign: 'center',
+                                width: '50%',
+                                justifyContent:'center'
 
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.borderColor = '#b0bec5'; // Light grey
+                                e.currentTarget.style.color = '#b0bec5'; // Original color
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.borderColor = '#1976d2'; // Original border color
+                                e.currentTarget.style.color = '#1976d2'; // Original text color
+                            }}
+                        >
+                            <FaLongArrowAltLeft style={{ marginRight: '8px' }} />
+                            بازگشت
+                        </Link>
+                    </Box>
                 </form>
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }

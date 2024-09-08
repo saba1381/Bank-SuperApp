@@ -6,6 +6,7 @@ from django.core.cache import cache
 from .models import User
 from .serializers import UserSerializer
 import random
+from django.utils import timezone
 
 class RegisterView(APIView):
     def post(self, request):
@@ -67,6 +68,10 @@ class LoginView(APIView):
             user = User.objects.get(phone_number=phone_number, national_code=national_code)
         except User.DoesNotExist:
             return Response({"detail": "شماره موبایل یا کد ملی اشتباه است."}, status=status.HTTP_400_BAD_REQUEST)
+
+       
+        user.last_login = timezone.now()
+        user.save(update_fields=['last_login'])
 
         refresh = RefreshToken.for_user(user)
         return Response({

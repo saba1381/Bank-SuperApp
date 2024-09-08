@@ -4,9 +4,9 @@ import { UseAppSelector } from "../store/configureStore";
 export default function RequireAuth() {
     const { user } = UseAppSelector(state => state.account);
     const location = useLocation();
-
+    const accessToken = localStorage.getItem('access_token');
     console.log(user);
-    if (!user || user?.role!=="admin") {
+    if (!user) {
         return <Navigate to='/sign-in' state={{ from: location }} />
     }
 

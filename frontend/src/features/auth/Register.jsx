@@ -1,57 +1,47 @@
-// features/auth/Register.jsx
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { FaLongArrowAltLeft, FaLongArrowAltRight } from "react-icons/fa";
-import { BiErrorCircle } from "react-icons/bi";
-import { Link, useNavigate } from 'react-router-dom';
+import { Container, TextField, Button, Box, Typography, Paper, Alert, Link as MuiLink } from '@mui/material';
+import { styled } from '@mui/system';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+    maxWidth: '600px',
+    width: '100%',
+    padding: theme.spacing(4),
+    margin: theme.spacing(5, 0),
+    borderRadius: '16px',
+    boxShadow: theme.shadows[3],
+}));
+
+const GradientText = styled('span')({
+    background: 'linear-gradient(to right, #6B46C1, #6B46C1, #4299E1, #3182CE)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+});
+
+const validationSchema = Yup.object({
+    nationalId: Yup.string()
+        .matches(/^[0-9]*$/, 'کدملی باید شامل اعداد باشد')
+        .length(10, 'کدملی باید 10 رقم باشد')
+        .required('کد ملی را وارد کنید'),
+    mobile: Yup.string()
+        .matches(/^[0-9]*$/, 'شماره موبایل باید شامل اعداد باشد')
+        .matches(/^(09)[0-9]{9}$/, 'شماره موبایل معتبر نیست')
+        .required('شماره موبایل را وارد کنید'),
+});
 
 export default function Register() {
-    const [mobile, setMobile] = useState('');
-    const [nationalId, setNationalId] = useState('');
-    const [mobileError, setMobileError] = useState('');
-    const [nationalIdError, setNationalIdError] = useState('');
-    const [isActivation, setIsActivation] = useState(false); 
-    const [generalError, setGeneralError] = useState(''); 
     const navigate = useNavigate();
-    const numberPattern = /^[0-9]*$/;
-    const iranMobilePattern = /^(09)[0-9]{9}$/;
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        let isValid = true;
-        
-        if (!mobile) {
-            setMobileError('شماره موبایل را وارد کنید');
-            isValid = false;
-        } else if (!numberPattern.test(mobile)) {
-            setMobileError('شماره موبایل باید شامل اعداد باشد');
-            isValid = false;
-        } else if (!iranMobilePattern.test(mobile)) {
-            setMobileError('شماره موبایل معتبر نیست.');
-            isValid = false;
-        } else if (mobile.length !== 11) {
-            setMobileError('طول شماره موبایل صحیح نمی‌باشد');
-            isValid = false;
-        } else {
-            setMobileError('');
-        }
-
-           
-        if (!nationalId) {
-            setNationalIdError('کد ملی را وارد کنید');
-            isValid = false;
-        } else if (!numberPattern.test(nationalId)) {
-            setNationalIdError('کد ملی باید شامل اعداد باشد');
-            isValid = false;
-        } else if (nationalId.length !== 10) {
-            setNationalIdError('کد ملی باید ۱۰ رقم باشد');
-            isValid = false;  
-        } else {
-            setNationalIdError('');
-        }
-
-        if (isValid) {
+    const formik = useFormik({
+        initialValues: {
+            nationalId: '',
+            mobile: '',
+        },
+        validationSchema: validationSchema,
+        onSubmit: async (values, { setSubmitting, setStatus }) => {
             try {
                 const response = await fetch('http://localhost:8000/api/users/register/', {
                     method: 'POST',
@@ -59,109 +49,157 @@ export default function Register() {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        phone_number: mobile,
-                        national_code: nationalId,
+                        phone_number: values.mobile,
+                        national_code: values.nationalId,
                     }),
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log(data);      
-                           
-                    localStorage.setItem('phone_number', mobile);
-                    localStorage.setItem('national_code', nationalId);
-                    setIsActivation(true);  
+                    console.log(data);
+
+                    localStorage.setItem('phone_number', values.mobile);
+                    localStorage.setItem('national_code', values.nationalId);
                     navigate('/activation-code');
                 } else {
                     const errorData = await response.json();
-                    setGeneralError(errorData.detail || 'خطایی رخ داده است.');
+                    setStatus(errorData.detail || 'خطایی رخ داده است.');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                setGeneralError('خطایی در ارتباط با سرور رخ داد.');
+                setStatus('خطایی در ارتباط با سرور رخ داد.');
+            } finally {
+                setSubmitting(false);
             }
-        }
-    };
+        },
+    });
 
     return (
-        <div className='flex items-center justify-center bg-slate-100 py-[200px] sm:py-[400px] lg:py-[10px] p-0 min-h-screen'>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', bgcolor: 'grey.100' }}>
             <Helmet>
                 <title>ثبت نام در موبایل بانک</title>
             </Helmet>
-            <div className='max-w-xl w-full sm:w-[60%] md:w-[70%] rounded-xl shadow-md bg-white md:mt-[80px] lg:mt-[60px] md:p-10 p-6'>
-                <div className='text-3xl font-semibold items-center text-center'>  
-                    <span className='text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-purple-700 drop-shadow-sm'>ثبت </span> 
-                    <span className='text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-700 drop-shadow-sm'>نام</span>
-                </div>
+            <StyledPaper>
+                <Typography variant="h4" align="center" gutterBottom>
+                    <GradientText>ثبت نام در موبایل بانک</GradientText>
+                </Typography>
 
-                {generalError && (
-                    <div className='mb-4 mt-4 bg-red-100 py-2 rounded-lg px-4 flex justify-start items-right gap-1'>
-                        <BiErrorCircle className='text-pink-500' />
-                        <p className='text-pink-500 text-sm text-right'>{generalError}</p>
-                    </div>
+                {formik.status && (
+                    <Alert severity="error" sx={{ mb: 2, mt: 2 }}>
+                        {formik.status}
+                    </Alert>
                 )}
 
-                <form onSubmit={handleSubmit}>
-                    <div className='flex items-center justify-center'>
-                        <input
-                            className={`p-2 md:w-full mt-10 rounded-lg shadow-b-lg placeholder:text-sm w-[80%] lg:placeholder:text-md border placeholder:text-right text-right bg-slate-100 text-gray-600 focus:outline-none focus:border-pink-500 focus:placeholder:text-pink-500 ${
-                                nationalIdError ? 'border-red-500' : 'border-gray-300'
-                            }`}
-                            type='text'
-                            name='nationalId'
-                            placeholder='کد ملی'
-                            value={nationalId}
-                            onChange={(e) => setNationalId(e.target.value)}
-                        />
-                    </div>
-                    {nationalIdError && (
-                        <div className='mb-4 mt-2 bg-red-100 py-2 rounded-lg px-4 flex justify-start items-right gap-1'>
-                            <BiErrorCircle className='text-pink-500' />
-                            <p className='text-pink-500 text-sm text-right'>{nationalIdError}</p>
-                        </div>
-                    )}
+                <form onSubmit={formik.handleSubmit}>
+                    <TextField
+                        fullWidth
+                        margin="normal"
+                        label="کد ملی"
+                        name="nationalId"
+                        value={formik.values.nationalId}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={formik.touched.nationalId && Boolean(formik.errors.nationalId)}
+                        helperText={formik.touched.nationalId && formik.errors.nationalId}
+                        variant="outlined"
+                        InputProps={{
+                            style: { textAlign: 'right' },
+                            sx: {
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: 'lightgrey', // رنگ اولیه border
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: 'pink', // رنگ border هنگام hover
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: 'pink', // رنگ border هنگام فوکوس
+                                    },
+                                    '&.Mui-error fieldset': {
+                                        borderColor: 'red', // رنگ border هنگام خطا
+                                    },
+                                },
+                            },
+                        }}
+                        InputLabelProps={{
+                            sx: {
+                                color: 'lightgrey', // رنگ اولیه label
+                                '&.Mui-focused': {
+                                    color: 'lightgrey', // رنگ label هنگام فوکوس
+                                },
+                                '&.Mui-error': {
+                                    color: 'red', // رنگ label هنگام خطا
+                                },
+                            },
+                        }}
+                    />
 
-                    <div className='flex py-2 items-center justify-center'>
-                        <input
-                            className={`p-2 md:w-full rounded-lg shadow-b-lg border placeholder:text-sm lg:placeholder:text-md w-[80%] placeholder:text-right text-right bg-slate-100 text-gray-600 focus:outline-none focus:border-pink-500 focus:placeholder:text-pink-500 ${
-                                mobileError ? 'border-red-500' : 'border-gray-300'
-                            }`}
-                            type='text'
-                            name='mobile'
-                            placeholder='شماره موبایل'
-                            value={mobile}
-                            onChange={(e) => setMobile(e.target.value)}
-                        />
-                    </div>
-                    {mobileError && (
-                        <div className='mb-4 bg-red-100 py-2 rounded-lg px-4 flex justify-start items-right gap-1'>
-                            <BiErrorCircle className='text-pink-500' />
-                            <p className='text-pink-500 text-sm text-right'>{mobileError}</p>
-                        </div>
-                    )}
-                    <div className='flex justify-center items-center gap-2 '>
-                        <div className='flex items-center justify-center w-[45%] sm:w-[50%]'>
-                            <button
-                                type='submit'
-                                className='group w-full flex justify-center items-center px-4 py-2 mt-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full shadow-md hover:bg-gradient-to-r hover:from-blue-700 hover:to-blue-800 transition-all ease-in-out duration-300 text-md'
-                            >
-                                <FaLongArrowAltRight className='ml-2 group-hover:text-opacity-60' />
-                                ادامه
-                            </button>
-                        </div>
+<TextField
+                        fullWidth
+                        margin="normal"
+                        label="شماره موبایل"
+                        name="mobile"
+                        value={formik.values.mobile}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={formik.touched.mobile && Boolean(formik.errors.mobile)}
+                        helperText={formik.touched.mobile && formik.errors.mobile}
+                        variant="outlined"
+                        InputProps={{
+                            style: { textAlign: 'right' },
+                            sx: {
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: 'lightgrey', // رنگ اولیه border
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: 'pink', // رنگ border هنگام hover
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: 'pink', // رنگ border هنگام فوکوس
+                                    },
+                                    '&.Mui-error fieldset': {
+                                        borderColor: 'red', // رنگ border هنگام خطا
+                                    },
+                                },
+                            },
+                        }}
+                        InputLabelProps={{
+                            sx: {
+                                color: 'lightgrey', // رنگ اولیه label
+                                '&.Mui-focused': {
+                                    color: 'lightgrey', // رنگ label هنگام فوکوس
+                                },
+                                '&.Mui-error': {
+                                    color: 'red', // رنگ label هنگام خطا
+                                },
+                            },
+                        }}
+                    />
 
-                        <div className='flex items-center justify-center w-[45%] sm:w-[50%]'>
-                            <Link
-                                to="/sign-in"
-                                className='group w-full flex justify-center items-center px-4 py-2 mt-6 bg-slate-100 text-gray-700 rounded-full shadow-md hover:opacity-65 transition-all ease-in-out duration-300 text-md'
-                            >
-                                بازگشت
-                                <FaLongArrowAltLeft className='mr-2 group-hover:text-opacity-60' />
-                            </Link>
-                        </div>
-                    </div>
+                    <Box display="flex" justifyContent="center" mt={2}>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            fullWidth
+                            disabled={formik.isSubmitting}
+                            sx={{
+                                width: '80%',
+                                bgcolor: 'primary.main',
+                                '&:hover': { bgcolor: 'primary.dark' },
+                            }}
+                        >
+                            ثبت نام
+                        </Button>
+                    </Box>
+
+                    <Box display="flex" justifyContent="center" mt={2}>
+                        <MuiLink component={Link} to="/sign-in" underline="none" variant="body2" color="primary" sx={{ textAlign: 'center', width: '80%', py: 1, borderRadius: 7, border: 1, borderColor: 'grey.300', ':hover': { color: 'grey.600' } }}>
+                            بازگشت  
+                        </MuiLink>
+                    </Box>
                 </form>
-            </div>
-        </div>
+            </StyledPaper>
+        </Box>
     );
 }

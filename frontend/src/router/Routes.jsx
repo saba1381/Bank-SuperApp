@@ -1,12 +1,12 @@
 import Register from "../features/auth/Register";
-import { createBrowserRouter, Navigate } from "react-router-dom"; // Import createBrowserRouter and Navigate
-import App from "../layout/App"; // Import the App component
-import SignIn from "../features/auth/SignIn"; // Import the SignIn component
-import RequireAuth from "./RequireAuth"; // Import RequireAuth component
-import PrivatePage from "../features/private/PrivatePage"; // Import PrivatePage component
-import ServerError from "../errors/ServerError"; // Import ServerError component
-import NotFound from "../errors/NotFound"; // Import NotFound component
-import ActivationCode from '../features/auth/ActivationCode'; // Import ActivationCode
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import App from "../layout/App"; 
+import SignIn from "../features/auth/SignIn"; 
+import RequireAuth from "./RequireAuth";
+import PrivatePage from "../features/private/PrivatePage"; 
+import ServerError from "../errors/ServerError";
+import NotFound from "../errors/NotFound"; 
+import ActivationCode from '../features/auth/ActivationCode'; 
 
 export const router = createBrowserRouter([
     {
@@ -26,10 +26,13 @@ export const router = createBrowserRouter([
                 element: <ActivationCode /> 
             },
             {
-                path: "cp",
-                element: <PrivatePage />
+                element: <RequireAuth />, children: [
+                    { path: "cp", element: <PrivatePage /> }
+                ]
             },
-            { path: "", element: <Navigate to="/sign-in" /> },
+      
+            //{ path: "", element: <Navigate to="/sign-in" /> },
+            {path:'' , element: <App />},
             { path: "server-error", element: <ServerError /> },
             { path: "not-found", element: <NotFound /> },
             { path: "*", element: <Navigate replace to="not-found" /> },

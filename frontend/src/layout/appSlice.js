@@ -1,8 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState={
-    isDrawerOpen : false,
-    isLoginModalOpen:false,
     loginStep:"mobile",
     startTimer:false,
     timer:{
@@ -15,15 +13,6 @@ export const appSlice = createSlice({
     name:"appslice",
     initialState,
     reducers:{
-        setIsDrawerOpen: (state,action) => {
-            state.isDrawerOpen = action.payload;
-        },
-        setLoginModalOpen: (state,action) => {
-            state.isLoginModalOpen = action.payload;
-            // if(!action.payload){
-            //     state.loginStep="mobile";
-            // }
-        },
         setLoginStepToMobile: (state) => {
             state.loginStep = "mobile";
             state.startTimer = false;
@@ -64,7 +53,7 @@ export const appSlice = createSlice({
 });
 
 
-export const { setStartTimer,TimerTick,setTimeInterval,clearTimeInterval , setIsDrawerOpen,setLoginModalOpen,setLoginStepToMobile,setLoginStepToOTP} =
+export const { setStartTimer,TimerTick,setTimeInterval,clearTimeInterval ,setLoginStepToMobile,setLoginStepToOTP} =
 appSlice.actions;
 
 export default appSlice.reducer;

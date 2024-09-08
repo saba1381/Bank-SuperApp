@@ -16,8 +16,8 @@ import { theme } from "./theme";
 import * as serviceWorkerRegistration from "./serviceWorkerResgistration";
 import SplashScreenBox from './SplashScreenBox';
 import { Helmet } from 'react-helmet';
-import Header from './components/Header'; // ایمپورت کردن Header
-import { router } from "./router/Routes"; // دوباره ایمپورت کردن router
+import Header from './components/Header'
+import { router } from "./router/Routes"; 
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 if (process.env.NODE_ENV === 'production') {
@@ -63,7 +63,7 @@ function App() {
                 theme="colored"
               />
               <CssBaseline />
-              {!showSplash && <Header />} {/* اضافه کردن Header */}
+              {!showSplash && <Header />} 
               {showSplash ? (
                 <SplashScreenBox />
               ) : (

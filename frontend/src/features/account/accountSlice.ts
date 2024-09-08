@@ -8,11 +8,13 @@ import { router } from "../../router/Routes";
 import { setLoginStepToOTP } from "../../layout/appSlice";
 
 interface AccountState {
-    user: User | null;
+    user: User | null,
+    isLoading :boolean
 }
 
 const initialState: AccountState = {
-    user: null
+    user: null,
+    isLoading : false,
 };
 
 export const verifyOTP = createAsyncThunk(
@@ -34,8 +36,8 @@ export const refreshTokensAsync = createAsyncThunk(
     async (_, thunkAPI) => {
         const userObject = JSON.parse(localStorage.getItem('user') || '{}');
         //get refreshed token from api
-        const refreshedToken =  await agent.UserProfile.refreshTokens({refreshToken:userObject.tokens.refresh.token});
-        userObject.tokens = refreshedToken;
+        // const refreshedToken =  await agent.UserProfile.refreshTokens({refreshToken:userObject.tokens.refresh.token});
+        // userObject.tokens = refreshedToken;
 
         thunkAPI.dispatch(setUser(userObject));
         localStorage.setItem('user', JSON.stringify(userObject));
@@ -104,7 +106,10 @@ export const accountSlice = createSlice({
             toast.error('دسترسی شما قطع شد ، لطفا مجدد وارد شوید');
             router.navigate('/');
         });
-        builder.addCase(verifyOTP.fulfilled, (state, action) => {
+        builder.addCase(signInUser.pending,(state)=>{
+            state.isLoading = true;
+        });
+        builder.addCase(verifyOTP.fulfilled, (state, action:any) => {
             state.user = action.payload;
         });
         builder.addMatcher(isAnyOf(signInUser.rejected,verifyOTP.rejected), (state, action) => {

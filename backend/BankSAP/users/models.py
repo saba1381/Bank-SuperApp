@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from django.utils import timezone  # Import timezone
 
 class UserManager(BaseUserManager):
     def create_user(self, phone_number, national_code, password=None, **extra_fields):
@@ -29,6 +30,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     national_code = models.CharField(max_length=10, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    last_login = models.DateTimeField(null=True, blank=True) 
 
     USERNAME_FIELD = 'phone_number'
     REQUIRED_FIELDS = ['national_code']
