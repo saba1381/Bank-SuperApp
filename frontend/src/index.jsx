@@ -21,9 +21,9 @@ import { router } from "./router/Routes";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 if (process.env.NODE_ENV === 'production') {
-  console.log = () => {}
-  console.error = () => {}
-  console.debug = () => {}
+  console.log = () => {};
+  console.error = () => {};
+  console.debug = () => {};
 }
 const cacheRtl = createCache({
   key: "muirtl",
@@ -48,27 +48,23 @@ function App() {
 
   return (
     <StrictMode>
-      <Helmet>
-        <title>موبایل بانک</title>
-      </Helmet>
       <Provider store={store}>
         <CacheProvider value={cacheRtl}>
           <ThemeProvider theme={theme}>
-            <Box component="div" dir="rtl" sx={{ display: "flex", flexDirection: "column" }}>
-              <ToastContainer
-                position="top-center"
-                rtl
-                toastStyle={{}}
-                hideProgressBar
-                theme="colored"
-              />
+            <Box component="div" dir="rtl" sx={{ display: "flex", flexDirection: "column", minHeight: '100vh' }}>
               <CssBaseline />
-              {!showSplash && <Header />} 
+              <Header /> {/* اطمینان حاصل کنید که Header همیشه رندر می‌شود */}
               {showSplash ? (
                 <SplashScreenBox />
               ) : (
                 <RouterProvider router={router} />
               )}
+              <ToastContainer
+                position="top-center"
+                rtl
+                hideProgressBar
+                theme="colored"
+              />
             </Box>
           </ThemeProvider>
         </CacheProvider>

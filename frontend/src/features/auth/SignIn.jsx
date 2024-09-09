@@ -56,6 +56,8 @@ export default function SignIn() {
             rememberMe: false,
         },
         validationSchema: validationSchema,
+        validateOnBlur : false,
+        validateOnChange:false,
         onSubmit: async (values, { setSubmitting, setFieldError }) => {
             localStorage.removeItem('access_token');
 
@@ -72,8 +74,14 @@ export default function SignIn() {
                     phone_number: values.mobile,
                     national_code: values.nationalId
                 }));
+                console.log(result);
+                
 
                 if (result.meta.requestStatus === 'fulfilled') {
+                    localStorage.setItem('access_token', result.payload.access);
+                    localStorage.setItem('refresh_token', result.payload.refresh);
+                    console.log("ورود");
+                    
                     navigate("/cp");
                 } else {
                     setFieldError('general', 'کدملی یا شماره موبایل اشتباه است.');

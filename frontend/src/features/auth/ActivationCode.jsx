@@ -4,6 +4,8 @@ import { Helmet } from 'react-helmet';
 import { TextField, Button, Box, Typography } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useDispatch } from 'react-redux'; // Import Redux hook
+import { verifyOTP } from '../account/accountSlice'; // Import the action for OTP verification
 import { FaLongArrowAltLeft } from 'react-icons/fa';
 
 // Validation schema
@@ -17,13 +19,14 @@ const validationSchema = Yup.object({
 export default function ActivationCode() {
     const inputRefs = useRef([]);
     const navigate = useNavigate();
+    const dispatch = useDispatch(); // Use the dispatch hook
 
     const formik = useFormik({
         initialValues: { code: '' },
         validationSchema,
         validateOnChange: false,
         validateOnBlur: false,
-        onSubmit: async (values, { setSubmitting }) => {
+        onSubmit: async (values, { setSubmitting, setFieldError }) => {
             const { code } = values;
             const phone_number = localStorage.getItem('phone_number');
             const national_code = localStorage.getItem('national_code');
@@ -35,24 +38,24 @@ export default function ActivationCode() {
             }
 
             try {
-                const response = await fetch('http://localhost:8000/api/users/verify-otp/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone_number, otp: code, national_code }),
-                });
+                const result = await dispatch(verifyOTP({
+                    phone_number,
+                    otp: code,
+                    national_code,
+                }));
 
-                if (response.ok) {
-                    const data = await response.json();
-                    localStorage.setItem('access_token', data.access);
-                    localStorage.setItem('refresh_token', data.refresh);
+                if (result.meta.requestStatus === 'fulfilled') {
+                    // On successful verification, store tokens and navigate to /cp
+                    localStorage.setItem('access_token', result.payload.access);
+                    localStorage.setItem('refresh_token', result.payload.refresh);
                     navigate('/cp');
                 } else {
-                    const errorData = await response.json();
-                    formik.setErrors({ code: errorData.detail || 'خطا در تأیید کد.' });
+                    // Handle error response
+                    setFieldError('code', 'کد فعالسازی اشتباه است.');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                formik.setErrors({ code: 'خطایی در ارتباط با سرور رخ داد.' });
+                setFieldError('code', 'خطایی در ارتباط با سرور رخ داد.');
             }
 
             setSubmitting(false);
@@ -141,7 +144,7 @@ export default function ActivationCode() {
                         </Button>
                     </Box>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'center'}}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <Link
                             to="/register"
                             style={{
@@ -156,20 +159,10 @@ export default function ActivationCode() {
                                 position: 'relative',
                                 textAlign: 'center',
                                 width: '50%',
-                                justifyContent:'center'
-
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.borderColor = '#b0bec5'; // Light grey
-                                e.currentTarget.style.color = '#b0bec5'; // Original color
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.borderColor = '#1976d2'; // Original border color
-                                e.currentTarget.style.color = '#1976d2'; // Original text color
+                                justifyContent: 'center',
                             }}
                         >
-                            <FaLongArrowAltLeft style={{ marginRight: '8px' }} />
-                            بازگشت
+                            ثبت نام
                         </Link>
                     </Box>
                 </form>

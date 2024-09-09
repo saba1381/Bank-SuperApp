@@ -5,10 +5,12 @@ export default function RequireAuth() {
     const { user } = UseAppSelector(state => state.account);
     const location = useLocation();
     const accessToken = localStorage.getItem('access_token');
-    console.log(user);
-    if (!user) {
+
+    // اگر کاربر در استیت وجود ندارد و توکن هم موجود نیست، به صفحه ورود هدایت شود
+    if (!user && !accessToken) {
         return <Navigate to='/sign-in' state={{ from: location }} />
     }
 
+    // اگر کاربر یا توکن معتبر است، اجازه دسترسی بدهد
     return <Outlet />
 }

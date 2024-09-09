@@ -26,13 +26,13 @@ export const router = createBrowserRouter([
                 element: <ActivationCode /> 
             },
             {
-                element: <RequireAuth />, children: [
+                element: <RequireAuth />, 
+                children: [
                     { path: "cp", element: <PrivatePage /> }
                 ]
             },
-      
-            //{ path: "", element: <Navigate to="/sign-in" /> },
-            {path:'' , element: <App />},
+            // Redirect root to "sign-in" unless authenticated
+            { path: "", element: <Navigate to="/sign-in" /> },
             { path: "server-error", element: <ServerError /> },
             { path: "not-found", element: <NotFound /> },
             { path: "*", element: <Navigate replace to="not-found" /> },

@@ -41,6 +41,8 @@ export default function Register() {
             mobile: '',
         },
         validationSchema: validationSchema,
+        validateOnBlur : false,
+        validateOnChange:false,
         onSubmit: async (values, { setSubmitting, setStatus }) => {
             try {
                 const response = await fetch('http://localhost:8000/api/users/register/', {
