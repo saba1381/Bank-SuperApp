@@ -15,7 +15,7 @@ const SettingsIcon = () => {
 
   return (
     <>
-      <IconButton color="inherit" onClick={handleSettingsClick}>
+      <IconButton color="inherit" onClick={handleSettingsClick} style={{ fontSize: '1.1rem' }}>
         <IoMdSettings />
       </IconButton>
       <Menu

@@ -15,8 +15,8 @@ const NotificationIcon = () => {
 
   return (
     <>
-      <IconButton color="inherit" onClick={handleNotificationClick}>
-        <IoIosNotifications />
+      <IconButton color="inherit" onClick={handleNotificationClick} >
+        <IoIosNotifications style={{ fontSize: '1.2rem' }} />
       </IconButton>
       <Snackbar
         open={snackbarOpen}

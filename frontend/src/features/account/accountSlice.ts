@@ -1,6 +1,5 @@
 import { User } from './../../models/UserModel';
 import { createAsyncThunk, createSlice, isAnyOf } from "@reduxjs/toolkit";
-
 import agent from "../../api/agent";
 import { toast } from "react-toastify";
 import { router } from "../../router/Routes";
@@ -87,37 +86,58 @@ export const fetchCurrentUser = createAsyncThunk(
 )
 
 export const accountSlice = createSlice({
-    name:'account',
+    name: 'account',
     initialState,
     reducers: {
+    
         signOut: (state) => {
+        
             state.user = null;
-            localStorage.removeItem('user');
-            router.navigate('/');
+            
+            
+            localStorage.removeItem('access_token'); 
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('user');  
+
+            
+            const toastId = toast.info('شما با موفقیت خارج شدید', {
+                autoClose: false 
+            });
+
+       
+            setTimeout(() => {
+                toast.dismiss(toastId);  
+            }, 4000);
+            
+        
+            router.navigate('/sign-in');
         },
         setUser: (state, action) => {
             state.user = action.payload;
         }
     },
-    extraReducers: (builder => {
+    extraReducers: (builder) => {
         builder.addCase(refreshTokensAsync.rejected, (state) => {
             state.user = null;
             localStorage.removeItem('user');
-            toast.error('دسترسی شما قطع شد ، لطفا مجدد وارد شوید');
-            router.navigate('/');
+            toast.error('دسترسی شما قطع شد، لطفاً مجدد وارد شوید');
+            router.navigate('/sign-in');
         });
-        builder.addCase(signInUser.pending,(state)=>{
+        builder.addCase(signInUser.pending, (state) => {
             state.isLoading = true;
         });
-        builder.addCase(verifyOTP.fulfilled, (state, action:any) => {
+        builder.addCase(verifyOTP.fulfilled, (state, action) => {
             state.user = action.payload;
         });
-        builder.addMatcher(isAnyOf(signInUser.rejected,verifyOTP.rejected), (state, action) => {
+        builder.addMatcher(isAnyOf(signInUser.rejected, verifyOTP.rejected), (state) => {
+            state.isLoading = false;
+            toast.error('ورود ناموفق بود، لطفاً دوباره تلاش کنید');
+        });
+    },
+});
 
-          
-        })
-       
-    })
-})
 
-export const {signOut, setUser} = accountSlice.actions;
+
+
+export const { signOut, setUser } = accountSlice.actions;
+export default accountSlice.reducer;
