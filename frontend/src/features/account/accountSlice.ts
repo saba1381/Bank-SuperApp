@@ -3,7 +3,6 @@ import { createAsyncThunk, createSlice, isAnyOf } from "@reduxjs/toolkit";
 import agent from "../../api/agent";
 import { toast } from "react-toastify";
 import { router } from "../../router/Routes";
-
 import { setLoginStepToOTP } from "../../layout/appSlice";
 
 interface AccountState {

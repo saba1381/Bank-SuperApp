@@ -6,8 +6,7 @@ import SettingsIcon from './icons/SettingsIcon';
 import LogoutIcon from './icons/LogoutIcon';
 import { UseAppSelector } from '../store/configureStore';
 import { useDispatch } from 'react-redux';
-import { signOut } from '../features/account/accountSlice';  // مسیر صحیح فایل accountSlice را وارد کنید
-
+import { signOut } from '../features/account/accountSlice';
 const Header = () => {
   const { user } = UseAppSelector(state => state.account);
   const isCPPage = typeof window !== 'undefined' && window.location.pathname === '/cp';
@@ -73,7 +72,7 @@ const Header = () => {
       >
         <DialogTitle>تایید خروج</DialogTitle>
         <DialogContent>
-          <Typography>آیا از خروج خود مطمئن هستید؟</Typography>
+          <Typography>     آیا برای خروج از موبایل بانک مطمعن هستید؟</Typography>
         </DialogContent>
         <DialogActions>
         <Button onClick={handleConfirmLogout} color="secondary">

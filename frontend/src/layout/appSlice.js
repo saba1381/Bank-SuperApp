@@ -8,7 +8,7 @@ const initialState = {
     minutes: 2,
     intervallId: null,
   },
-  showCardList: false, // وضعیت جدید برای مدیریت نمایش لیست کارت‌ها
+  showCardList: false,
 };
 
 export const appSlice = createSlice({

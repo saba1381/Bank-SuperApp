@@ -6,11 +6,13 @@ export default function RequireAuth() {
     const location = useLocation();
     const accessToken = localStorage.getItem('access_token');
 
-    // اگر کاربر در استیت وجود ندارد و توکن هم موجود نیست، به صفحه ورود هدایت شود
+ 
+
+    // اگر کاربر وارد نشده است و به صفحه محافظت‌شده می‌رود
     if (!user && !accessToken) {
-        return <Navigate to='/sign-in' state={{ from: location }} />
+        return <Navigate to="/sign-in" state={{ from: location }} />
     }
 
-    // اگر کاربر یا توکن معتبر است، اجازه دسترسی بدهد
+    // اجازه دسترسی به بقیه‌ی صفحات
     return <Outlet />
 }

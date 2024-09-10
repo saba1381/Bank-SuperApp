@@ -191,7 +191,7 @@ export default function Register() {
                                 '&:hover': { bgcolor: 'primary.dark' },
                             }}
                         >
-                            ثبت نام
+                             ادامه
                         </Button>
                     </Box>
 

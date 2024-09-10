@@ -162,7 +162,7 @@ export default function ActivationCode() {
                                 justifyContent: 'center',
                             }}
                         >
-                            ثبت نام
+                            بازگشت 
                         </Link>
                     </Box>
                 </form>
