@@ -11,7 +11,7 @@ const SplashScreenBox = () => {
       height="100vh"
       width="100%"
       sx={{
-        background: 'linear-gradient(to right, #6b46c1, #90cdf4)',
+        background:'linear-gradient(to right, #2560eb, #7c3aed)',
         dark: {
           background: 'linear-gradient(to right, #6b46c1, #3182ce)',
         },

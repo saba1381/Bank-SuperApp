@@ -29,9 +29,9 @@ const Header = () => {
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         {/* بخش سمت راست */}
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <AssuredWorkloadIcon style={{ fontSize: '1.875rem', marginRight: '1rem' }} />
+          <AssuredWorkloadIcon style={{ fontSize: '1.875rem', marginRight: '1rem', marginLeft:'0.5rem' }} />
           <Typography 
-            variant="h6" 
+            variant="h4" 
             sx={{ display: { xs: 'none', sm: 'block' } }}
           >
             موبایل بانک
