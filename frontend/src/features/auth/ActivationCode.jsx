@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { TextField, Button, Box, Typography } from '@mui/material';
@@ -7,8 +7,10 @@ import * as Yup from 'yup';
 import { useDispatch } from 'react-redux'; // Import Redux hook
 import { verifyOTP } from '../account/accountSlice'; // Import the action for OTP verification
 import { FaLongArrowAltLeft } from 'react-icons/fa';
+import Register from './Register';
 
-// Validation schema
+
+
 const validationSchema = Yup.object({
     code: Yup.string()
         .length(4, 'کد فعالسازی باید ۴ رقم باشد')
@@ -17,9 +19,11 @@ const validationSchema = Yup.object({
 });
 
 export default function ActivationCode() {
+    const [showRegister, setShowRegister] = useState(false);
     const inputRefs = useRef([]);
     const navigate = useNavigate();
-    const dispatch = useDispatch(); // Use the dispatch hook
+    const dispatch = useDispatch();
+    
 
     const formik = useFormik({
         initialValues: { code: '' },
@@ -95,13 +99,16 @@ export default function ActivationCode() {
             }
         }
     };
+    if (showRegister) {
+        return <Register />; 
+    }
 
     return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', bgcolor: 'grey.100' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh',width:{xs:'100%' , sm:'60%' , md:'45%'}, bgcolor: 'grey.100' }}>
             <Helmet>
                 <title>کد فعالسازی</title>
             </Helmet>
-            <Box sx={{ maxWidth: '500px', width: '100%', p: 4, bgcolor: 'white', borderRadius: '8px', boxShadow: 3 }}>
+            <Box sx={{ maxWidth: '900px', width: '100%', p: 6, bgcolor: 'white', borderRadius: '8px', boxShadow: 3 }}>
                 <Typography variant="h4" align="center" gutterBottom>
                     <span style={{ background: 'linear-gradient(to right, #6B46C1, #6B46C1, #4299E1, #3182CE)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>کد فعالسازی</span>
                 </Typography>
@@ -131,6 +138,7 @@ export default function ActivationCode() {
                             {formik.errors.code}
                         </Typography>
                     )}
+                    
 
                     <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                         <Button
@@ -145,9 +153,9 @@ export default function ActivationCode() {
                     </Box>
 
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <Link
-                            to="/register"
-                            style={{
+                        <Button
+                            onClick={()=>setShowRegister(true)}
+                            sx={{
                                 textDecoration: 'none',
                                 color: '#1976d2',
                                 display: 'flex',
@@ -163,7 +171,7 @@ export default function ActivationCode() {
                             }}
                         >
                             بازگشت 
-                        </Link>
+                        </Button>
                     </Box>
                 </form>
             </Box>

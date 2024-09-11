@@ -9,9 +9,13 @@ import { UseAppDispatch } from "../store/configureStore";
 import { fetchCurrentUser } from "../features/account/accountSlice";
 import { sleep } from "../util/util";
 
+
 export default function App() {
   const dispatch = UseAppDispatch();
   const [loading, setLoading] = useState(true);
+  const [step, setStep] = useState('register');
+
+
   const initApp = useCallback(async () => {
     try {
       await dispatch(fetchCurrentUser());
@@ -31,11 +35,12 @@ export default function App() {
   if (loading) return <LoadingComponent message="لطفا منتظر باشید ..." />;
 
   return (
-    <Box sx={{display:"flex",flexDirection:"column",minHeight:"100vh",width:"100%"}}>
+    <Box sx={{display:"flex",flexDirection:"column",maxHeight:"100vh",width:"100%"}}>
       <Box
       component={"main"}
       sx={{flexGrow:1}}
       >
+       
             <Outlet />
       </Box>
     </Box>

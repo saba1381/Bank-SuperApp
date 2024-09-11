@@ -51,7 +51,7 @@ function App() {
       <Provider store={store}>
         <CacheProvider value={cacheRtl}>
           <ThemeProvider theme={theme}>
-            <Box component="div" dir="rtl" sx={{ display: "flex", flexDirection: "column", minHeight: '100vh' }}>
+            <Box component="div" dir="rtl" sx={{ display: "flex", flexDirection: "column", maxHeight: '100vh' }}>
               <CssBaseline />
               <Header /> {/* اطمینان حاصل کنید که Header همیشه رندر می‌شود */}
               {showSplash ? (

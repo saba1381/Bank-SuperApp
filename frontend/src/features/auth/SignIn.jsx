@@ -56,8 +56,8 @@ export default function SignIn() {
             rememberMe: false,
         },
         validationSchema: validationSchema,
-        validateOnBlur : false,
-        validateOnChange:false,
+        validateOnBlur: false,
+        validateOnChange: false,
         onSubmit: async (values, { setSubmitting, setFieldError }) => {
             localStorage.removeItem('access_token');
 
@@ -75,13 +75,12 @@ export default function SignIn() {
                     national_code: values.nationalId
                 }));
                 console.log(result);
-                
 
                 if (result.meta.requestStatus === 'fulfilled') {
                     localStorage.setItem('access_token', result.payload.access);
                     localStorage.setItem('refresh_token', result.payload.refresh);
                     console.log("ورود");
-                    
+
                     navigate("/cp");
                 } else {
                     setFieldError('general', 'کدملی یا شماره موبایل اشتباه است.');
@@ -95,18 +94,23 @@ export default function SignIn() {
     });
 
     return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', bgcolor: 'grey.100' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height:{xs: '80vh' , md:'100%'}, bgcolor: 'grey.100' }}>
             <Helmet>
                 <title>ورود به موبایل بانک</title>
             </Helmet>
-            <StyledPaper>
-                <Typography variant="h4" align="center" gutterBottom>
-                    <GradientText>همراه بانک</GradientText>
+            
+            <Typography variant="h6" align="center"  color='grey.900' sx={{mt: {md:'10px'}}}>
+                به موبایل بانک خود خوش آمدید
+            </Typography>
+            
+            <StyledPaper sx={{ p: { xs: 2, md: 6 } }}>
+                <Typography variant="h3" align="start" gutterBottom>
+                    <GradientText>ورود به حساب</GradientText>
                 </Typography>
 
                 <form onSubmit={formik.handleSubmit}>
                     {formik.errors.general && (
-                        <Box display="flex" alignItems="center" justifyContent="flex-start" gap={1} bgcolor="lightpink"  p={1} borderRadius={4} mt={2} pr={2} mb={2}>
+                        <Box display="flex" alignItems="center" justifyContent="flex-start" gap={1} bgcolor="lightpink" p={1} borderRadius={4} mt={2} pr={2} mb={2}>
                             <BiErrorCircle className='text-pink-500' />
                             <Typography variant="body2" color="error">{formik.errors.general}</Typography>
                         </Box>
@@ -128,28 +132,28 @@ export default function SignIn() {
                             sx: {
                                 '& .MuiOutlinedInput-root': {
                                     '& fieldset': {
-                                        borderColor: 'lightgrey', // رنگ اولیه border
+                                        borderColor: 'lightgrey',
                                     },
                                     '&:hover fieldset': {
-                                        borderColor: 'pink', // رنگ border هنگام hover
+                                        borderColor: 'pink',
                                     },
                                     '&.Mui-focused fieldset': {
-                                        borderColor: 'pink', // رنگ border هنگام فوکوس
+                                        borderColor: 'pink',
                                     },
                                     '&.Mui-error fieldset': {
-                                        borderColor: 'red', // رنگ border هنگام خطا
+                                        borderColor: 'red',
                                     },
                                 },
                             },
                         }}
                         InputLabelProps={{
                             sx: {
-                                color: 'lightgrey', // رنگ اولیه label
+                                color: 'lightgrey',
                                 '&.Mui-focused': {
-                                    color: 'lightgrey', // رنگ label هنگام فوکوس
+                                    color: 'lightgrey',
                                 },
                                 '&.Mui-error': {
-                                    color: 'red', // رنگ label هنگام خطا
+                                    color: 'red',
                                 },
                             },
                         }}
@@ -171,33 +175,33 @@ export default function SignIn() {
                             sx: {
                                 '& .MuiOutlinedInput-root': {
                                     '& fieldset': {
-                                        borderColor: 'lightgrey', // رنگ اولیه border
+                                        borderColor: 'lightgrey',
                                     },
                                     '&:hover fieldset': {
-                                        borderColor: 'pink', // رنگ border هنگام hover
+                                        borderColor: 'pink',
                                     },
                                     '&.Mui-focused fieldset': {
-                                        borderColor: 'pink', // رنگ border هنگام فوکوس
+                                        borderColor: 'pink',
                                     },
                                     '&.Mui-error fieldset': {
-                                        borderColor: 'red', // رنگ border هنگام خطا
+                                        borderColor: 'red',
                                     },
                                 },
                             },
                         }}
                         InputLabelProps={{
                             sx: {
-                                color: 'lightgrey', // رنگ اولیه label
+                                color: 'lightgrey',
                                 '&.Mui-focused': {
-                                    color: 'lightgrey', // رنگ label هنگام فوکوس
+                                    color: 'lightgrey',
                                 },
                                 '&.Mui-error': {
-                                    color: 'red', // رنگ label هنگام خطا
+                                    color: 'red',
                                 },
                             },
                         }}
                     />
-                    
+
                     <Box display="flex" justifyContent="center" mt={2}>
                         <Button
                             type="submit"
@@ -205,7 +209,7 @@ export default function SignIn() {
                             fullWidth
                             disabled={formik.isSubmitting}
                             sx={{
-                                width: '80%',
+                                width: '100%',
                                 bgcolor: 'primary.main',
                                 '&:hover': { bgcolor: 'primary.dark' },
                             }}
@@ -213,7 +217,7 @@ export default function SignIn() {
                             ورود به موبایل بانک
                         </Button>
                     </Box>
-                    
+
                     <Box display="flex" justifyContent="space-between" mt={2} gap={1}>
                         <MuiLink component={Link} to="/forgot-password" underline="none" variant="body2" color="primary" sx={{ textAlign: 'center', width: '100%', py: 1, borderRadius: 4, border: 1, borderColor: 'grey.300', ':hover': { color: 'grey.600' } }}>
                             فراموشی رمز
