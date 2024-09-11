@@ -48,7 +48,7 @@ export const appSlice = createSlice({
     setStartTimer: (state, action) => {
       state.startTimer = action.payload;
     },
-    // اکشن‌ها برای مدیریت نمایش لیست کارت‌ها
+    
     showCardList: (state) => {
       state.showCardList = true;
     },

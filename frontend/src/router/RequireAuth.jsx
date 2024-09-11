@@ -8,11 +8,9 @@ export default function RequireAuth() {
 
  
 
-    // اگر کاربر وارد نشده است و به صفحه محافظت‌شده می‌رود
     if (!user && !accessToken) {
         return <Navigate to="/sign-in" state={{ from: location }} />
     }
 
-    // اجازه دسترسی به بقیه‌ی صفحات
     return <Outlet />
 }

@@ -130,7 +130,12 @@ export const accountSlice = createSlice({
         });
         builder.addMatcher(isAnyOf(signInUser.rejected, verifyOTP.rejected), (state) => {
             state.isLoading = false;
-            toast.error('ورود ناموفق بود، لطفاً دوباره تلاش کنید');
+            const toastId = toast.error('ورود ناموفق بود، لطفاً دوباره تلاش کنید', {
+                autoClose: false 
+            });
+            setTimeout(() => {
+                toast.dismiss(toastId);  
+            }, 3000);
         });
     },
 });

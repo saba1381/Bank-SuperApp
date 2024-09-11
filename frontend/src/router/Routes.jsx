@@ -3,6 +3,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../layout/App"; 
 import SignIn from "../features/auth/SignIn"; 
 import RequireAuth from "./RequireAuth";
+import AlreadyAuth from "./AlreadyAuth";
 import PrivatePage from "../features/private/PrivatePage"; 
 import ServerError from "../errors/ServerError";
 import NotFound from "../errors/NotFound"; 
@@ -14,12 +15,17 @@ export const router = createBrowserRouter([
         element: <App />,
         children: [
             {
-                path: "sign-in",
-                element: <SignIn />
-            },
-            {
-                path: "register", 
-                element: <Register />
+                element: <AlreadyAuth />, // برای جلوگیری از دسترسی لاگین شده‌ها به این صفحات
+                children: [
+                    {
+                        path: "sign-in",
+                        element: <SignIn />
+                    },
+                    {
+                        path: "register", 
+                        element: <Register />
+                    },
+                ]
             },
             {
                 path: "activation-code", 

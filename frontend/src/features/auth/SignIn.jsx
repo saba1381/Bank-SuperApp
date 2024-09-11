@@ -1,13 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { BiErrorCircle } from "react-icons/bi";
-import { Container, TextField, Button, Box, Typography, Checkbox, FormControlLabel, Paper, Link as MuiLink } from '@mui/material';
+import { Container, TextField, Button, Box, Typography, Checkbox, FormControlLabel, Paper, Link as MuiLink, IconButton, Snackbar, Alert } from '@mui/material';
 import { styled } from '@mui/system';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { UseAppDispatch } from '../../store/configureStore';
 import { signInUser } from '../account/accountSlice';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'; // آیکون علامت سوال
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     maxWidth: '600px',
@@ -24,6 +25,19 @@ const GradientText = styled('span')({
     WebkitTextFillColor: 'transparent',
 });
 
+const Overlay = styled('div')(({ theme }) => ({
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 1000,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+}));
+
 const validationSchema = Yup.object({
     nationalId: Yup.string()
         .matches(/^[0-9]*$/, 'کدملی باید شامل اعداد باشد')
@@ -38,6 +52,8 @@ const validationSchema = Yup.object({
 export default function SignIn() {
     const navigate = useNavigate(); 
     const dispatch = UseAppDispatch();
+    const [snackbarOpen, setSnackbarOpen] = useState(false); // وضعیت برای کنترل نمایش Snackbar
+    const [overlayOpen, setOverlayOpen] = useState(false); // وضعیت برای کنترل نمایش Overlay
 
     useEffect(() => {
         const accessToken = localStorage.getItem('access_token');
@@ -93,20 +109,37 @@ export default function SignIn() {
         },
     });
 
+    
+    const handleSnackbarOpen = () => {
+        setSnackbarOpen(true);
+        setOverlayOpen(true);
+    };
+
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+        setOverlayOpen(false); 
+    };
+
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height:{xs: '80vh' , md:'100%'}, bgcolor: 'grey.100' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: { xs: '80vh', md: '100%' }, bgcolor: 'grey.100' }}>
             <Helmet>
                 <title>ورود به موبایل بانک</title>
             </Helmet>
-            
-            <Typography variant="h6" align="center"  color='grey.900' sx={{mt: {md:'10px'}}}>
-                به موبایل بانک خود خوش آمدید
-            </Typography>
-            
+
             <StyledPaper sx={{ p: { xs: 2, md: 6 } }}>
-                <Typography variant="h3" align="start" gutterBottom>
-                    <GradientText>ورود به حساب</GradientText>
-                </Typography>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h3" align="start" gutterBottom>
+                        <GradientText>ورود به حساب</GradientText>
+                    </Typography>
+                    <Button
+                        variant="outlined"
+                        startIcon={<HelpOutlineIcon style={{fontSize:'13px'}} />}
+                        onClick={handleSnackbarOpen}
+                        sx={{ ml: 2 , fontSize:'13px' , padding:(0,0,0,2) , display:'flex' , height:'5px'}}
+                    >
+                        راهنما
+                    </Button>
+                </Box>
 
                 <form onSubmit={formik.handleSubmit}>
                     {formik.errors.general && (
@@ -242,6 +275,30 @@ export default function SignIn() {
                     </Box>
                 </form>
             </StyledPaper>
+
+            {overlayOpen && <Overlay />} 
+
+            <Snackbar
+                open={snackbarOpen}
+                onClose={handleSnackbarClose}
+                autoHideDuration={6000}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                action={
+                    <IconButton
+                        aria-label="close"
+                        color="inherit"
+                        onClick={handleSnackbarClose}
+                    >
+                        ×
+                    </IconButton>
+                }
+            >
+                <Alert onClose={handleSnackbarClose} severity="info" sx={{ width: '100%' , borderRadius:'20px'}}>
+                    <Typography variant='h5'>صفحه ورود:</Typography>
+                    <Typography>   برای ورود به موبایل بانک نام کاربری و رمز عبور خود را وارد کنید. اگر حساب کاربری ندارید ، ابتدا ثبت نام کنید.</Typography>
+                  
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }

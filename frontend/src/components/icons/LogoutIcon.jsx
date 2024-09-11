@@ -10,7 +10,8 @@ const LogoutIcon = ({ onClick }) => {
           variant="body3" 
           sx={{ 
             fontSize: '0.9rem', 
-            display: { xs: 'none', md: 'block' } 
+            display: { xs: 'none', md: 'block'},
+            mr:'3px' 
           }}
         >
           خروج

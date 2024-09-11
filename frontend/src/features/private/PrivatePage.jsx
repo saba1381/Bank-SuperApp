@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Container, Grid, Paper, Link, useMediaQuery, Button } from "@mui/material";
+import { Box, Container, Grid, Paper, Link, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useDispatch } from "react-redux";
 import { BsCreditCard } from "react-icons/bs";
@@ -10,9 +10,12 @@ import { TbCreditCardPay } from "react-icons/tb";
 import { RiSimCard2Line } from "react-icons/ri";
 import CardList from './CardList';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { motion } from "framer-motion";
+import ProfileEdit from "./ProfileEdit";
+
 
 const systems = [
-    { title: 'لیست کارت ها', icon: BsCreditCard, color: '#1976d2' }, // مطمئن شوید عنوان صحیح است
+    { title: 'لیست کارت ها', icon: BsCreditCard, color: '#1976d2' },
     { title: 'سوابق تراکنش', icon: MdHistory, color: '#388e3c' },
     { title: 'ویرایش پروفایل', icon: ImProfile, color: '#f57c00' },
     { title: 'حساب کاربری', icon: CgProfile, color: '#7b1fa2' },
@@ -24,31 +27,36 @@ const PrivatePage = () => {
     const dispatch = useDispatch();
     const theme = useTheme();
     const [showCardList, setShowCardList] = useState(false);
+    const [showProfileEdit, setShowProfileEdit] = useState(false);
     const isXs = useMediaQuery(theme.breakpoints.down('sm'));
     const isMd = useMediaQuery(theme.breakpoints.up('md'));
+    const isSm = useMediaQuery(theme.breakpoints.up('sm'));
 
     useEffect(() => {
         const loadDataAsync = async () => {
-            // داده‌ها از API بارگذاری شود (در این مثال داده‌ای وجود ندارد)
+            // Fetch data from API if needed
         };
         loadDataAsync();
     }, [dispatch]);
 
     const getIconSize = () => {
         if (isXs) return 30;
+        if (isSm) return 28;
         if (isMd) return 40;
         return 45;
     };
 
     const getPaperSize = () => {
-        if (isXs) return 120;
-        if (isMd) return 180;
+        if (isXs) return 140;
+        if (isSm) return 190;
+        if (isMd) return 190;
         return 230;
     };
 
     const getTitleFontSize = () => {
-        if (isXs) return '0.8rem';
-        if (isMd) return '1rem';
+        if (isXs) return '0.9rem';
+        if (isSm) return '1.2rem';
+        if (isMd) return '3rem';
         return '1.2rem';
     };
 
@@ -58,11 +66,17 @@ const PrivatePage = () => {
         { bankName: 'بانک ملت', ownerName: 'محمد حسینی', cardNumber: '6104-3371-1356-1498', icon: <DeleteIcon /> },
     ];
 
+    
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+    };
+
     return (
         <Container
             maxWidth="xl"
             sx={{
-                py: 5,
+                py: 2,
                 px: 3,
                 display: 'flex',
                 justifyContent: 'center',
@@ -70,65 +84,75 @@ const PrivatePage = () => {
             }}
         >
             <Box sx={{ width: '100%' }}>
-                {/* شرط نمایش لیست کارت‌ها */}
+                {/* Conditional rendering of CardList */}
                 {showCardList ? (
                     <CardList cards={cards} onBack={() => setShowCardList(false)} />
-                ) : (
-                    <Grid container spacing={3} justifyContent="center" sx={{ mt: 5 }}>
+                ) : ( showProfileEdit ? (
+                    <ProfileEdit onClose={() => setShowProfileEdit(false)} />
+                ) :(
+                    <Grid container spacing={isXs ? 2 : 3} justifyContent="center" sx={{ mt: 5 }}>
                         {systems.map((system, index) => (
                             <Grid
                                 item
                                 key={index}
-                                xs={4} sm={4} md={3} lg={2}
+                                xs={6} sm={4} md={3} lg={2} // Adjusted the grid item sizes for better responsiveness
                                 sx={{ display: 'flex', justifyContent: "center" }}
                             >
-                                <Paper
-                                    elevation={3}
-                                    sx={{
-                                        width: getPaperSize(),
-                                        height: getPaperSize(),
-                                        p: 3,
-                                        textAlign: 'center',
-                                        cursor: 'pointer',
-                                        transition: '0.3s',
-                                        borderRadius: 5,
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        flexDirection: 'column',
-                                        '&:hover': { transform: 'scale(0.96)' }
-                                    }}
-                                    onClick={() => {
-                                        if (system.title === 'لیست کارت ها') { // عنوان صحیح را بررسی کنید
-                                            setShowCardList(true);
-                                        }
-                                    }}
+                                <motion.div
+                                    variants={itemVariants}
+                                    initial="hidden"
+                                    animate="visible"
                                 >
-                                    <Box
-                                        display="flex"
-                                        flexDirection="column"
-                                        alignItems="center"
-                                        justifyContent="center"
+                                    <Paper
+                                        elevation={3}
+                                        sx={{
+                                            width: getPaperSize(),
+                                            height: getPaperSize(),
+                                            p: 3,
+                                            textAlign: 'center',
+                                            cursor: 'pointer',
+                                            transition: '0.3s',
+                                            borderRadius: 5,
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            flexDirection: 'column',
+                                            '&:hover': { transform: 'scale(0.96)' }
+                                        }}
+                                        onClick={() => {
+                                            if (system.title === 'لیست کارت ها') {
+                                                setShowCardList(true);
+                                            }else if (system.title === 'ویرایش پروفایل'){
+                                                setShowProfileEdit(true);
+                                            }
+                                        }}
                                     >
-                                        <Link href="#" underline="none" color="inherit" sx={{ color: system.color }}>
-                                            {React.createElement(system.icon, { size: getIconSize() })}
-                                        </Link>
                                         <Box
-                                            mt={2}
-                                            color="text.primary"
-                                            sx={{
-                                                fontSize: getTitleFontSize(),
-                                                '&:hover': { color: 'primary.main' }
-                                            }}
+                                            display="flex"
+                                            flexDirection="column"
+                                            alignItems="center"
+                                            justifyContent="center"
                                         >
-                                            {system.title}
+                                            <Link href="#" underline="none" color="inherit" sx={{ color: system.color }}>
+                                                {React.createElement(system.icon, { size: getIconSize() })}
+                                            </Link>
+                                            <Box
+                                                mt={2}
+                                                color="text.primary"
+                                                sx={{
+                                                    fontSize: getTitleFontSize(),
+                                                    '&:hover': { color: 'primary.main' }
+                                                }}
+                                            >
+                                                {system.title}
+                                            </Box>
                                         </Box>
-                                    </Box>
-                                </Paper>
+                                    </Paper>
+                                </motion.div>
                             </Grid>
                         ))}
                     </Grid>
-                )}
+              )  )}
             </Box>
         </Container>
     );
