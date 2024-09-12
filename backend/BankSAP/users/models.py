@@ -28,9 +28,13 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=11, unique=True)
     national_code = models.CharField(max_length=10, unique=True)
+    first_name = models.CharField(max_length=30, blank=True, null=True)  # نام
+    last_name = models.CharField(max_length=30, blank=True, null=True)  # نام خانوادگی
+    email = models.EmailField(max_length=255, unique=True, null=True, blank=True)  # ایمیل
+    gender = models.CharField(max_length=10, choices=[('male', 'مرد'), ('female', 'زن')], blank=True, null=True)  # جنسیت
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    last_login = models.DateTimeField(null=True, blank=True) 
+    last_login = models.DateTimeField(null=True, blank=True)
 
     USERNAME_FIELD = 'phone_number'
     REQUIRED_FIELDS = ['national_code']

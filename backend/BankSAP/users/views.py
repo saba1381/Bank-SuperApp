@@ -7,6 +7,7 @@ from .models import User
 from .serializers import UserSerializer
 import random
 from django.utils import timezone
+from rest_framework.permissions import IsAuthenticated
 
 class RegisterView(APIView):
     def post(self, request):
@@ -78,3 +79,16 @@ class LoginView(APIView):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }, status=status.HTTP_200_OK)
+    
+
+
+class UpdateProfileView(APIView):
+    def put(self, request):
+        user = request.user
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        print(f"Validation Errors: {serializer.errors}")  
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

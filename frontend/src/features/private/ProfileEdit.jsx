@@ -1,21 +1,41 @@
 import React, { useState } from 'react';
-import { Box, Button, TextField, Avatar, Grid, Container, Paper, Typography, Select, MenuItem } from '@mui/material';
+import { Box, Button, TextField, Avatar, Grid, Container, Paper, Typography, Select, MenuItem, Snackbar, Alert } from '@mui/material';
 import { useFormik } from 'formik';
 import { motion } from 'framer-motion';
 import * as yup from 'yup';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-
+import axios from 'axios';  
 
 const validationSchema = yup.object({
-  firstName: yup.string('نام خود را وارد کنید').required('نام ضروری است'),
-  lastName: yup.string('نام خانوادگی خود را وارد کنید').required('نام خانوادگی ضروری است'),
-  email: yup.string('ایمیل خود را وارد کنید').email('ایمیل معتبر وارد کنید').required('ایمیل ضروری است'),
-  gender: yup.string('جنسیت خود را انتخاب کنید').required('جنسیت ضروری است'),
+  first_name: yup
+    .string('نام خود را وارد کنید')
+    .matches(/^[\u0600-\u06FF\s]+$/, 'نام باید به زبان فارسی باشد')
+    .required('نام ضروری است'),
+  last_name: yup
+    .string('نام خانوادگی خود را وارد کنید')
+    .matches(/^[\u0600-\u06FF\s]+$/, 'نام خانوادگی باید به زبان فارسی باشد')
+    .required('نام خانوادگی ضروری است'),
+  email: yup
+    .string('ایمیل خود را وارد کنید')
+    .email('ایمیل معتبر وارد کنید')
+    .required('ایمیل ضروری است'),
+  gender: yup
+    .string('جنسیت خود را انتخاب کنید')
+    .required('جنسیت ضروری است'),
+  phone_number: yup
+    .string('شماره موبایل خود را وارد کنید')
+    .matches(/^[0-9]+$/, 'شماره موبایل باید فقط شامل اعداد باشد')
+    .test('len', 'شماره موبایل باید 11 رقم باشد', val => val && val.length === 11)
+    .test('start', 'شماره موبایل معتبر نیست', val => val && val.startsWith('09'))
+    .required('شماره موبایل ضروری است'),
 });
 
 const ProfileEdit = ({ onClose }) => {
   const [profileImage, setProfileImage] = useState(null);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('error');  // 'error' or 'success'
 
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -25,16 +45,36 @@ const ProfileEdit = ({ onClose }) => {
 
   const formik = useFormik({
     initialValues: {
-      firstName: '',
-      lastName: '',
+      first_name: '',
+      last_name: '',
       email: '',
       gender: '',
+      phone_number: '',  // تغییر نام فیلد به phone_number
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log('Profile Updated:', values);
-      alert(JSON.stringify(values, null, 2));
-      onClose();
+      axios.put('http://localhost:8000/api/users/profile/update/', values, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,  // استفاده از توکن JWT
+        },
+      })
+      .then(response => {
+        console.log('Profile Updated:', response.data);
+        setSnackbarMessage('پروفایل با موفقیت به‌روزرسانی شد');
+        setSnackbarSeverity('success');
+        setOpenSnackbar(true);
+        setTimeout(() => {
+          onClose();  // به صفحه‌ی قبلی بروید
+        }, 4000);
+      })
+      .catch(error => {
+        console.error('Error updating profile:', error);
+        const errorMessage = error.response?.data?.detail || 'خطایی در به‌روزرسانی پروفایل رخ داده است';
+        setSnackbarMessage(errorMessage);
+        setSnackbarSeverity('error');
+        setOpenSnackbar(true);
+        formik.resetForm();  // ریست کردن فرم
+      });
     },
     validateOnBlur: false,
     validateOnChange: false
@@ -42,22 +82,27 @@ const ProfileEdit = ({ onClose }) => {
 
   const handleSubmit = () => {
     formik.setTouched({
-      firstName: true,
-      lastName: true,
+      first_name: true,
+      last_name: true,
       email: true,
       gender: true,
+      phone_number: true,  // تغییر نام فیلد به phone_number
     });
     formik.handleSubmit();
   };
 
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
+
   return (
-    <Container maxWidth="full" >
-        <Box sx={{ mt: 1,mb:2 ,display: 'flex', justifyContent: 'flex-end' }}>
+    <Container maxWidth="full">
+      <Box sx={{ mt: 1, mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
         <Button variant="contained" color="primary" onClick={onClose} endIcon={<KeyboardBackspaceIcon />}>
           بازگشت
         </Button>
       </Box>
-      <Paper elevation={4} sx={{ p: 4, borderRadius: 5 ,width:{md:'70%' , sx:'100%'},mx: 'auto' }} >
+      <Paper elevation={4} sx={{ p: 4, borderRadius: 5, width: { md: '70%', sx: '100%' }, mx: 'auto' }}>
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <Typography variant="h5" align="center" gutterBottom>
             ویرایش پروفایل
@@ -106,28 +151,22 @@ const ProfileEdit = ({ onClose }) => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  id="firstName"
-                  name="firstName"
+                  id="first_name"
+                  name="first_name"
                   label="نام"
                   variant="outlined"
-                  value={formik.values.firstName}
+                  value={formik.values.first_name}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-                  helperText={formik.touched.firstName && formik.errors.firstName}
+                  error={formik.touched.first_name && Boolean(formik.errors.first_name)}
+                  helperText={formik.touched.first_name && formik.errors.first_name}
                   InputLabelProps={{ sx: { color: 'gray' } }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      '&:hover fieldset': {
-                        borderColor: '#FF1493',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#FF1493',
-                      },
+                      '&:hover fieldset': { borderColor: '#FF1493' },
+                      '&.Mui-focused fieldset': { borderColor: '#FF1493' },
                     },
-                    '& label.Mui-focused': {
-                      color: '#FF1493',
-                    },
+                    '& label.Mui-focused': { color: '#FF1493' },
                   }}
                 />
               </Grid>
@@ -135,28 +174,22 @@ const ProfileEdit = ({ onClose }) => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  id="lastName"
-                  name="lastName"
+                  id="last_name"
+                  name="last_name"
                   label="نام خانوادگی"
                   variant="outlined"
-                  value={formik.values.lastName}
+                  value={formik.values.last_name}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-                  helperText={formik.touched.lastName && formik.errors.lastName}
+                  error={formik.touched.last_name && Boolean(formik.errors.last_name)}
+                  helperText={formik.touched.last_name && formik.errors.last_name}
                   InputLabelProps={{ sx: { color: 'gray' } }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      '&:hover fieldset': {
-                        borderColor: '#FF1493',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#FF1493',
-                      },
+                      '&:hover fieldset': { borderColor: '#FF1493' },
+                      '&.Mui-focused fieldset': { borderColor: '#FF1493' },
                     },
-                    '& label.Mui-focused': {
-                      color: '#FF1493',
-                    },
+                    '& label.Mui-focused': { color: '#FF1493' },
                   }}
                 />
               </Grid>
@@ -176,67 +209,78 @@ const ProfileEdit = ({ onClose }) => {
                   InputLabelProps={{ sx: { color: 'gray' } }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      '&:hover fieldset': {
-                        borderColor: '#FF1493',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#FF1493',
-                      },
+                      '&:hover fieldset': { borderColor: '#FF1493' },
+                      '&.Mui-focused fieldset': { borderColor: '#FF1493' },
                     },
-                    '& label.Mui-focused': {
-                      color: '#FF1493',
-                    },
+                    '& label.Mui-focused': { color: '#FF1493' },
                   }}
                 />
               </Grid>
 
               <Grid item xs={12}>
-  <Select
-    fullWidth
-    id="gender"
-    name="gender"
-    value={formik.values.gender}
-    onChange={formik.handleChange}
-    onBlur={formik.handleBlur}
-    displayEmpty
-    error={formik.touched.gender && Boolean(formik.errors.gender)}
-    sx={{
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: 'gray', // default border color
-        },
-        '&:hover fieldset': {
-          borderColor: '#FF1493', // color when hovered
-        },
-        '&.Mui-focused fieldset': {
-          borderColor: '#FF1493', // color when focused
-        },
-      },
-      '& .MuiSelect-select': {
-        '&:focus': {
-          borderColor: '#FF1493', // color when focused
-        },
-      },
-      '& .MuiInputLabel-root.Mui-focused': {
-        color: '#FF1493', // color of the label when focused
-      },
-    }}
-  >
-    <MenuItem value="" disabled sx={{ fontSize: '0.8rem' }}>
-      جنسیت
-    </MenuItem>
-    <MenuItem value="male">مرد</MenuItem>
-    <MenuItem value="female">زن</MenuItem>
-  </Select>
-  <Typography color="error" variant="caption">
-    {formik.touched.gender && formik.errors.gender}
-  </Typography>
-</Grid>
+                <TextField
+                  fullWidth
+                  id="phone_number"
+                  name="phone_number"
+                  label="شماره موبایل"
+                  variant="outlined"
+                  value={formik.values.phone_number}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.phone_number && Boolean(formik.errors.phone_number)}
+                  helperText={formik.touched.phone_number && formik.errors.phone_number}
+                  InputLabelProps={{ sx: { color: 'gray' } }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '&:hover fieldset': { borderColor: '#FF1493' },
+                      '&.Mui-focused fieldset': { borderColor: '#FF1493' },
+                    },
+                    '& label.Mui-focused': { color: '#FF1493' },
+                  }}
+                />
+              </Grid>
 
+              <Grid item xs={12}>
+                <Select
+                  fullWidth
+                  id="gender"
+                  name="gender"
+                  value={formik.values.gender}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  displayEmpty
+                  error={formik.touched.gender && Boolean(formik.errors.gender)}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': { borderColor: 'gray' },
+                      '&:hover fieldset': { borderColor: '#FF1493' },
+                      '&.Mui-focused fieldset': { borderColor: '#FF1493' },
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    انتخاب جنسیت
+                  </MenuItem>
+                  <MenuItem value="male">مرد</MenuItem>
+                  <MenuItem value="female">زن</MenuItem>
+                </Select>
+                {formik.touched.gender && formik.errors.gender && (
+                  <Typography color="error" variant="body2">
+                    {formik.errors.gender}
+                  </Typography>
+                )}
+              </Grid>
 
               <Grid item xs={12} textAlign="center">
-                <Button variant="contained" color="primary" onClick={handleSubmit} type="submit" sx={{ mt: 2 }}>
-                  ذخیره
+                <Button
+                  variant="contained"
+                  onClick={handleSubmit}
+                  sx={{
+                    backgroundColor: '#FF1493',
+                    '&:hover': { backgroundColor: '#FF1493' },
+                  }}
+                >
+                  به‌روزرسانی پروفایل
                 </Button>
               </Grid>
             </Grid>
@@ -244,8 +288,15 @@ const ProfileEdit = ({ onClose }) => {
         </motion.div>
       </Paper>
 
-      {/* Back button */}
-      
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
