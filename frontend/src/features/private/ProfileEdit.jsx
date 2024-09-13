@@ -58,7 +58,7 @@ const ProfileEdit = ({ onClose }) => {
     .catch(error => {
       console.error('Error fetching profile:', error);
     });
-  }, []); // یک بار در زمان لود صفحه اجرا می‌شود
+  }, []); 
 
   const formik = useFormik({
     initialValues: {
