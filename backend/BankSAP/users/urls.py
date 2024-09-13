@@ -6,5 +6,4 @@ urlpatterns = [
     path('verify-otp/', VerifyOTPView.as_view(), name='verify_otp'),
     path('login/', LoginView.as_view(), name='login'),
     path('profile/update/', UpdateProfileView.as_view(), name='update_profile'), 
-    path('profile/get-info/', UpdateProfileView.as_view(), name='profile'), # اضافه کردن این خط
 ]

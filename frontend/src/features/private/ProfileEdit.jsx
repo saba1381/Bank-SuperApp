@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, TextField, Avatar, Grid, Container, Paper, Typography, Select, MenuItem, Snackbar, Alert } from '@mui/material';
 import { useFormik } from 'formik';
 import { motion } from 'framer-motion';
@@ -37,11 +37,28 @@ const ProfileEdit = ({ onClose }) => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('error');  // 'error' or 'success'
 
-  const handleImageChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setProfileImage(URL.createObjectURL(e.target.files[0]));
-    }
-  };
+
+  useEffect(() => {
+    axios.get('http://localhost:8000/api/users/profile/update/', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+      },
+    })
+    .then(response => {
+      console.log('User data:', response);
+      formik.setValues({
+        first_name: response.first_name || '',
+        last_name: response.last_name || '',
+        email: response.email || '',
+        gender: response.gender || '',
+        phone_number: response.phone_number || '',
+      });
+      setProfileImage(response.profile_image || null); // تنظیم تصویر پروفایل
+    })
+    .catch(error => {
+      console.error('Error fetching profile:', error);
+    });
+  }, []); // یک بار در زمان لود صفحه اجرا می‌شود
 
   const formik = useFormik({
     initialValues: {
@@ -49,36 +66,40 @@ const ProfileEdit = ({ onClose }) => {
       last_name: '',
       email: '',
       gender: '',
-      phone_number: '',  // تغییر نام فیلد به phone_number
+      phone_number: '', 
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
       axios.put('http://localhost:8000/api/users/profile/update/', values, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,  // استفاده از توکن JWT
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,  
         },
       })
       .then(response => {
-        console.log('Profile Updated:', response.data);
         setSnackbarMessage('پروفایل با موفقیت به‌روزرسانی شد');
         setSnackbarSeverity('success');
         setOpenSnackbar(true);
         setTimeout(() => {
-          onClose();  // به صفحه‌ی قبلی بروید
+          onClose();  
         }, 4000);
       })
       .catch(error => {
-        console.error('Error updating profile:', error);
         const errorMessage = error.response?.data?.detail || 'خطایی در به‌روزرسانی پروفایل رخ داده است';
         setSnackbarMessage(errorMessage);
         setSnackbarSeverity('error');
         setOpenSnackbar(true);
-        formik.resetForm();  // ریست کردن فرم
+        formik.resetForm();  
       });
     },
     validateOnBlur: false,
     validateOnChange: false
   });
+
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setProfileImage(URL.createObjectURL(e.target.files[0]));
+    }
+  };
 
   const handleSubmit = () => {
     formik.setTouched({
@@ -86,7 +107,7 @@ const ProfileEdit = ({ onClose }) => {
       last_name: true,
       email: true,
       gender: true,
-      phone_number: true,  // تغییر نام فیلد به phone_number
+      phone_number: true, 
     });
     formik.handleSubmit();
   };
@@ -217,7 +238,7 @@ const ProfileEdit = ({ onClose }) => {
                 />
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   id="phone_number"
@@ -240,7 +261,7 @@ const ProfileEdit = ({ onClose }) => {
                 />
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <Select
                   fullWidth
                   id="gender"
@@ -248,52 +269,44 @@ const ProfileEdit = ({ onClose }) => {
                   value={formik.values.gender}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  displayEmpty
                   error={formik.touched.gender && Boolean(formik.errors.gender)}
+                  displayEmpty
+                  inputProps={{ 'aria-label': 'انتخاب جنسیت' }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      '& fieldset': { borderColor: 'gray' },
                       '&:hover fieldset': { borderColor: '#FF1493' },
                       '&.Mui-focused fieldset': { borderColor: '#FF1493' },
                     },
+                    '& label.Mui-focused': { color: '#FF1493' },
                   }}
                 >
-                  <MenuItem value="" disabled>
+                  <MenuItem value="">
                     انتخاب جنسیت
                   </MenuItem>
                   <MenuItem value="male">مرد</MenuItem>
                   <MenuItem value="female">زن</MenuItem>
                 </Select>
-                {formik.touched.gender && formik.errors.gender && (
-                  <Typography color="error" variant="body2">
-                    {formik.errors.gender}
-                  </Typography>
-                )}
-              </Grid>
-
-              <Grid item xs={12} textAlign="center">
-                <Button
-                  variant="contained"
-                  onClick={handleSubmit}
-                  sx={{
-                    backgroundColor: '#FF1493',
-                    '&:hover': { backgroundColor: '#FF1493' },
-                  }}
-                >
-                  به‌روزرسانی پروفایل
-                </Button>
               </Grid>
             </Grid>
+            <Box mt={4} textAlign="center">
+              <Button
+                variant="contained"
+                sx={{ bgcolor: '#FF1493', '&:hover': { bgcolor: '#ff61a6' } }}
+                onClick={handleSubmit}
+              >
+                به‌روزرسانی پروفایل
+              </Button>
+            </Box>
           </form>
         </motion.div>
       </Paper>
-
       <Snackbar
         open={openSnackbar}
-        autoHideDuration={4000}
+        autoHideDuration={6000}
         onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
           {snackbarMessage}
         </Alert>
       </Snackbar>
