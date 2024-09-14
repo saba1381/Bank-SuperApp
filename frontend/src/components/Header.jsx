@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { signOut } from '../features/account/accountSlice';
 import { UseAppSelector } from '../store/configureStore';
 
+
 const Header = () => {
   const { user } = UseAppSelector((state) => state.account);
   const isCPPage = typeof window !== 'undefined' && window.location.pathname === '/cp';

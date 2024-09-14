@@ -8,6 +8,8 @@ import * as Yup from 'yup';
 import ActivationCode from './ActivationCode';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import { FaLongArrowAltLeft } from 'react-icons/fa';
+import { UseAppDispatch } from '../../store/configureStore';
+import { registerUser } from '../account/accountSlice';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     maxWidth: '600px',
@@ -37,7 +39,7 @@ const validationSchema = Yup.object({
 
 export default function Register() {
     const [showActivationCode, setShowActivationCode] = useState(false);
-
+    const dispatch = UseAppDispatch();
     const formik = useFormik({
         initialValues: {
             nationalId: '',
@@ -48,31 +50,24 @@ export default function Register() {
         validateOnChange: false,
         onSubmit: async (values, { setSubmitting, setStatus }) => {
             try {
-                const response = await fetch('http://localhost:8000/api/users/register/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
+                const response = await dispatch(registerUser(
+                    {
                         phone_number: values.mobile,
-                        national_code: values.nationalId,
-                    }),
-                });
+                        national_code: values.nationalId
+                    }
+                ));
+                console.log(response);
 
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log(data);
-
+                if (response.meta.requestStatus === 'fulfilled') {
                     localStorage.setItem('phone_number', values.mobile);
                     localStorage.setItem('national_code', values.nationalId);
-
-                    setShowActivationCode(true); // بعد از ثبت موفق، کامپوننت نمایش داده می‌شود.
+                    setShowActivationCode(true); 
                 } else {
                     const errorData = await response.json();
                     setStatus(errorData.detail || 'خطایی رخ داده است.');
                 }
             } catch (error) {
-                console.error('Error:', error);
+                
                 setStatus('خطایی در ارتباط با سرور رخ داد.');
             } finally {
                 setSubmitting(false);

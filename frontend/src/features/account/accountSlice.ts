@@ -29,6 +29,22 @@ export const verifyOTP = createAsyncThunk(
     }
 )
 
+
+export const registerUser = createAsyncThunk(
+    'account/register',
+    async (data:object, thunkAPI) => {
+        try {
+            const userDto = await agent.UserProfile.register(data);
+            const {...user} = userDto;
+            localStorage.setItem('user', JSON.stringify(user));
+            return user;
+        } catch (error:any) {
+            return thunkAPI.rejectWithValue({error: error.data});
+        }
+    }
+)
+
+
 export const refreshTokensAsync = createAsyncThunk(
     'account/refreshTokens',
     async (_, thunkAPI) => {

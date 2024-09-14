@@ -74,7 +74,7 @@ axios.interceptors.response.use(
 );
 
 const requests = {
-  get: (url:string, params?:string) => axios.get(url, { params }).then(responseBody),
+  get: (url:string) => axios.get(url).then(responseBody),
   post: (url:string , body:object) => axios.post(url , body).then(responseBody),
   put: (url:string, body:object) => axios.put(url, { headers: {}, body }).then(responseBody),
   del: (url:string, data:object) =>
@@ -87,7 +87,8 @@ const UserProfile = {
   login: (values:object) => requests.post("users/login/",values),
   verifyOTP: (values:object) => requests.post("users/verify-otp/", values),
   refreshTokens: (values:object) => requests.post("auth/refresh-tokens", values),
-  register: (values:object) => requests.post("account/register", values),
+  register: (values:object) => requests.post("users/register/", values),
+  profileInfo : (values:object) => requests.post("users/profile/update/", values) ,
   currentUser: () => requests.get("account/currentUser"),
 };
 
