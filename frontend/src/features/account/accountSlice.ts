@@ -100,6 +100,42 @@ export const fetchCurrentUser = createAsyncThunk(
     }
 )
 
+export const fetchUserProfile = createAsyncThunk(
+    'account/fetchUserProfile',
+    async (_, thunkAPI) => {
+        const currentPath = window.location.pathname;
+
+        // فقط زمانی که کاربر در صفحه /cp است درخواست API ارسال شود
+        if (currentPath !== '/cp') {
+            return thunkAPI.rejectWithValue({ error: 'Not in CP page' });
+        }
+
+        try {
+            const response = await agent.UserProfile.profileInfo();
+            return response;
+        } catch (error:any) {
+            return thunkAPI.rejectWithValue({error: error.response?.data});
+        }
+    }
+);
+
+
+export const updateUserProfile = createAsyncThunk(
+    'account/updateUserProfile',
+    async (profileData: object, thunkAPI) => {
+        try {
+            const response = await agent.UserProfile.updateProfile(profileData); // متد PUT در agent برای این کار
+            
+            return response;
+        } catch (error: any) {
+            
+            return thunkAPI.rejectWithValue({ error: error.data });
+        }
+    }
+);
+
+
+
 export const accountSlice = createSlice({
     name: 'account',
     initialState,
@@ -132,6 +168,35 @@ export const accountSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
+        builder
+        .addCase(updateUserProfile.pending, (state) => {
+            state.isLoading = true;
+        })
+        .addCase(updateUserProfile.fulfilled, (state, action) => {
+            state.user = { ...state.user, ...action.payload };
+            state.isLoading = false;
+        })
+        .addCase(updateUserProfile.rejected, (state) => {
+            state.isLoading = false;
+        });
+        builder
+        .addCase(fetchUserProfile.pending, (state) => {
+            state.isLoading = true;
+        })
+        .addCase(fetchUserProfile.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.user = action.payload;
+        })
+        .addCase(fetchUserProfile.rejected, (state) => {
+            state.isLoading = false;
+        
+            // چک کردن مسیر جاری
+            const currentPath = window.location.pathname;
+            if (currentPath === '/cp') {
+                toast.error('خطا در دریافت اطلاعات پروفایل');
+            }
+        });
+        
         builder.addCase(refreshTokensAsync.rejected, (state) => {
             state.user = null;
             localStorage.removeItem('user');

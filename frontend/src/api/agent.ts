@@ -5,7 +5,6 @@ import { refreshTokensAsync } from "../features/account/accountSlice";
 
 
 axios.defaults.baseURL = process.env.REACT_APP_API_URL;
-//Cors Policy
 axios.defaults.withCredentials = false;
 
 const responseBody = (response:any) => response;
@@ -13,10 +12,11 @@ const responseBody = (response:any) => response;
 
 
 axios.interceptors.request.use(config => {
-    const token = store.getState().account.user?.token;
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-    return config;
-})
+  const token = localStorage.getItem('access_token');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
 
 axios.interceptors.response.use(
   async (response) => {
@@ -76,7 +76,7 @@ axios.interceptors.response.use(
 const requests = {
   get: (url:string) => axios.get(url).then(responseBody),
   post: (url:string , body:object) => axios.post(url , body).then(responseBody),
-  put: (url:string, body:object) => axios.put(url, { headers: {}, body }).then(responseBody),
+  put: (url:string, body:object) => axios.put(url, body).then(responseBody),
   del: (url:string, data:object) =>
     axios.delete(url, { headers: {}, data }).then(responseBody),
   options: (url:string) => axios.options(url).then(responseBody),
@@ -88,7 +88,8 @@ const UserProfile = {
   verifyOTP: (values:object) => requests.post("users/verify-otp/", values),
   refreshTokens: (values:object) => requests.post("auth/refresh-tokens", values),
   register: (values:object) => requests.post("users/register/", values),
-  profileInfo : (values:object) => requests.post("users/profile/update/", values) ,
+  profileInfo : () => requests.get("users/profile/update/") ,
+  updateProfile: (values: object) => requests.put("users/profile/update/", values),
   currentUser: () => requests.get("account/currentUser"),
 };
 

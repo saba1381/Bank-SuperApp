@@ -6,6 +6,10 @@ import * as yup from 'yup';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import axios from 'axios';  
+import { UseAppDispatch } from '../../store/configureStore';
+import { fetchUserProfile , updateUserProfile} from '../../features/account/accountSlice';
+import { useSelector } from 'react-redux';
+
 
 const validationSchema = yup.object({
   first_name: yup
@@ -32,6 +36,8 @@ const validationSchema = yup.object({
 });
 
 const ProfileEdit = ({ onClose }) => {
+  const dispatch = UseAppDispatch();
+  const { user, isLoading } = useSelector((state) => state.account);
   const [profileImage, setProfileImage] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -39,58 +45,39 @@ const ProfileEdit = ({ onClose }) => {
 
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/users/profile/update/', {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-      },
-    })
-    .then(response => {
-      console.log('User data:', response);
-      formik.setValues({
-        first_name: response.first_name || '',
-        last_name: response.last_name || '',
-        email: response.email || '',
-        gender: response.gender || '',
-        phone_number: response.phone_number || '',
-      });
-      setProfileImage(response.profile_image || null); // تنظیم تصویر پروفایل
-    })
-    .catch(error => {
-      console.error('Error fetching profile:', error);
-    });
-  }, []); 
+    if (!user) {
+        dispatch(fetchUserProfile());
+    }
+}, [dispatch, user]);
+
 
   const formik = useFormik({
     initialValues: {
-      first_name: '',
-      last_name: '',
-      email: '',
-      gender: '',
-      phone_number: '', 
+      first_name: user?.first_name || '',  // استفاده از اطلاعات کاربر از Redux یا مقادیر پیش‌فرض
+      last_name: user?.last_name || '',
+      email: user?.email || '',
+      gender: user?.gender || '',
+      phone_number: user?.phone_number || '',
     },
+    enableReinitialize: true, // این گزینه باعث می‌شود مقادیر اولیه فرم به‌روزرسانی شوند
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      axios.put('http://localhost:8000/api/users/profile/update/', values, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,  
-        },
+      dispatch(updateUserProfile(values)) // استفاده از thunk جدید
+      .unwrap()
+      .then(() => {
+          setSnackbarMessage('پروفایل با موفقیت به‌روزرسانی شد');
+          setSnackbarSeverity('success');
+          setOpenSnackbar(true);
+          setTimeout(() => {
+              onClose();
+          }, 4000);
       })
-      .then(response => {
-        setSnackbarMessage('پروفایل با موفقیت به‌روزرسانی شد');
-        setSnackbarSeverity('success');
-        setOpenSnackbar(true);
-        setTimeout(() => {
-          onClose();  
-        }, 4000);
-      })
-      .catch(error => {
-        const errorMessage = error.response?.data?.detail || 'خطایی در به‌روزرسانی پروفایل رخ داده است';
-        setSnackbarMessage(errorMessage);
-        setSnackbarSeverity('error');
-        setOpenSnackbar(true);
-        formik.resetForm();  
+      .catch((error) => {
+          setSnackbarMessage('خطا در به‌روزرسانی پروفایل');
+          setSnackbarSeverity('error');
+          setOpenSnackbar(true);
       });
-    },
+  },
     validateOnBlur: false,
     validateOnChange: false
   });
