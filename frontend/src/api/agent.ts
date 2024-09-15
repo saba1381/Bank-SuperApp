@@ -1,15 +1,13 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-import {  store } from "../store/configureStore";
+import { store } from "../store/configureStore";
 import { refreshTokensAsync } from "../features/account/accountSlice";
-
+import { signOut } from "../features/account/accountSlice";
 
 axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 axios.defaults.withCredentials = false;
 
-const responseBody = (response:any) => response;
-
-
+const responseBody = (response: any) => response;
 
 axios.interceptors.request.use(config => {
   const token = localStorage.getItem('access_token');
@@ -17,19 +15,12 @@ axios.interceptors.request.use(config => {
   return config;
 });
 
-
 axios.interceptors.response.use(
   async (response) => {
-    //await sleep();
-    //const pagination = response.headers["pagination"];
-    // if (pagination) {
-      return response.data;
-    // }
-    // responseCode = response.status;
-    // return response;
+    return response.data;
   },
-  (error) => {
-    if(error?.response){
+  async (error) => {
+    if (error?.response) {
       const { data, status } = error.response;
       switch (status) {
         case 400:
@@ -44,59 +35,68 @@ axios.interceptors.response.use(
           }
           toast.error(data.Title);
           break;
+
         case 401:
-          store.dispatch(refreshTokensAsync());
-          toast.error(data.Title);
+          if (data.message === "Token is expired" || data.message === "Unauthorized") {
+            toast.error('دسترسی شما قطع شد، لطفاً مجدد وارد شوید');
+            store.dispatch(signOut()); // فراخوانی اکشن signOut
+          } else {
+            store.dispatch(refreshTokensAsync());
+            toast.error(data.Title);
+          }
           break;
-          case 406:
-            toast.error("متاسفانه پاسخ شما قابل قبول نیست .");
-            break;  
-            case 429:
-              toast.error("درخواست ها به سمت سرور زیاد است .");
-              break;   
-                
+
+        case 403: // در صورت منقضی شدن رفرش توکن
+          toast.error('زمان توکن شما به پایان رسیده است. لطفاً مجدداً وارد شوید.');
+          store.dispatch(signOut()); // خروج از حساب
+          break;
+
+        case 406:
+          toast.error("متاسفانه پاسخ شما قابل قبول نیست.");
+          break;
+
+        case 429:
+          toast.error("درخواست‌ها به سمت سرور زیاد است.");
+          break;
+
         case 500:
-          toast.error("خطای داخلی سرور لطفا تا دقایقی دیگر مجدد تلاش نمایید .");
+          toast.error("خطای داخلی سرور لطفا تا دقایقی دیگر مجدد تلاش نمایید.");
           break;
+
         default:
           toast.error(data.Title || data.title);
           break;
       }
-  
+
+      return Promise.reject(error.response);
+    } else {
       return Promise.reject(error.response);
     }
-    else {
-      //toast.error("Server Timeout 504.");
-      return Promise.reject(error.response);
-    }
-   
   }
 );
 
 const requests = {
-  get: (url:string) => axios.get(url).then(responseBody),
-  post: (url:string , body:object) => axios.post(url , body).then(responseBody),
-  put: (url:string, body:object) => axios.put(url, body).then(responseBody),
-  del: (url:string, data:object) =>
+  get: (url: string) => axios.get(url).then(responseBody),
+  post: (url: string, body: object) => axios.post(url, body).then(responseBody),
+  put: (url: string, body: object) => axios.put(url, body).then(responseBody),
+  del: (url: string, data: object) =>
     axios.delete(url, { headers: {}, data }).then(responseBody),
-  options: (url:string) => axios.options(url).then(responseBody),
-  
+  options: (url: string) => axios.options(url).then(responseBody),
 };
 
 const UserProfile = {
-  login: (values:object) => requests.post("users/login/",values),
-  verifyOTP: (values:object) => requests.post("users/verify-otp/", values),
-  refreshTokens: (values:object) => requests.post("auth/refresh-tokens", values),
-  register: (values:object) => requests.post("users/register/", values),
-  profileInfo : () => requests.get("users/profile/update/") ,
+  login: (values: object) => requests.post("users/login/", values),
+  verifyOTP: (values: object) => requests.post("users/verify-otp/", values),
+  refreshTokens: (values: object) => requests.post("auth/refresh-tokens", values),
+  register: (values: object) => requests.post("users/register/", values),
+  profileInfo: () => requests.get("users/profile/update/"),
   updateProfile: (values: object) => requests.put("users/profile/update/", values),
   currentUser: () => requests.get("account/currentUser"),
 };
 
-const Card={
-  Transfer: (values:object) => requests.post("Cards/Transfer/",values),
-}
-
+const Card = {
+  Transfer: (values: object) => requests.post("Cards/Transfer/", values),
+};
 
 const agent = {
   UserProfile,

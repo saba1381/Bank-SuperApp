@@ -4,7 +4,7 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['phone_number', 'national_code', 'first_name', 'last_name', 'email', 'gender']  # اضافه کردن فیلدها
+        fields = ['phone_number', 'national_code', 'first_name', 'last_name', 'email', 'gender']  
 
     def create(self, validated_data):
         user = User.objects.create(

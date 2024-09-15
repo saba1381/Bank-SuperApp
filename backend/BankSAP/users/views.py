@@ -52,7 +52,7 @@ class VerifyOTPView(APIView):
                         'access': str(refresh.access_token),
                     }, status=status.HTTP_201_CREATED)
                 
-                # اضافه کردن لاگ برای نمایش خطاهای سریالایزر
+                
                 print(f"Serializer Errors: {serializer.errors}")
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 

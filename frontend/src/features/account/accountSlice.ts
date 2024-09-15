@@ -7,202 +7,196 @@ import { setLoginStepToOTP } from "../../layout/appSlice";
 
 interface AccountState {
     user: User | null,
-    isLoading :boolean
+    isLoading: boolean
 }
 
 const initialState: AccountState = {
     user: null,
-    isLoading : false,
+    isLoading: false,
 };
 
 export const verifyOTP = createAsyncThunk(
     'account/verifyOtp',
-    async (data:object, thunkAPI) => {
+    async (data: object, thunkAPI) => {
         try {
             const userDto = await agent.UserProfile.verifyOTP(data);
-            const {...user} = userDto;
+            const { ...user } = userDto;
             localStorage.setItem('user', JSON.stringify(user));
             return user;
-        } catch (error:any) {
-            return thunkAPI.rejectWithValue({error: error.data});
-        }
-    }
-)
-
-
-export const registerUser = createAsyncThunk(
-    'account/register',
-    async (data:object, thunkAPI) => {
-        try {
-            const userDto = await agent.UserProfile.register(data);
-            const {...user} = userDto;
-            localStorage.setItem('user', JSON.stringify(user));
-            return user;
-        } catch (error:any) {
-            return thunkAPI.rejectWithValue({error: error.data});
-        }
-    }
-)
-
-
-export const refreshTokensAsync = createAsyncThunk(
-    'account/refreshTokens',
-    async (_, thunkAPI) => {
-        const userObject = JSON.parse(localStorage.getItem('user') || '{}');
-        //get refreshed token from api
-        // const refreshedToken =  await agent.UserProfile.refreshTokens({refreshToken:userObject.tokens.refresh.token});
-        // userObject.tokens = refreshedToken;
-
-        thunkAPI.dispatch(setUser(userObject));
-        localStorage.setItem('user', JSON.stringify(userObject));
-        window.location.reload();
-    },
-    {
-        condition: () => {
-            if (!localStorage.getItem('user')) return false;
-        }
-    }
-)
-
-
-export const signInUser = createAsyncThunk(
-    'account/signInUser',
-    async (data:object, thunkAPI) => {
-        try {
-            const userDto = await agent.UserProfile.login(data);
-            const {...user} = userDto;
-            localStorage.setItem('user', JSON.stringify(user));
-            return user;
-        } catch (error:any) {
-            return thunkAPI.rejectWithValue({error: error.data})
-        }
-    }
-)
-
-export const fetchCurrentUser = createAsyncThunk(
-    'account/fetchCurrentUser',
-    async (_, thunkAPI) => {
-        thunkAPI.dispatch(setUser(JSON.parse(localStorage.getItem('user')?? '')))
-        // try {
-        //     const userDto = await agent.UserProfile.currentUser();
-        //     const {...user} = userDto;
-            
-        //     localStorage.setItem('user', JSON.stringify(user));
-        //     return user;
-        // } catch (error) {
-        //     return thunkAPI.rejectWithValue(error);
-        // }
-    },
-    {
-        condition: () => {
-            if (!localStorage.getItem('user')) return false;
-        }
-    }
-)
-
-export const fetchUserProfile = createAsyncThunk(
-    'account/fetchUserProfile',
-    async (_, thunkAPI) => {
-        const currentPath = window.location.pathname;
-
-        // فقط زمانی که کاربر در صفحه /cp است درخواست API ارسال شود
-        if (currentPath !== '/cp') {
-            return thunkAPI.rejectWithValue({ error: 'Not in CP page' });
-        }
-
-        try {
-            const response = await agent.UserProfile.profileInfo();
-            return response;
-        } catch (error:any) {
-            return thunkAPI.rejectWithValue({error: error.response?.data});
-        }
-    }
-);
-
-
-export const updateUserProfile = createAsyncThunk(
-    'account/updateUserProfile',
-    async (profileData: object, thunkAPI) => {
-        try {
-            const response = await agent.UserProfile.updateProfile(profileData); // متد PUT در agent برای این کار
-            
-            return response;
         } catch (error: any) {
-            
             return thunkAPI.rejectWithValue({ error: error.data });
         }
     }
 );
 
+export const registerUser = createAsyncThunk(
+    'account/register',
+    async (data: object, thunkAPI) => {
+        try {
+            const userDto = await agent.UserProfile.register(data);
+            const { ...user } = userDto;
+            localStorage.setItem('user', JSON.stringify(user));
+            return user;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue({ error: error.data });
+        }
+    }
+);
 
+export const refreshTokensAsync = createAsyncThunk(
+    'account/refreshTokens',
+    async (_, thunkAPI) => {
+        const userObject = JSON.parse(localStorage.getItem('user') || '{}');
+
+        try {
+            
+            const refreshedToken = await agent.UserProfile.refreshTokens({ refreshToken: userObject.tokens.refresh.token });
+            
+        
+            userObject.tokens = refreshedToken;
+            localStorage.setItem('user', JSON.stringify(userObject));
+            thunkAPI.dispatch(setUser(userObject));
+            localStorage.removeItem('isManualSignOut');
+            return userObject;  
+        } catch (error) {
+
+            const isManualSignOut = localStorage.getItem('isManualSignOut');
+            if (!isManualSignOut) {
+                thunkAPI.dispatch(signOut()); 
+            }
+            return thunkAPI.rejectWithValue({ error: 'Failed to refresh token' });
+        }
+    },
+    {
+        condition: () => {
+            if (!localStorage.getItem('user')) return false;
+        }
+    }
+);
+
+export const signInUser = createAsyncThunk(
+    'account/signInUser',
+    async (data: object, thunkAPI) => {
+        try {
+            const userDto = await agent.UserProfile.login(data);
+            const { ...user } = userDto;
+            localStorage.setItem('user', JSON.stringify(user));
+            return user;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue({ error: error.data });
+        }
+    }
+);
+
+export const fetchCurrentUser = createAsyncThunk(
+    'account/fetchCurrentUser',
+    async (_, thunkAPI) => {
+        thunkAPI.dispatch(setUser(JSON.parse(localStorage.getItem('user') ?? '')));
+    },
+    {
+        condition: () => {
+            if (!localStorage.getItem('user')) return false;
+        }
+    }
+);
+
+export const fetchUserProfile = createAsyncThunk(
+    'account/fetchUserProfile',
+    async (_, thunkAPI) => {
+        const currentPath = window.location.pathname;
+        if (currentPath !== '/cp') {
+            return thunkAPI.rejectWithValue({ error: 'Not in CP page' });
+        }
+        try {
+            const response = await agent.UserProfile.profileInfo();
+            return response;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue({ error: error.response?.data });
+        }
+    }
+);
+
+export const updateUserProfile = createAsyncThunk(
+    'account/updateUserProfile',
+    async (profileData: object, thunkAPI) => {
+        try {
+            const response = await agent.UserProfile.updateProfile(profileData);
+            return response;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue({ error: error.data });
+        }
+    }
+);
 
 export const accountSlice = createSlice({
     name: 'account',
     initialState,
     reducers: {
-    
         signOut: (state) => {
-        
             state.user = null;
-            
-            
-            localStorage.removeItem('access_token'); 
+            localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
-            localStorage.removeItem('user');  
-
-            
+            localStorage.removeItem('user');
+        
+            // ذخیره فلگ برای خروج دستی
+            localStorage.setItem('isManualSignOut', 'true');
+        
             const toastId = toast.info('شما با موفقیت خارج شدید', {
-                autoClose: false 
+                autoClose: false
             });
-
-       
+        
             setTimeout(() => {
-                toast.dismiss(toastId);  
+                toast.dismiss(toastId);
             }, 4000);
-            
         
             router.navigate('/sign-in');
-        },
+        }
+        ,
         setUser: (state, action) => {
             state.user = action.payload;
         }
     },
     extraReducers: (builder) => {
         builder
-        .addCase(updateUserProfile.pending, (state) => {
-            state.isLoading = true;
-        })
-        .addCase(updateUserProfile.fulfilled, (state, action) => {
-            state.user = { ...state.user, ...action.payload };
-            state.isLoading = false;
-        })
-        .addCase(updateUserProfile.rejected, (state) => {
-            state.isLoading = false;
-        });
+            .addCase(updateUserProfile.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(updateUserProfile.fulfilled, (state, action) => {
+                state.user = { ...state.user, ...action.payload };
+                state.isLoading = false;
+            })
+            .addCase(updateUserProfile.rejected, (state) => {
+                state.isLoading = false;
+            });
         builder
-        .addCase(fetchUserProfile.pending, (state) => {
-            state.isLoading = true;
-        })
-        .addCase(fetchUserProfile.fulfilled, (state, action) => {
-            state.isLoading = false;
-            state.user = action.payload;
-        })
-        .addCase(fetchUserProfile.rejected, (state) => {
-            state.isLoading = false;
-        
-            // چک کردن مسیر جاری
-            const currentPath = window.location.pathname;
-            if (currentPath === '/cp') {
-                toast.error('خطا در دریافت اطلاعات پروفایل');
-            }
-        });
-        
-        builder.addCase(refreshTokensAsync.rejected, (state) => {
-            state.user = null;
-            localStorage.removeItem('user');
-            toast.error('دسترسی شما قطع شد، لطفاً مجدد وارد شوید');
-            router.navigate('/sign-in');
-        });
+            .addCase(fetchUserProfile.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(fetchUserProfile.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.user = action.payload;
+            })
+            .addCase(fetchUserProfile.rejected, (state) => {
+                state.isLoading = false;
+                const currentPath = window.location.pathname;
+                if (currentPath === '/cp') {
+                    toast.error('خطا در دریافت اطلاعات پروفایل');
+                }
+            });
+
+            builder.addCase(refreshTokensAsync.rejected, (state) => {
+                state.user = null;
+                localStorage.removeItem('user');
+                const isManualSignOut = localStorage.getItem('isManualSignOut');
+                
+                if (!isManualSignOut) {
+                    toast.error('دسترسی شما قطع شد، لطفاً مجدد وارد شوید');
+                }
+                
+                localStorage.removeItem('isManualSignOut');
+                router.navigate('/sign-in');
+            });
+            
         builder.addCase(signInUser.pending, (state) => {
             state.isLoading = true;
         });
@@ -211,18 +205,9 @@ export const accountSlice = createSlice({
         });
         builder.addMatcher(isAnyOf(signInUser.rejected, verifyOTP.rejected), (state) => {
             state.isLoading = false;
-            const toastId = toast.error('ورود ناموفق بود، لطفاً دوباره تلاش کنید', {
-                autoClose: false 
-            });
-            setTimeout(() => {
-                toast.dismiss(toastId);  
-            }, 3000);
         });
-    },
+    }
 });
-
-
-
 
 export const { signOut, setUser } = accountSlice.actions;
 export default accountSlice.reducer;
