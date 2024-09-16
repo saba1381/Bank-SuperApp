@@ -17,7 +17,9 @@ import * as serviceWorkerRegistration from "./serviceWorkerResgistration";
 import SplashScreenBox from './SplashScreenBox';
 import { Helmet } from 'react-helmet';
 import Header from './components/Header'
-import { router } from "./router/Routes"; 
+import { router } from "./router/Routes";
+
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 if (process.env.NODE_ENV === 'production') {
@@ -53,7 +55,7 @@ function App() {
           <ThemeProvider theme={theme}>
             <Box component="div" dir="rtl" sx={{ display: "flex", flexDirection: "column", maxHeight: '100vh' }}>
               <CssBaseline />
-              <Header /> {/* اطمینان حاصل کنید که Header همیشه رندر می‌شود */}
+              <Header /> 
               {showSplash ? (
                 <SplashScreenBox />
               ) : (

@@ -7,21 +7,28 @@ import SettingsIcon from './icons/SettingsIcon';
 import LogoutIcon from './icons/LogoutIcon';
 import { useSelector } from 'react-redux';
 import { UseAppDispatch } from '../store/configureStore';
-import { fetchUserProfile, signOut } from '../features/account/accountSlice';
+import { fetchUserProfile, signOut , fetchCurrentUser } from '../features/account/accountSlice';
 
 
 const Header = () => {
     const { user, isLoading } = useSelector((state) => state.account);
     const dispatch = UseAppDispatch();
-    const isCPPage = typeof window !== 'undefined' && window.location.pathname === '/cp';
+    const isCPPage =window.location.pathname === '/cp';
     const [openDialog, setOpenDialog] = React.useState(false);
 
     useEffect(() => {
-        if (!user) {
-            dispatch(fetchUserProfile());
+        if (!user && localStorage.getItem('user')) {
+            dispatch(fetchCurrentUser()); // واکشی کاربر از localStorage
         }
     }, [dispatch, user]);
 
+    // واکشی اطلاعات پروفایل فقط زمانی که کاربر لاگین کرده و در صفحه cp هست
+    useEffect(() => {
+        if (!user && isCPPage) {
+            dispatch(fetchUserProfile());
+        }
+    }, [dispatch, user, isCPPage]);
+    
     const handleLogoutClick = () => {
         setOpenDialog(true);
     };
@@ -34,6 +41,12 @@ const Header = () => {
         dispatch(signOut());
         setOpenDialog(false);
     };
+
+    useEffect(() => {
+        console.log('user:', user);
+        console.log('isLoading:', isLoading);
+        console.log('currentPath:', window.location.pathname);
+    }, [user, isLoading]);
 
     return (
         <AppBar
@@ -51,7 +64,7 @@ const Header = () => {
                     </Typography>
                 </Box>
 
-                {user && isCPPage && (
+                {user && isCPPage && !isLoading &&(
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Typography variant="body1" sx={{ marginRight: { xs: '0.3rem', md: '0.7rem' }, fontWeight: 'bold' }}>
                             {user.first_name} {user.last_name}

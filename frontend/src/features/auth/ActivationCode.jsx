@@ -53,8 +53,9 @@ export default function ActivationCode() {
                     localStorage.setItem('access_token', result.payload.access);
                     localStorage.setItem('refresh_token', result.payload.refresh);
                     navigate('/cp');
+                    window.location.reload();
                 } else {
-                    // Handle error response
+                    
                     setFieldError('code', 'کد فعالسازی اشتباه است.');
                 }
             } catch (error) {

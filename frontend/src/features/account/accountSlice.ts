@@ -138,7 +138,7 @@ export const accountSlice = createSlice({
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('user');
         
-            // ذخیره فلگ برای خروج دستی
+            
             localStorage.setItem('isManualSignOut', 'true');
         
             const toastId = toast.info('شما با موفقیت خارج شدید', {

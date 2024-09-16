@@ -14,25 +14,25 @@ import { useSelector } from 'react-redux';
 const validationSchema = yup.object({
   first_name: yup
     .string('نام خود را وارد کنید')
-    .matches(/^[\u0600-\u06FF\s]+$/, 'نام باید به زبان فارسی باشد')
-    .required('نام ضروری است'),
+    .matches(/^[\u0600-\u06FF\s]+$/, 'نام باید به زبان فارسی باشد'),
+    //.required('نام ضروری است'),
   last_name: yup
     .string('نام خانوادگی خود را وارد کنید')
-    .matches(/^[\u0600-\u06FF\s]+$/, 'نام خانوادگی باید به زبان فارسی باشد')
-    .required('نام خانوادگی ضروری است'),
+    .matches(/^[\u0600-\u06FF\s]+$/, 'نام خانوادگی باید به زبان فارسی باشد'),
+    //.required('نام خانوادگی ضروری است'),
   email: yup
     .string('ایمیل خود را وارد کنید')
-    .email('ایمیل معتبر وارد کنید')
-    .required('ایمیل ضروری است'),
+    .email('ایمیل معتبر وارد کنید'),
+   //.required('ایمیل ضروری است'),
   gender: yup
-    .string('جنسیت خود را انتخاب کنید')
-    .required('جنسیت ضروری است'),
+    .string('جنسیت خود را انتخاب کنید'),
+    //.required('جنسیت ضروری است'),
   phone_number: yup
     .string('شماره موبایل خود را وارد کنید')
     .matches(/^[0-9]+$/, 'شماره موبایل باید فقط شامل اعداد باشد')
     .test('len', 'شماره موبایل باید 11 رقم باشد', val => val && val.length === 11)
-    .test('start', 'شماره موبایل معتبر نیست', val => val && val.startsWith('09'))
-    .required('شماره موبایل ضروری است'),
+    .test('start', 'شماره موبایل معتبر نیست', val => val && val.startsWith('09')),
+    //.required('شماره موبایل ضروری است'),
 });
 
 const ProfileEdit = ({ onClose }) => {

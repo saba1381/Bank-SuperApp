@@ -100,6 +100,7 @@ export default function SignIn() {
                     console.log("ورود");
 
                     navigate("/cp");
+                    window.location.reload();
                 } else {
                     setFieldError('general', 'کدملی یا شماره موبایل اشتباه است.');
                 }
