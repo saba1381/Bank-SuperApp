@@ -99,8 +99,7 @@ export default function SignIn() {
                     localStorage.setItem('refresh_token', result.payload.refresh);
                     console.log("ورود");
 
-                    navigate("/cp");
-                    window.location.reload();
+                    window.location.assign('/cp');
                 } else {
                     setFieldError('general', 'کدملی یا شماره موبایل اشتباه است.');
                 }

@@ -52,8 +52,7 @@ export default function ActivationCode() {
                     // On successful verification, store tokens and navigate to /cp
                     localStorage.setItem('access_token', result.payload.access);
                     localStorage.setItem('refresh_token', result.payload.refresh);
-                    navigate('/cp');
-                    window.location.reload();
+                    window.location.assign('/cp');
                 } else {
                     
                     setFieldError('code', 'کد فعالسازی اشتباه است.');

@@ -179,9 +179,9 @@ export const accountSlice = createSlice({
             .addCase(fetchUserProfile.rejected, (state) => {
                 state.isLoading = false;
                 const currentPath = window.location.pathname;
-                if (currentPath === '/cp') {
-                    toast.error('خطا در دریافت اطلاعات پروفایل');
-                }
+                //if (currentPath === '/cp') {
+                //    toast.error('خطا در دریافت اطلاعات پروفایل');
+                //}
             });
 
             builder.addCase(refreshTokensAsync.rejected, (state) => {
