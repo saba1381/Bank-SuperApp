@@ -4,7 +4,7 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['phone_number', 'national_code', 'first_name', 'last_name', 'email', 'gender']  
+        fields = ['phone_number', 'national_code', 'first_name', 'last_name', 'email', 'gender' , 'profile_image']  
 
     def create(self, validated_data):
         user = User.objects.create(
@@ -20,5 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
         instance.email = validated_data.get('email', instance.email)
         instance.phone_number = validated_data.get('phone_number', instance.phone_number)
         instance.gender = validated_data.get('gender', instance.gender)
+        if validated_data.get('profile_image'):
+            instance.profile_image = validated_data.get('profile_image')
         instance.save()
         return instance

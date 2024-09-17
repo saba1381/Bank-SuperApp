@@ -31,7 +31,7 @@ const validationSchema = yup.object({
     .string('شماره موبایل خود را وارد کنید')
     .matches(/^[0-9]+$/, 'شماره موبایل باید فقط شامل اعداد باشد')
     .test('len', 'شماره موبایل باید 11 رقم باشد', val => val && val.length === 11)
-    .test('start', 'شماره موبایل معتبر نیست', val => val && val.startsWith('09')),
+    .test('start', 'شماره موبایل معتبر نیست', val => val && val.startsWith('09'))
     //.required('شماره موبایل ضروری است'),
 });
 
@@ -39,55 +39,73 @@ const ProfileEdit = ({ onClose }) => {
   const dispatch = UseAppDispatch();
   const { user, isLoading } = useSelector((state) => state.account);
   const [profileImage, setProfileImage] = useState(null);
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('error');  // 'error' or 'success'
 
-
   useEffect(() => {
     if (!user) {
-        dispatch(fetchUserProfile());
+      dispatch(fetchUserProfile());
     }
-}, [dispatch, user]);
-
+  }, [dispatch, user]);
 
   const formik = useFormik({
     initialValues: {
-      first_name: user?.first_name || '',  // استفاده از اطلاعات کاربر از Redux یا مقادیر پیش‌فرض
+      first_name: user?.first_name || '', 
       last_name: user?.last_name || '',
       email: user?.email || '',
       gender: user?.gender || '',
       phone_number: user?.phone_number || '',
+      avatar : user?.profile_image || ''
     },
-    enableReinitialize: true, // این گزینه باعث می‌شود مقادیر اولیه فرم به‌روزرسانی شوند
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      dispatch(updateUserProfile(values)) // استفاده از thunk جدید
-      .unwrap()
-      .then(() => {
-          setSnackbarMessage('پروفایل با موفقیت به‌روزرسانی شد');
-          setSnackbarSeverity('success');
-          setOpenSnackbar(true);
-          setTimeout(() => {
-              onClose();
-          }, 4000);
-      })
-      .catch((error) => {
-          setSnackbarMessage('خطا در به‌روزرسانی پروفایل');
-          setSnackbarSeverity('error');
-          setOpenSnackbar(true);
-      });
-  },
+    enableReinitialize: true,
+    onSubmit: async (values) => {
+      const formData = new FormData();
+      formData.append('first_name', values.first_name);
+      formData.append('last_name', values.last_name);
+      formData.append('email', values.email);
+      formData.append('gender', values.gender);
+      formData.append('phone_number', values.phone_number);
+
+      
+      if (selectedImageFile) {
+        formData.append('profile_image', selectedImageFile);
+      }
+
+      try {
+        await dispatch(updateUserProfile(formData));
+        setSnackbarMessage('پروفایل با موفقیت به‌روزرسانی شد');
+        setSnackbarSeverity('success');
+        setOpenSnackbar(true);
+        setTimeout(() => {
+          onClose();
+        }, 4000);
+      } catch (error) {
+        console.error('Error updating profile:', error); // Add this line
+        setSnackbarMessage('خطا در به‌روزرسانی پروفایل');
+        setSnackbarSeverity('error');
+        setOpenSnackbar(true);
+      }
+    },
     validateOnBlur: false,
-    validateOnChange: false
+    validateOnChange: false,
   });
+
+  const profileImageURL = user?.profile_image && user.profile_image.startsWith('/media/')
+  ? `http://127.0.0.1:8000${user.profile_image}`
+  : user?.profile_image 
+    ? `http://127.0.0.1:8000/media/${user.profile_image}`
+    : '/default-profile.png';
+
+
 
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setProfileImage(URL.createObjectURL(e.target.files[0]));
+      setSelectedImageFile(e.target.files[0]); 
     }
   };
-
   const handleSubmit = () => {
     formik.setTouched({
       first_name: true,
@@ -120,7 +138,7 @@ const ProfileEdit = ({ onClose }) => {
               <Grid item xs={12} textAlign="center">
                 <Box sx={{ position: 'relative', display: 'inline-block' }}>
                   <Avatar
-                    src={profileImage || '/default-profile.png'}
+                    src={profileImage ||profileImageURL || '/default-profile.png'}
                     alt="Profile Image"
                     sx={{ width: 80, height: 80, margin: 'auto' }}
                   />
@@ -129,6 +147,7 @@ const ProfileEdit = ({ onClose }) => {
                       style={{ display: 'none' }}
                       id="upload-photo"
                       name="upload-photo"
+                      value={formik.values.profileImage}
                       type="file"
                       onChange={handleImageChange}
                     />

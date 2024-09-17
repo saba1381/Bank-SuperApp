@@ -1,6 +1,6 @@
 // Header.tsx
 import React, { useEffect } from 'react';
-import { AppBar, Toolbar, Typography, Box, Dialog, DialogActions, DialogContent, Button } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box,Avatar ,Dialog, DialogActions, DialogContent, Button } from '@mui/material';
 import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 import NotificationIcon from './icons/NotificationIcon';
 import SettingsIcon from './icons/SettingsIcon';
@@ -29,6 +29,13 @@ const Header = () => {
         }
     }, [dispatch, user, isCPPage]);
     
+    const profileImageURL = user?.profile_image && user.profile_image.startsWith('/media/')
+    ? `http://127.0.0.1:8000${user.profile_image}`
+    : user?.profile_image 
+      ? `http://127.0.0.1:8000/media/${user.profile_image}`
+      : '/default-profile.png';
+  
+
     const handleLogoutClick = () => {
         setOpenDialog(true);
     };
@@ -66,12 +73,18 @@ const Header = () => {
 
                 {user && isCPPage && !isLoading &&(
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                       
                         <Typography variant="body1" sx={{ marginRight: { xs: '0.3rem', md: '0.7rem' }, fontWeight: 'bold' }}>
                             {user.first_name} {user.last_name}
                         </Typography>
                         <NotificationIcon />
                         <SettingsIcon />
                         <LogoutIcon onClick={handleLogoutClick} />
+                        <Avatar
+                    src={profileImageURL ||''}
+                    
+                    sx={{ width: {xs:35 , md:45}, height: {xs:35 , md:45} ,ml:'6px' }}
+                  />
                     </Box>
                 )}
             </Toolbar>

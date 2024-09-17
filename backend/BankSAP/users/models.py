@@ -32,9 +32,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=30, blank=True, null=True)  # نام خانوادگی
     email = models.EmailField(max_length=255, unique=True, null=True, blank=True)  # ایمیل
     gender = models.CharField(max_length=10, choices=[('male', 'مرد'), ('female', 'زن')], blank=True, null=True)  # جنسیت
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
     last_login = models.DateTimeField(null=True, blank=True)
+    profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
 
     USERNAME_FIELD = 'phone_number'
     REQUIRED_FIELDS = ['national_code']
