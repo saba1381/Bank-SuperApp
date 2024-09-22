@@ -30,8 +30,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     national_code = models.CharField(max_length=10, unique=True)
     first_name = models.CharField(max_length=30, blank=True, null=True)  
     last_name = models.CharField(max_length=30, blank=True, null=True) 
-    email = models.EmailField(max_length=255, unique=True, null=True, blank=True)  
-    gender = models.CharField(max_length=10, choices=[('male', 'مرد'), ('female', 'زن')], blank=True, null=True)  # جنسیت
+    email = models.EmailField(max_length=255, unique=False, null=True, blank=True)  
+    gender = models.CharField(max_length=10, choices=[('male', 'مرد'), ('female', 'زن')], blank=True, null=True)
     last_login = models.DateTimeField(null=True, blank=True)
     profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
 

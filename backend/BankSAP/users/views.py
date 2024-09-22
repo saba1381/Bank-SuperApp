@@ -8,15 +8,23 @@ from .serializers import UserSerializer
 import random
 from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
-
 class RegisterView(APIView):
     def post(self, request):
-        phone_number = request.data.get('phone_number')
+        first_name = request.data.get('first_name')
+        last_name = request.data.get('last_name')
         national_code = request.data.get('national_code')
-        username = request.data.get('username')
+        phone_number = request.data.get('phone_number')
+        password = request.data.get('password')
 
+
+
+        if User.objects.filter(national_code=national_code).exists() and User.objects.filter(phone_number=phone_number).exists():
+            return Response({'detail': 'کاربر با این کد ملی و شماره موبایل وجود دارد.'}, status=status.HTTP_400_BAD_REQUEST)
         if User.objects.filter(phone_number=phone_number).exists():
-            return Response({"detail": "Phone number already registered."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "کاربر با این شماره موبایل وجود دارد"}, status=status.HTTP_400_BAD_REQUEST)
+        if User.objects.filter(national_code=national_code).exists():
+            return Response({'detail': 'کاربر با این کد ملی وجود دارد.'}, status=status.HTTP_400_BAD_REQUEST)
+        
 
         otp = random.randint(1000, 9999) 
         
@@ -24,20 +32,36 @@ class RegisterView(APIView):
 
         cache.set(phone_number, otp, timeout=300)  
         cache.set(f'user_data_{phone_number}', request.data, timeout=300)  
+
+        # بررسی و خطایابی دقیق‌تر
+        user_data = {
+            'phone_number': phone_number,
+            'national_code': national_code,
+            'first_name': first_name,
+            'last_name': last_name,
+            'password': password  # اضافه کردن رمز عبور به serializer
+        }
+
+        serializer = UserSerializer(data=user_data)
+        if not serializer.is_valid():
+            print(f"Serializer Errors: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # اگر داده‌ها معتبر هستند
         return Response({"detail": f"Your OTP code is {otp}"}, status=status.HTTP_200_OK)
 
 
 class VerifyOTPView(APIView):
     def post(self, request):
-        otp = request.data.get('otp') 
-        phone_number = request.data.get('phone_number')  
+        otp = request.data.get('otp')
+        phone_number = request.data.get('phone_number')
 
         print(f"Received OTP: {otp}, Phone Number: {phone_number}")
 
         cached_otp = cache.get(phone_number)
         user_data = cache.get(f'user_data_{phone_number}')
 
-        print(f"Cached OTP: {cached_otp}, User Data: {user_data}")
+        print(f"Cached OTP: {cached_otp}, User Data: {user_data}")  # بررسی داده‌ها در کش
 
         if cached_otp and int(otp) == cached_otp:
             if user_data:
@@ -46,31 +70,33 @@ class VerifyOTPView(APIView):
                     user = serializer.save()
                     refresh = RefreshToken.for_user(user)
                     cache.delete(phone_number)         
-                    cache.delete(f'user_data_{phone_number}')  
+                    cache.delete(f'user_data_{phone_number}')
                     return Response({
                         'refresh': str(refresh),
                         'access': str(refresh.access_token),
                     }, status=status.HTTP_201_CREATED)
-                
-                
+
                 print(f"Serializer Errors: {serializer.errors}")
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                
+
             return Response({"detail": "User data not found in cache."}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"detail": "Invalid OTP or OTP expired."}, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class LoginView(APIView):
     def post(self, request):
-        phone_number = request.data.get('phone_number')
+        password = request.data.get('password')
         national_code = request.data.get('national_code')
 
         try:
-            user = User.objects.get(phone_number=phone_number, national_code=national_code)
+            user = User.objects.get(national_code=national_code)
         except User.DoesNotExist:
-            return Response({"detail": "شماره موبایل یا کد ملی اشتباه است."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "کدملی اشتباه است."}, status=status.HTTP_400_BAD_REQUEST)
 
-       
+        if not user.check_password(password):
+            return Response({"detail": "  رمز عبور اشتباه است."}, status=status.HTTP_400_BAD_REQUEST)
+
         user.last_login = timezone.now()
         user.save(update_fields=['last_login'])
 
@@ -79,7 +105,6 @@ class LoginView(APIView):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }, status=status.HTTP_200_OK)
-    
 
 
 class UpdateProfileView(APIView):

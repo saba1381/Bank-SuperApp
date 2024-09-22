@@ -46,11 +46,10 @@ const validationSchema = Yup.object({
         .matches(/^[0-9]*$/, 'کدملی باید شامل اعداد باشد')
         .length(10, 'کدملی باید 10 رقم باشد')
         .required('کد ملی را وارد کنید'),
-    mobile: Yup.string()
-        .matches(/^[0-9]*$/, 'شماره موبایل باید شامل اعداد باشد')
-        .matches(/^(09)[0-9]{9}$/, 'شماره موبایل معتبر نیست')
-        .required('شماره موبایل را وارد کنید'),
+    password: Yup.string()
+        .required('رمز عبور را وارد کنید'),
 });
+
 
 export default function SignIn() {
     const navigate = useNavigate(); 
@@ -71,7 +70,7 @@ export default function SignIn() {
     const formik = useFormik({
         initialValues: {
             nationalId: '',
-            mobile: '',
+            password: '',
             rememberMe: false,
         },
         validationSchema: validationSchema,
@@ -79,35 +78,30 @@ export default function SignIn() {
         validateOnChange: false,
         onSubmit: async (values, { setSubmitting, setFieldError }) => {
             localStorage.removeItem('access_token');
-
+    
             if (values.rememberMe) {
                 localStorage.setItem('nationalId', values.nationalId);
-                localStorage.setItem('mobile', values.mobile);
             } else {
                 localStorage.removeItem('nationalId');
-                localStorage.removeItem('mobile');
             }
-
+    
             try {
                 const result = await dispatch(signInUser({
-                    phone_number: values.mobile,
-                    national_code: values.nationalId
+                    national_code: values.nationalId,
+                    password: values.password
                 }));
-                console.log(result);
-
+    
                 if (result.meta.requestStatus === 'fulfilled') {
                     localStorage.setItem('access_token', result.payload.access);
                     localStorage.setItem('refresh_token', result.payload.refresh);
-                    console.log("ورود");
-
                     window.location.assign('/cp');
                 } else {
-                    setFieldError('general', 'کدملی یا شماره موبایل اشتباه است.');
+                    setFieldError('general', 'کدملی یا رمز عبور اشتباه است.');
                 }
             } catch (error) {
                 setFieldError('general', 'خطایی رخ داده است. لطفاً دوباره تلاش کنید.');
             }
-
+    
             setSubmitting(false);
         },
     });
@@ -124,7 +118,7 @@ export default function SignIn() {
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: { xs: '80vh', md: 'Fullscreen' } }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: { xs: '80vh', md: '100vh' } }}>
             <Helmet>
                 <title>ورود به موبایل بانک</title>
             </Helmet>
@@ -195,48 +189,49 @@ export default function SignIn() {
                         }}
                     />
 
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        label="شماره موبایل"
-                        name="mobile"
-                        value={formik.values.mobile}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        error={formik.touched.mobile && Boolean(formik.errors.mobile)}
-                        helperText={formik.touched.mobile && formik.errors.mobile}
-                        variant="outlined"
-                        InputProps={{
-                            style: { textAlign: 'right' },
-                            sx: {
-                                '& .MuiOutlinedInput-root': {
-                                    '& fieldset': {
-                                        borderColor: 'lightgrey',
-                                    },
-                                    '&:hover fieldset': {
-                                        borderColor: 'pink',
-                                    },
-                                    '&.Mui-focused fieldset': {
-                                        borderColor: 'pink',
-                                    },
-                                    '&.Mui-error fieldset': {
-                                        borderColor: 'red',
-                                    },
-                                },
-                            },
-                        }}
-                        InputLabelProps={{
-                            sx: {
-                                color: 'lightgrey',
-                                '&.Mui-focused': {
-                                    color: 'lightgrey',
-                                },
-                                '&.Mui-error': {
-                                    color: 'red',
-                                },
-                            },
-                        }}
-                    />
+                  <TextField
+    fullWidth
+    margin="normal"
+    label="رمز عبور"
+    name="password"
+    type="password"
+    value={formik.values.password}
+    onChange={formik.handleChange}
+    onBlur={formik.handleBlur}
+    error={formik.touched.password && Boolean(formik.errors.password)}
+    helperText={formik.touched.password && formik.errors.password}
+    variant="outlined"
+    InputProps={{
+        style: { textAlign: 'right' },
+        sx: {
+            '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                    borderColor: 'lightgrey',
+                },
+                '&:hover fieldset': {
+                    borderColor: 'pink',
+                },
+                '&.Mui-focused fieldset': {
+                    borderColor: 'pink',
+                },
+                '&.Mui-error fieldset': {
+                    borderColor: 'red',
+                },
+            },
+        },
+    }}
+    InputLabelProps={{
+        sx: {
+            color: 'lightgrey',
+            '&.Mui-focused': {
+                color: 'lightgrey',
+            },
+            '&.Mui-error': {
+                color: 'red',
+            },
+        },
+    }}
+/>
 
                     <Box display="flex" justifyContent="center" mt={2}>
                         <Button

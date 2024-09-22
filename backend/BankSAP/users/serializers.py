@@ -4,15 +4,21 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['phone_number', 'national_code', 'first_name', 'last_name', 'email', 'gender' , 'profile_image']  
+        fields = ['phone_number', 'national_code', 'first_name', 'last_name','gender','email' ,'password' ,'profile_image']
+        extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        user = User.objects.create(
+        user = User(
             phone_number=validated_data['phone_number'],
             national_code=validated_data['national_code'],
-            
+            first_name=validated_data.get('first_name', None),
+            last_name=validated_data.get('last_name', None),
         )
+        user.set_password(validated_data['password'])  # هش کردن رمز عبور
+        user.save()
         return user
+
+
 
     def update(self, instance, validated_data):
         instance.first_name = validated_data.get('first_name', instance.first_name)

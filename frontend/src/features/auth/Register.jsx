@@ -27,6 +27,14 @@ const GradientText = styled('span')({
 });
 
 const validationSchema = Yup.object({
+    firstName: Yup.string().required('نام را وارد کنید'),
+    lastName: Yup.string().required('نام خانوادگی را وارد کنید'),
+    password: Yup.string()
+        .min(8, 'رمز عبور باید حداقل 8 کاراکتر باشد')
+        .required('رمز عبور را وارد کنید'),
+    confirmPassword: Yup.string()
+        .oneOf([Yup.ref('password'), null], 'رمز عبور و تکرار آن باید مطابقت داشته باشند')
+        .required('تکرار رمز عبور را وارد کنید'),
     nationalId: Yup.string()
         .matches(/^[0-9]*$/, 'کدملی باید شامل اعداد باشد')
         .length(10, 'کدملی باید 10 رقم باشد')
@@ -42,6 +50,10 @@ export default function Register() {
     const dispatch = UseAppDispatch();
     const formik = useFormik({
         initialValues: {
+            firstName: '',
+            lastName: '',
+            password: '',
+            confirmPassword: '',
             nationalId: '',
             mobile: '',
         },
@@ -53,22 +65,35 @@ export default function Register() {
                 const response = await dispatch(registerUser(
                     {
                         phone_number: values.mobile,
-                        national_code: values.nationalId
+                        national_code: values.nationalId,
+                        first_name: values.firstName,
+                        last_name: values.lastName,
+                        password: values.password,
                     }
                 ));
-                console.log(response);
-
+        
                 if (response.meta.requestStatus === 'fulfilled') {
                     localStorage.setItem('phone_number', values.mobile);
                     localStorage.setItem('national_code', values.nationalId);
                     setShowActivationCode(true); 
                 } else {
-                    const errorData = await response.json();
-                    setStatus(errorData.detail || 'خطایی رخ داده است.');
+                    // دسترسی مستقیم به پیام خطا در response.payload
+                    const errorData = response.payload;
+        
+                    // اگر پیام خطا به صورت آبجکت هست و فیلد detail داره، نمایش بده
+                    if (errorData && typeof errorData === 'object' && errorData.error && errorData.error.detail) {
+                        setStatus(errorData.error.detail);  // نمایش پیام خطا
+                    } else {
+                        setStatus('خطایی رخ داده است.'); // پیام عمومی در صورت نبود پیام خاص
+                    }
                 }
             } catch (error) {
-                
-                setStatus('خطایی در ارتباط با سرور رخ داد.');
+                // اگر خطا از try خارج شد
+                if (error && error.response && error.response.detail && error.response.detail) {
+                    setStatus(error.response.detail);  // نمایش پیام خطا
+                } else {
+                    setStatus('خطایی رخ داده است.'); // پیام عمومی برای سایر خطاها
+                }
             } finally {
                 setSubmitting(false);
             }
@@ -76,12 +101,12 @@ export default function Register() {
     });
 
     return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: {xs:'80vh' , md:'fullscreen'}}}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: { xs: '100vh', md: '150vh' } }}>
             <Helmet>
                 <title>ثبت نام در موبایل بانک</title>
             </Helmet>
             {!showActivationCode ? (
-                <StyledPaper sx={{p:{xs:2 , md:7}}}>
+                <StyledPaper sx={{ p: { xs: 2, md: 7 } }}>
                     <Typography variant="h3" align="center" gutterBottom>
                         <GradientText>ثبت نام در موبایل بانک</GradientText>
                     </Typography>
@@ -96,6 +121,176 @@ export default function Register() {
                         <TextField
                             fullWidth
                             margin="normal"
+                            label="نام"
+                            name="firstName"
+                            value={formik.values.firstName}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.firstName && Boolean(formik.errors.firstName)}
+                            helperText={formik.touched.firstName && formik.errors.firstName}
+                            InputProps={{
+                                style: { textAlign: 'right' },
+                                sx: {
+                                    '& .MuiOutlinedInput-root': {
+                                        '& fieldset': {
+                                            borderColor: 'lightgrey',
+                                        },
+                                        '&:hover fieldset': {
+                                            borderColor: 'pink',
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: 'pink',
+                                        },
+                                        '&.Mui-error fieldset': {
+                                            borderColor: 'red',
+                                        },
+                                    },
+                                },
+                            }}
+                            InputLabelProps={{
+                                sx: {
+                                    color: 'lightgrey',
+                                    '&.Mui-focused': {
+                                        color: 'lightgrey',
+                                    },
+                                    '&.Mui-error': {
+                                        color: 'red',
+                                    },
+                                },
+                            }}
+                        />
+
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            label="نام خانوادگی"
+                            name="lastName"
+                            value={formik.values.lastName}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+                            helperText={formik.touched.lastName && formik.errors.lastName}
+                            InputProps={{
+                                style: { textAlign: 'right' },
+                                sx: {
+                                    '& .MuiOutlinedInput-root': {
+                                        '& fieldset': {
+                                            borderColor: 'lightgrey',
+                                        },
+                                        '&:hover fieldset': {
+                                            borderColor: 'pink',
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: 'pink',
+                                        },
+                                        '&.Mui-error fieldset': {
+                                            borderColor: 'red',
+                                        },
+                                    },
+                                },
+                            }}
+                            InputLabelProps={{
+                                sx: {
+                                    color: 'lightgrey',
+                                    '&.Mui-focused': {
+                                        color: 'lightgrey',
+                                    },
+                                    '&.Mui-error': {
+                                        color: 'red',
+                                    },
+                                },
+                            }}
+                        />
+
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            label="رمز عبور"
+                            name="password"
+                            type="password"
+                            value={formik.values.password}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.password && Boolean(formik.errors.password)}
+                            helperText={formik.touched.password && formik.errors.password}
+                            InputProps={{
+                                style: { textAlign: 'right' },
+                                sx: {
+                                    '& .MuiOutlinedInput-root': {
+                                        '& fieldset': {
+                                            borderColor: 'lightgrey',
+                                        },
+                                        '&:hover fieldset': {
+                                            borderColor: 'pink',
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: 'pink',
+                                        },
+                                        '&.Mui-error fieldset': {
+                                            borderColor: 'red',
+                                        },
+                                    },
+                                },
+                            }}
+                            InputLabelProps={{
+                                sx: {
+                                    color: 'lightgrey',
+                                    '&.Mui-focused': {
+                                        color: 'lightgrey',
+                                    },
+                                    '&.Mui-error': {
+                                        color: 'red',
+                                    },
+                                },
+                            }}
+                        />
+
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            label="تکرار رمز عبور"
+                            name="confirmPassword"
+                            type="password"
+                            value={formik.values.confirmPassword}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
+                            helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+                            InputProps={{
+                                style: { textAlign: 'right' },
+                                sx: {
+                                    '& .MuiOutlinedInput-root': {
+                                        '& fieldset': {
+                                            borderColor: 'lightgrey',
+                                        },
+                                        '&:hover fieldset': {
+                                            borderColor: 'pink',
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: 'pink',
+                                        },
+                                        '&.Mui-error fieldset': {
+                                            borderColor: 'red',
+                                        },
+                                    },
+                                },
+                            }}
+                            InputLabelProps={{
+                                sx: {
+                                    color: 'lightgrey',
+                                    '&.Mui-focused': {
+                                        color: 'lightgrey',
+                                    },
+                                    '&.Mui-error': {
+                                        color: 'red',
+                                    },
+                                },
+                            }}
+                        />
+
+                        <TextField
+                            fullWidth
+                            margin="normal"
                             label="کد ملی"
                             name="nationalId"
                             value={formik.values.nationalId}
@@ -103,7 +298,6 @@ export default function Register() {
                             onBlur={formik.handleBlur}
                             error={formik.touched.nationalId && Boolean(formik.errors.nationalId)}
                             helperText={formik.touched.nationalId && formik.errors.nationalId}
-                            variant="outlined"
                             InputProps={{
                                 style: { textAlign: 'right' },
                                 sx: {
@@ -146,7 +340,6 @@ export default function Register() {
                             onBlur={formik.handleBlur}
                             error={formik.touched.mobile && Boolean(formik.errors.mobile)}
                             helperText={formik.touched.mobile && formik.errors.mobile}
-                            variant="outlined"
                             InputProps={{
                                 style: { textAlign: 'right' },
                                 sx: {
@@ -178,50 +371,50 @@ export default function Register() {
                                 },
                             }}
                         />
-                       <Box sx={{display:"flex", justifyContent:'space-between',alignItems:'center' , width:'100%' , gap:3 , mt:4}}>
-                        <Box display="flex" justifyContent="center" mt={2} sx={{width:'50%'}}>
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                startIcon={<ArrowRightAltIcon style={{fontSize:'1.5rem'}}/>}
-                                fullWidth
-                                disabled={formik.isSubmitting}
-                                sx={{
-                                    width: '100%',
-                                    bgcolor: 'primary.main',
-                                    '&:hover': { bgcolor: 'primary.dark' },
-                                }}
-                            >
-                                ادامه
-                            </Button>
-                        </Box>
 
-                        <Box display="flex" justifyContent="center" mt={2} sx={{ width: '50%' }}>
-            <MuiLink
-                component={Link}
-                to="/sign-in"
-                underline="none"
-                variant="body2"
-                color="primary"
-                sx={{
-                    textAlign: 'center',
-                    width: '100%',
-                    py: 1,
-                    borderRadius: 7,
-                    border: 1,
-                    borderColor: 'grey.300',
-                    justifyContent:'center',
-                    display: 'flex',
-                    alignItems: 'center', // Vertical alignment of items
-                    gap: 1, // Space between icon and text
-                    ':hover': { color: 'grey.600' }
-                }}
-            >
-               
-                <Typography>بازگشت</Typography>
-                <FaLongArrowAltLeft />
-            </MuiLink>
-        </Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', gap: 3, mt: 4 }}>
+                            <Box display="flex" justifyContent="center" mt={2} sx={{ width: '50%' }}>
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    startIcon={<ArrowRightAltIcon style={{ fontSize: '1.5rem' }} />}
+                                    fullWidth
+                                    disabled={formik.isSubmitting}
+                                    sx={{
+                                        width: '100%',
+                                        bgcolor: 'primary.main',
+                                        '&:hover': { bgcolor: 'primary.dark' },
+                                    }}
+                                >
+                                    ادامه
+                                </Button>
+                            </Box>
+
+                            <Box display="flex" justifyContent="center" mt={2} sx={{ width: '50%' }}>
+                                <MuiLink
+                                    component={Link}
+                                    to="/sign-in"
+                                    underline="none"
+                                    variant="body2"
+                                    color="primary"
+                                    sx={{
+                                        textAlign: 'center',
+                                        width: '100%',
+                                        py: 1,
+                                        borderRadius: 7,
+                                        border: 1,
+                                        borderColor: 'grey.300',
+                                        justifyContent: 'center',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 1,
+                                        ':hover': { color: 'grey.600' }
+                                    }}
+                                >
+                                    <Typography>بازگشت</Typography>
+                                    <FaLongArrowAltLeft />
+                                </MuiLink>
+                            </Box>
                         </Box>
                     </form>
                 </StyledPaper>
