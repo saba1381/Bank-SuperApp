@@ -77,8 +77,7 @@ const Header = () => {
                         <Typography variant="body1" sx={{ marginRight: { xs: '0.3rem', md: '0.7rem' }, fontWeight: 'bold' }}>
                             {user.first_name} {user.last_name}
                         </Typography>
-                        <NotificationIcon />
-                        <SettingsIcon />
+                        
                         <LogoutIcon onClick={handleLogoutClick} />
                         <Avatar
                     src={profileImageURL ||''}

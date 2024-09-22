@@ -76,7 +76,7 @@ export default function Register() {
     });
 
     return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: {xs:'80vh' , md:'90vh'}, bgcolor: 'grey.100'}}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: {xs:'80vh' , md:'fullscreen'}}}>
             <Helmet>
                 <title>ثبت نام در موبایل بانک</title>
             </Helmet>

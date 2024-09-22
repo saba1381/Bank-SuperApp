@@ -104,7 +104,7 @@ export default function ActivationCode() {
     }
 
     return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh',width:{xs:'100%' , sm:'60%' , md:'45%'}, bgcolor: 'grey.100' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh',width:{xs:'100%' , sm:'60%' , md:'45%'} }}>
             <Helmet>
                 <title>کد فعالسازی</title>
             </Helmet>

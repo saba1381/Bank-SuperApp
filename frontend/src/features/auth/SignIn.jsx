@@ -9,6 +9,7 @@ import * as Yup from 'yup';
 import { UseAppDispatch } from '../../store/configureStore';
 import { signInUser } from '../account/accountSlice';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'; 
+import { Fullscreen } from '@mui/icons-material';
 
 
 
@@ -54,8 +55,8 @@ const validationSchema = Yup.object({
 export default function SignIn() {
     const navigate = useNavigate(); 
     const dispatch = UseAppDispatch();
-    const [snackbarOpen, setSnackbarOpen] = useState(false); // وضعیت برای کنترل نمایش Snackbar
-    const [overlayOpen, setOverlayOpen] = useState(false); // وضعیت برای کنترل نمایش Overlay
+    const [snackbarOpen, setSnackbarOpen] = useState(false); 
+    const [overlayOpen, setOverlayOpen] = useState(false); 
 
     useEffect(() => {
         const accessToken = localStorage.getItem('access_token');
@@ -123,7 +124,7 @@ export default function SignIn() {
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: { xs: '80vh', md: '100%' }, bgcolor: 'grey.100' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: { xs: '80vh', md: 'Fullscreen' } }}>
             <Helmet>
                 <title>ورود به موبایل بانک</title>
             </Helmet>
