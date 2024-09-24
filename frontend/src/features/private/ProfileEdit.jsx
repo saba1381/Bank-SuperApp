@@ -42,7 +42,7 @@ const ProfileEdit = ({ onClose }) => {
   const [selectedImageFile, setSelectedImageFile] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('error');  // 'error' or 'success'
+  const [snackbarSeverity, setSnackbarSeverity] = useState('error'); 
 
   useEffect(() => {
     if (!user) {
@@ -75,6 +75,8 @@ const ProfileEdit = ({ onClose }) => {
 
       try {
         await dispatch(updateUserProfile(formData));
+
+        
         setSnackbarMessage('پروفایل با موفقیت به‌روزرسانی شد');
         setSnackbarSeverity('success');
         setOpenSnackbar(true);
@@ -82,7 +84,7 @@ const ProfileEdit = ({ onClose }) => {
           onClose();
         }, 4000);
       } catch (error) {
-        console.error('Error updating profile:', error); // Add this line
+        
         setSnackbarMessage('خطا در به‌روزرسانی پروفایل');
         setSnackbarSeverity('error');
         setOpenSnackbar(true);

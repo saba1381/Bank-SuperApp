@@ -169,12 +169,15 @@
 
                 </Box>
                 
-<BottomMenu
-                    onProfileClick={handleProfileClick}
-                    onHistoryClick={handleHistoryClick}
-                    onServicesClick={handleServicesClick}
-                    onSettingsClick={handleSettingsClick}
-                />
+                <BottomMenu
+  showSettings={showSettings}
+  setShowSettings={setShowSettings}
+  onProfileClick={handleProfileClick}
+  onHistoryClick={handleHistoryClick}
+  onServicesClick={handleServicesClick}
+  onSettingsClick={handleSettingsClick}
+/>
+
             </Container>
         );
     };

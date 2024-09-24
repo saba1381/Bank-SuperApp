@@ -8,7 +8,13 @@ from .serializers import UserSerializer
 import random
 from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import AllowAny
+
+
+
 class RegisterView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
@@ -33,13 +39,13 @@ class RegisterView(APIView):
         cache.set(phone_number, otp, timeout=300)  
         cache.set(f'user_data_{phone_number}', request.data, timeout=300)  
 
-        # بررسی و خطایابی دقیق‌تر
+        
         user_data = {
             'phone_number': phone_number,
             'national_code': national_code,
             'first_name': first_name,
             'last_name': last_name,
-            'password': password  # اضافه کردن رمز عبور به serializer
+            'password': password  
         }
 
         serializer = UserSerializer(data=user_data)
@@ -61,7 +67,7 @@ class VerifyOTPView(APIView):
         cached_otp = cache.get(phone_number)
         user_data = cache.get(f'user_data_{phone_number}')
 
-        print(f"Cached OTP: {cached_otp}, User Data: {user_data}")  # بررسی داده‌ها در کش
+        print(f"Cached OTP: {cached_otp}, User Data: {user_data}")  
 
         if cached_otp and int(otp) == cached_otp:
             if user_data:
@@ -124,3 +130,25 @@ class UpdateProfileView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         print(f"Validation Errors: {serializer.errors}")  
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def put(self, request):
+        print(request.data) 
+        user = request.user
+        current_password = request.data.get('current_password')
+        new_password = request.data.get('new_password')
+
+        if not current_password or not new_password:
+            return Response({"detail": "لطفاً هر دو فیلد رمز عبور فعلی و رمز عبور جدید را وارد کنید."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not user.check_password(current_password):
+            print("Current password is incorrect.")
+            return Response({"detail": "رمز عبور فعلی اشتباه است."}, status=status.HTTP_400_BAD_REQUEST)
+        user.set_password(new_password)
+        user.save()
+
+        return Response({"detail": "رمز عبور با موفقیت تغییر کرد."}, status=status.HTTP_200_OK)

@@ -1,4 +1,3 @@
-// Header.tsx
 import React, { useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Box,Avatar ,Dialog, DialogActions, DialogContent, Button } from '@mui/material';
 import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
@@ -16,24 +15,15 @@ const Header = () => {
     const isCPPage =window.location.pathname === '/cp';
     const [openDialog, setOpenDialog] = React.useState(false);
 
-    useEffect(() => {
-        if (!user && localStorage.getItem('user')) {
-            dispatch(fetchCurrentUser()); // واکشی کاربر از localStorage
-        }
-    }, [dispatch, user]);
+ 
 
-    // واکشی اطلاعات پروفایل فقط زمانی که کاربر لاگین کرده و در صفحه cp هست
     useEffect(() => {
         if (!user && isCPPage) {
             dispatch(fetchUserProfile());
         }
     }, [dispatch, user, isCPPage]);
     
-    const profileImageURL = user?.profile_image && user.profile_image.startsWith('/media/')
-    ? `http://127.0.0.1:8000${user.profile_image}`
-    : user?.profile_image 
-      ? `http://127.0.0.1:8000/media/${user.profile_image}`
-      : '/default-profile.png';
+
   
 
     const handleLogoutClick = () => {
@@ -73,17 +63,9 @@ const Header = () => {
 
                 {user && isCPPage && !isLoading &&(
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                       
-                        <Typography variant="body1" sx={{ marginRight: { xs: '0.3rem', md: '0.7rem' }, fontWeight: 'bold' }}>
-                            {user.first_name} {user.last_name}
-                        </Typography>
-                        
+                     
                         <LogoutIcon onClick={handleLogoutClick} />
-                        <Avatar
-                    src={profileImageURL ||''}
-                    
-                    sx={{ width: {xs:35 , md:45}, height: {xs:35 , md:45} ,ml:'6px' }}
-                  />
+                       
                     </Box>
                 )}
             </Toolbar>

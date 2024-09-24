@@ -14,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
             first_name=validated_data.get('first_name', None),
             last_name=validated_data.get('last_name', None),
         )
-        user.set_password(validated_data['password'])  # هش کردن رمز عبور
+        user.set_password(validated_data['password'])  #hashing the password
         user.save()
         return user
 
