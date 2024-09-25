@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { TextField, Button, Box, Typography, Paper, Alert, Link as MuiLink } from '@mui/material';
+import { TextField, Button, Box, Typography, Paper, Alert, Link as MuiLink , IconButton, InputAdornment } from '@mui/material';
 import { styled } from '@mui/system';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -10,6 +10,9 @@ import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import { FaLongArrowAltLeft } from 'react-icons/fa';
 import { UseAppDispatch } from '../../store/configureStore';
 import { registerUser } from '../account/accountSlice';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+
+
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     maxWidth: '600px',
@@ -27,8 +30,12 @@ const GradientText = styled('span')({
 });
 
 const validationSchema = Yup.object({
-    firstName: Yup.string().required('نام را وارد کنید'),
-    lastName: Yup.string().required('نام خانوادگی را وارد کنید'),
+    firstName: Yup.string()
+        .required('نام را وارد کنید')
+        .matches(/^[\u0600-\u06FF\s]+$/, 'نام باید به زبان فارسی باشد'),
+    lastName: Yup.string()
+        .required('نام خانوادگی را وارد کنید')
+        .matches(/^[\u0600-\u06FF\s]+$/, 'نام خانوادگی باید به زبان فارسی باشد'),
     password: Yup.string()
         .min(8, 'رمز عبور باید حداقل 8 کاراکتر باشد')
         .required('رمز عبور را وارد کنید'),
@@ -48,6 +55,12 @@ const validationSchema = Yup.object({
 export default function Register() {
     const [showActivationCode, setShowActivationCode] = useState(false);
     const dispatch = UseAppDispatch();
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const handleClickShowPassword = () => setShowPassword(!showPassword);
+    const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
+
+
     const formik = useFormik({
         initialValues: {
             firstName: '',
@@ -60,7 +73,7 @@ export default function Register() {
         validationSchema: validationSchema,
         validateOnBlur: false,
         validateOnChange: false,
-        onSubmit: async (values, { setSubmitting, setStatus }) => {
+        onSubmit: async (values, { setSubmitting, setStatus , setErrors }) => {
             try {
                 const response = await dispatch(registerUser(
                     {
@@ -76,32 +89,29 @@ export default function Register() {
                     localStorage.setItem('phone_number', values.mobile);
                     localStorage.setItem('national_code', values.nationalId);
                     setShowActivationCode(true); 
-                } else {
-                    // دسترسی مستقیم به پیام خطا در response.payload
-                    const errorData = response.payload;
-        
-                    // اگر پیام خطا به صورت آبجکت هست و فیلد detail داره، نمایش بده
-                    if (errorData && typeof errorData === 'object' && errorData.error && errorData.error.detail) {
-                        setStatus(errorData.error.detail);  // نمایش پیام خطا
+                }  else {
+                    if (response.payload && response.payload.error) {
+                        setErrors(response.payload.error); 
                     } else {
-                        setStatus('خطایی رخ داده است.'); // پیام عمومی در صورت نبود پیام خاص
+                        setStatus('خطایی رخ داده است.');
                     }
                 }
             } catch (error) {
-                // اگر خطا از try خارج شد
-                if (error && error.response && error.response.detail && error.response.detail) {
-                    setStatus(error.response.detail);  // نمایش پیام خطا
+                if (error.response) {
+                    setStatus(`خطای شبکه: ${error.response.status}, ${error.response.data}`);
                 } else {
-                    setStatus('خطایی رخ داده است.'); // پیام عمومی برای سایر خطاها
+                    setStatus('خطایی در سرور رخ داده است.');
                 }
             } finally {
                 setSubmitting(false);
             }
-        },
+        }
+        
+        ,
     });
 
     return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: { xs: '100vh', md: '150vh' } }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: { xs: '120vh', md: '200vh' } }}>
             <Helmet>
                 <title>ثبت نام در موبایل بانک</title>
             </Helmet>
@@ -154,7 +164,7 @@ export default function Register() {
                                         color: 'lightgrey',
                                     },
                                     '&.Mui-error': {
-                                        color: 'red',
+                                        color: 'pink',
                                     },
                                 },
                             }}
@@ -196,97 +206,118 @@ export default function Register() {
                                         color: 'lightgrey',
                                     },
                                     '&.Mui-error': {
-                                        color: 'red',
+                                        color: 'pink',
                                     },
                                 },
                             }}
                         />
+  <TextField
+                fullWidth
+                margin="normal"
+                label="رمز عبور"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.password && Boolean(formik.errors.password)}
+                helperText={formik.touched.password && formik.errors.password}
+                InputProps={{
+                    style: { textAlign: 'right' },
+                    sx: {
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': {
+                                borderColor: 'lightgrey',
+                            },
+                            '&:hover fieldset': {
+                                borderColor: 'pink',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: 'pink',
+                            },
+                            '&.Mui-error fieldset': {
+                                borderColor: 'pink',
+                            },
+                        },
+                    },
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={handleClickShowPassword}
+                                edge="end"
+                            >
+                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                        </InputAdornment>
+                    ),
+                }}
+                InputLabelProps={{
+                    sx: {
+                        color: 'lightgrey',
+                        '&.Mui-focused': {
+                            color: 'lightgrey',
+                        },
+                        '&.Mui-error': {
+                            color: 'pink',
+                        },
+                    },
+                }}
+            />
 
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            label="رمز عبور"
-                            name="password"
-                            type="password"
-                            value={formik.values.password}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.password && Boolean(formik.errors.password)}
-                            helperText={formik.touched.password && formik.errors.password}
-                            InputProps={{
-                                style: { textAlign: 'right' },
-                                sx: {
-                                    '& .MuiOutlinedInput-root': {
-                                        '& fieldset': {
-                                            borderColor: 'lightgrey',
-                                        },
-                                        '&:hover fieldset': {
-                                            borderColor: 'pink',
-                                        },
-                                        '&.Mui-focused fieldset': {
-                                            borderColor: 'pink',
-                                        },
-                                        '&.Mui-error fieldset': {
-                                            borderColor: 'red',
-                                        },
-                                    },
-                                },
-                            }}
-                            InputLabelProps={{
-                                sx: {
-                                    color: 'lightgrey',
-                                    '&.Mui-focused': {
-                                        color: 'lightgrey',
-                                    },
-                                    '&.Mui-error': {
-                                        color: 'red',
-                                    },
-                                },
-                            }}
-                        />
-
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            label="تکرار رمز عبور"
-                            name="confirmPassword"
-                            type="password"
-                            value={formik.values.confirmPassword}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
-                            helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
-                            InputProps={{
-                                style: { textAlign: 'right' },
-                                sx: {
-                                    '& .MuiOutlinedInput-root': {
-                                        '& fieldset': {
-                                            borderColor: 'lightgrey',
-                                        },
-                                        '&:hover fieldset': {
-                                            borderColor: 'pink',
-                                        },
-                                        '&.Mui-focused fieldset': {
-                                            borderColor: 'pink',
-                                        },
-                                        '&.Mui-error fieldset': {
-                                            borderColor: 'red',
-                                        },
-                                    },
-                                },
-                            }}
-                            InputLabelProps={{
-                                sx: {
-                                    color: 'lightgrey',
-                                    '&.Mui-focused': {
-                                        color: 'lightgrey',
-                                    },
-                                    '&.Mui-error': {
-                                        color: 'red',
-                                    },
-                                },
-                            }}
-                        />
+<TextField
+                fullWidth
+                margin="normal"
+                label="تکرار رمز عبور"
+                name="confirmPassword"
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={formik.values.confirmPassword}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
+                helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+                InputProps={{
+                    style: { textAlign: 'right' },
+                    sx: {
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': {
+                                borderColor: 'lightgrey',
+                            },
+                            '&:hover fieldset': {
+                                borderColor: 'pink',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: 'pink',
+                            },
+                            '&.Mui-error fieldset': {
+                                borderColor: 'pink',
+                            },
+                        },
+                    },
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <IconButton
+                                aria-label="toggle confirm password visibility"
+                                onClick={handleClickShowConfirmPassword}
+                                edge="end"
+                            >
+                                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                        </InputAdornment>
+                    ),
+                }}
+                InputLabelProps={{
+                    sx: {
+                        color: 'lightgrey',
+                        '&.Mui-focused': {
+                            color: 'lightgrey',
+                        },
+                        '&.Mui-error': {
+                            color: 'pink',
+                        },
+                    },
+                }}
+            />
 
                         <TextField
                             fullWidth
@@ -312,7 +343,7 @@ export default function Register() {
                                             borderColor: 'pink',
                                         },
                                         '&.Mui-error fieldset': {
-                                            borderColor: 'red',
+                                            borderColor: 'pink',
                                         },
                                     },
                                 },
@@ -324,7 +355,7 @@ export default function Register() {
                                         color: 'lightgrey',
                                     },
                                     '&.Mui-error': {
-                                        color: 'red',
+                                        color: 'pink',
                                     },
                                 },
                             }}
@@ -354,7 +385,7 @@ export default function Register() {
                                             borderColor: 'pink',
                                         },
                                         '&.Mui-error fieldset': {
-                                            borderColor: 'red',
+                                            borderColor: 'pink',
                                         },
                                     },
                                 },
@@ -366,7 +397,7 @@ export default function Register() {
                                         color: 'lightgrey',
                                     },
                                     '&.Mui-error': {
-                                        color: 'red',
+                                        color: 'pink',
                                     },
                                 },
                             }}

@@ -10,11 +10,13 @@ from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny
-
-
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+from .validators import CustomPasswordValidator  
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
+
     def post(self, request):
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
@@ -22,24 +24,32 @@ class RegisterView(APIView):
         phone_number = request.data.get('phone_number')
         password = request.data.get('password')
 
+        errors = {}
 
+        validator = CustomPasswordValidator()
+        try:
+            validator.validate(password)
+        except ValidationError as e:
+            errors['password'] = e.messages  
 
-        if User.objects.filter(national_code=national_code).exists() and User.objects.filter(phone_number=phone_number).exists():
-            return Response({'detail': 'کاربر با این کد ملی و شماره موبایل وجود دارد.'}, status=status.HTTP_400_BAD_REQUEST)
-        if User.objects.filter(phone_number=phone_number).exists():
-            return Response({"detail": "کاربر با این شماره موبایل وجود دارد"}, status=status.HTTP_400_BAD_REQUEST)
-        if User.objects.filter(national_code=national_code).exists():
-            return Response({'detail': 'کاربر با این کد ملی وجود دارد.'}, status=status.HTTP_400_BAD_REQUEST)
         
+        if User.objects.filter(national_code=national_code).exists() and User.objects.filter(phone_number=phone_number).exists():
+            errors['nationalId'] = ["این کد ملی قبلاً ثبت شده است."]
+            errors['mobile'] = ["این شماره تلفن قبلاً ثبت شده است."]
+        elif User.objects.filter(phone_number=phone_number).exists():
+            errors['mobile'] = ["این شماره تلفن قبلاً ثبت شده است."]
+        elif User.objects.filter(national_code=national_code).exists():
+            errors['nationalId'] = ["این کد ملی قبلاً ثبت شده است."]
+
+        if errors:
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
         otp = random.randint(1000, 9999) 
-        
         print(f"Generated OTP for {phone_number}: {otp}")
 
         cache.set(phone_number, otp, timeout=300)  
         cache.set(f'user_data_{phone_number}', request.data, timeout=300)  
 
-        
         user_data = {
             'phone_number': phone_number,
             'national_code': national_code,
@@ -53,8 +63,9 @@ class RegisterView(APIView):
             print(f"Serializer Errors: {serializer.errors}")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # اگر داده‌ها معتبر هستند
+        
         return Response({"detail": f"Your OTP code is {otp}"}, status=status.HTTP_200_OK)
+
 
 
 class VerifyOTPView(APIView):
