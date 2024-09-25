@@ -128,6 +128,21 @@ export const updateUserProfile = createAsyncThunk(
     }
 );
 
+
+export const changePassword = createAsyncThunk(
+    'account/changePassword',
+    async (data: { current_password: string, new_password: string }, thunkAPI) => {
+        try {
+            const response = await agent.UserProfile.passwordRecovery(data);
+            //toast.success('رمز عبور با موفقیت تغییر کرد');
+            return response;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue({ error: error.data.detail });
+        }
+    }
+);
+
+
 export const accountSlice = createSlice({
     name: 'account',
     initialState,
@@ -157,6 +172,18 @@ export const accountSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
+        builder
+    .addCase(changePassword.pending, (state) => {
+        state.isLoading = true;
+    })
+    .addCase(changePassword.fulfilled, (state) => {
+        state.isLoading = false;
+        
+    })
+    .addCase(changePassword.rejected, (state) => {
+        state.isLoading = false;
+    
+    });
         builder
             .addCase(updateUserProfile.pending, (state) => {
                 state.isLoading = true;

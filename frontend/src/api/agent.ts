@@ -91,6 +91,7 @@ const UserProfile = {
   register: (values: object) => requests.post("users/register/", values),
   profileInfo: () => requests.get("users/profile/update/"),
   updateProfile: (values: object) => requests.put("users/profile/update/", values),
+  passwordRecovery: (values: object) => requests.put("users/password/change/", values),
   currentUser: () => requests.get("account/currentUser"),
 };
 

@@ -6,6 +6,10 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { UseAppDispatch } from '../../../store/configureStore';
+import { changePassword } from '../../account/accountSlice';
+import { unwrapResult } from '@reduxjs/toolkit';
+
 
 const ChangePassword = ({ onBack }) => {
   const [showHelp, setShowHelp] = useState(false);
@@ -18,9 +22,13 @@ const ChangePassword = ({ onBack }) => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+
+
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleClickShowNewPassword = () => setShowNewPassword(!showNewPassword);
   const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
+
+  const dispatch = UseAppDispatch();
 
   const Overlay = styled('div')(({ theme }) => ({
     position: 'fixed',
@@ -56,23 +64,22 @@ const ChangePassword = ({ onBack }) => {
     }),
     onSubmit: async (values , { setErrors }) => {
       try {
-        const response = await axios.put('http://127.0.0.1:8000/api/users/password/change/', {
+        const response = await dispatch(changePassword({
           current_password: values.currentPassword,
-          new_password: values.newPassword,
-        }, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-          }
-        });
+          new_password: values.newPassword
+      })).then(unwrapResult);
+
+        console.log(response)
         setSnackbarMessage(response.detail);
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
         formik.resetForm(); 
+
       } catch (error) {
 
-        if (error && error.data.detail) {
+        if (error && error.error) {
 
-          const serverErrors = error.data.detail;
+          const serverErrors = error.error;
     
           if (serverErrors) {
             setSnackbarMessage(serverErrors); 
