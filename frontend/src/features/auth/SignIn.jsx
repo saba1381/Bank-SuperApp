@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { BiErrorCircle } from "react-icons/bi";
-import { Container, TextField, Button, Box, Typography, Checkbox, FormControlLabel, Paper, Link as MuiLink, IconButton, Snackbar, Alert } from '@mui/material';
+import { Container, TextField, Button, Box, Typography, Checkbox, FormControlLabel, Paper, Link as MuiLink, IconButton, Snackbar, Alert, InputAdornment } from '@mui/material';
 import { styled } from '@mui/system';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { UseAppDispatch } from '../../store/configureStore';
 import { signInUser } from '../account/accountSlice';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'; 
-import { Fullscreen } from '@mui/icons-material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 
 
@@ -56,6 +56,10 @@ export default function SignIn() {
     const dispatch = UseAppDispatch();
     const [snackbarOpen, setSnackbarOpen] = useState(false); 
     const [overlayOpen, setOverlayOpen] = useState(false); 
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const handleClickShowPassword = () => setShowPassword(!showPassword);
+    const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
 
     useEffect(() => {
         const accessToken = localStorage.getItem('access_token');
@@ -183,7 +187,7 @@ export default function SignIn() {
                                     color: 'lightgrey',
                                 },
                                 '&.Mui-error': {
-                                    color: 'red',
+                                    color: 'pink',
                                 },
                             },
                         }}
@@ -194,7 +198,7 @@ export default function SignIn() {
     margin="normal"
     label="رمز عبور"
     name="password"
-    type="password"
+    type={showPassword ? 'text' : 'password'}
     value={formik.values.password}
     onChange={formik.handleChange}
     onBlur={formik.handleBlur}
@@ -219,6 +223,17 @@ export default function SignIn() {
                 },
             },
         },
+        endAdornment: (
+            <InputAdornment position="end">
+                <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    edge="end"
+                >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+            </InputAdornment>
+        ),
     }}
     InputLabelProps={{
         sx: {
@@ -227,7 +242,7 @@ export default function SignIn() {
                 color: 'lightgrey',
             },
             '&.Mui-error': {
-                color: 'red',
+                color: 'pink',
             },
         },
     }}

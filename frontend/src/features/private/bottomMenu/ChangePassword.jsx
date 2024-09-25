@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Box, Typography, TextField, Button, Alert, IconButton, Container, Snackbar } from '@mui/material';
+import { Box, Typography, TextField, Button, Alert, IconButton, Container, Snackbar, InputAdornment } from '@mui/material';
 import { FaChevronLeft } from 'react-icons/fa';
 import { styled } from '@mui/system';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const ChangePassword = ({ onBack }) => {
   const [showHelp, setShowHelp] = useState(false);
@@ -13,6 +14,13 @@ const ChangePassword = ({ onBack }) => {
   const [snackbarOpenHelp, setSnackbarOpenHelp] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('error');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const handleClickShowNewPassword = () => setShowNewPassword(!showNewPassword);
+  const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
 
   const Overlay = styled('div')(({ theme }) => ({
     position: 'fixed',
@@ -34,7 +42,7 @@ const ChangePassword = ({ onBack }) => {
     setOverlayOpen(false); 
   };
 
-  // Formik form handling
+
   const formik = useFormik({
     initialValues: {
       currentPassword: '',
@@ -46,7 +54,7 @@ const ChangePassword = ({ onBack }) => {
       newPassword: Yup.string().required('پر کردن این فیلد ضروری است'),
       confirmPassword: Yup.string().oneOf([Yup.ref('newPassword'), null], 'رمز عبور جدید و تکرار آن باید یکسان باشند').required('پر کردن این فیلد ضروری است')
     }),
-    onSubmit: async (values) => {
+    onSubmit: async (values , { setErrors }) => {
       try {
         const response = await axios.put('http://127.0.0.1:8000/api/users/password/change/', {
           current_password: values.currentPassword,
@@ -56,18 +64,33 @@ const ChangePassword = ({ onBack }) => {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
           }
         });
-          setSnackbarMessage(response.detail);
-          setSnackbarSeverity('success');
-          setSnackbarOpen(true);
-          formik.resetForm(); 
-      } catch (error) {
-
-        setSnackbarMessage(error.data.detail);
-        setSnackbarSeverity('error');
+        setSnackbarMessage(response.detail);
+        setSnackbarSeverity('success');
         setSnackbarOpen(true);
         formik.resetForm(); 
+      } catch (error) {
 
-}}});
+        if (error && error.data.detail) {
+
+          const serverErrors = error.data.detail;
+    
+          if (serverErrors) {
+            setSnackbarMessage(serverErrors); 
+            formik.resetForm(); 
+          } else {
+            setSnackbarMessage('خطایی رخ داده است.');
+            formik.resetForm(); 
+          }
+        } else {
+          setSnackbarMessage('خطایی رخ داده است.');
+        }
+        
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+      }
+    }
+  });
+
 const handleSnackbarOpen = () => {
   setSnackbarOpenHelp(true);
   setOverlayOpen(true);
@@ -144,7 +167,7 @@ const handleSnackbarOpen = () => {
             fullWidth
             id="currentPassword"
             name="currentPassword"
-            type='password'
+            type={showPassword ? 'text' : 'password'}
             label="رمز فعلی"
             variant="outlined"
             sx={{ mb: 2, '& label': { color: '#808080' } }}
@@ -152,32 +175,156 @@ const handleSnackbarOpen = () => {
             onChange={formik.handleChange}
             error={formik.touched.currentPassword && Boolean(formik.errors.currentPassword)}
             helperText={formik.touched.currentPassword && formik.errors.currentPassword}
-          />
+            InputProps={{
+              style: { textAlign: 'right' },
+              sx: {
+                  '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                          borderColor: 'lightgrey',
+                      },
+                      '&:hover fieldset': {
+                          borderColor: 'pink',
+                      },
+                      '&.Mui-focused fieldset': {
+                          borderColor: 'pink',
+                      },
+                      '&.Mui-error fieldset': {
+                          borderColor: 'pink',
+                      },
+                  },
+              },
+              endAdornment: (
+                  <InputAdornment position="end">
+                      <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          edge="end"
+                      >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                  </InputAdornment>
+              ),
+          }}
+          InputLabelProps={{
+              sx: {
+                  color: 'lightgrey',
+                  '&.Mui-focused': {
+                      color: '#808080',
+                  },
+                  '&.Mui-error': {
+                      color: 'pink',
+                  },
+              },
+          }}
+      />
+
           <TextField
             fullWidth
             id="newPassword"
             name="newPassword"
             label="رمز جدید"
-            type='password'
+            type={showNewPassword ? 'text' : 'password'}
             variant="outlined"
             sx={{ mb: 2, '& label': { color: '#808080' } }}
             value={formik.values.newPassword}
             onChange={formik.handleChange}
             error={formik.touched.newPassword && Boolean(formik.errors.newPassword)}
             helperText={formik.touched.newPassword && formik.errors.newPassword}
+            InputProps={{
+              style: { textAlign: 'right' },
+              sx: {
+                  '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                          borderColor: 'lightgrey',
+                      },
+                      '&:hover fieldset': {
+                          borderColor: 'pink',
+                      },
+                      '&.Mui-focused fieldset': {
+                          borderColor: 'pink',
+                      },
+                      '&.Mui-error fieldset': {
+                          borderColor: 'pink',
+                      },
+                  },
+              },
+              endAdornment: (
+                  <InputAdornment position="end">
+                      <IconButton
+                          aria-label="toggle confirm password visibility"
+                          onClick={handleClickShowNewPassword}
+                          edge="end"
+                      >
+                          {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                  </InputAdornment>
+              ),
+          }}
+          InputLabelProps={{
+              sx: {
+                  color: 'lightgrey',
+                  '&.Mui-focused': {
+                      color: '#808080',
+                  },
+                  '&.Mui-error': {
+                      color: 'pink',
+                  },
+              },
+          }}
           />
           <TextField
             fullWidth
             id="confirmPassword"
             name="confirmPassword"
             label="تکرار رمز جدید"
-            type='password'
+            type={showConfirmPassword ? 'text' : 'password'}
             variant="outlined"
             sx={{ mb: 2, '& label': { color: '#808080' } }}
             value={formik.values.confirmPassword}
             onChange={formik.handleChange}
             error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
             helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+            InputProps={{
+              style: { textAlign: 'right' },
+              sx: {
+                  '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                          borderColor: 'lightgrey',
+                      },
+                      '&:hover fieldset': {
+                          borderColor: 'pink',
+                      },
+                      '&.Mui-focused fieldset': {
+                          borderColor: 'pink',
+                      },
+                      '&.Mui-error fieldset': {
+                          borderColor: 'pink',
+                      },
+                  },
+              },
+              endAdornment: (
+                  <InputAdornment position="end">
+                      <IconButton
+                          aria-label="toggle confirm password visibility"
+                          onClick={handleClickShowConfirmPassword}
+                          edge="end"
+                      >
+                          {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                  </InputAdornment>
+              ),
+          }}
+          InputLabelProps={{
+              sx: {
+                  color: 'lightgrey',
+                  '&.Mui-focused': {
+                      color: '#808080',
+                  },
+                  '&.Mui-error': {
+                      color: 'pink',
+                  },
+              },
+          }}
           />
           <Button
             variant="contained"
