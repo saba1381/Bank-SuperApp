@@ -1,18 +1,19 @@
-import { User } from './../../models/UserModel';
+import { User ,Card } from './../../models/UserModel';
 import { createAsyncThunk, createSlice, isAnyOf } from "@reduxjs/toolkit";
 import agent from "../../api/agent";
 import { toast } from "react-toastify";
 import { router } from "../../router/Routes";
 import { setLoginStepToOTP } from "../../layout/appSlice";
-
 interface AccountState {
     user: User | null,
-    isLoading: boolean
+    isLoading: boolean,
+    cards: Array<any> | [], // اضافه کردن وضعیت کارت‌ها
 }
 
 const initialState: AccountState = {
     user: null,
     isLoading: false,
+    cards: [], // مقدار اولیه برای کارت‌ها
 };
 
 export const verifyOTP = createAsyncThunk(
@@ -157,6 +158,20 @@ export const addCard = createAsyncThunk(
 );
 
 
+export const fetchCards = createAsyncThunk(
+    'account/fetchCards',
+    async (_, thunkAPI) => {
+        try {
+            const response = await agent.Card.CardList(); // فراخوانی API برای دریافت لیست کارت‌ها
+            return response; // برگرداندن داده‌های کارت‌ها
+        } catch (error: any) {
+            const errorMessage = error.data.detail || 'خطا در دریافت کارت‌ها';
+            return thunkAPI.rejectWithValue({ error: errorMessage });
+        }
+    }
+);
+
+  
 export const accountSlice = createSlice({
     name: 'account',
     initialState,
@@ -260,6 +275,19 @@ export const accountSlice = createSlice({
             state.isLoading = false; 
 
         });
+        builder
+  .addCase(fetchCards.pending, (state) => {
+    state.isLoading = true; // نشان‌دهنده وضعیت در حال بارگذاری
+  })
+  .addCase(fetchCards.fulfilled, (state, action) => {
+    state.isLoading = false; // بارگذاری کامل شد
+    state.cards = action.payload; // ذخیره لیست کارت‌ها در state
+  })
+  .addCase(fetchCards.rejected, (state) => {
+    state.isLoading = false; // بارگذاری با خطا مواجه شد
+    toast.error('خطا در دریافت لیست کارت‌ها');
+  });
+
         builder.addMatcher(isAnyOf(signInUser.rejected, verifyOTP.rejected), (state) => {
             state.isLoading = false;
         });
