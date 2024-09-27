@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Box, TextField, Button, Paper, Typography, Container ,Snackbar, Alert} from '@mui/material';
+import { Box, TextField, Button, Paper, Typography ,Snackbar, Alert} from '@mui/material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { motion } from 'framer-motion';
 import { useFormik } from 'formik';
@@ -62,21 +62,25 @@ const AddCard = ({ onBack }) => {
     formik.setFieldValue('cardNumber', formattedNumber);
   
     const firstSixDigits = inputValue.substring(0, 6);
-    const bank = banks[firstSixDigits] || { name: 'کارت ناشناخته است' };
-
-    
+    const bank = banks[firstSixDigits];
+  
     if (inputValue.length >= 6) {
-      setBankName(bank.name);
-      
-      const color = bankColors[firstSixDigits] || 'red'; 
-      setBankColor(color); 
+      if (bank) {
+        setBankName(bank.name);
+        const color = bankColors[firstSixDigits] || 'red'; 
+        setBankColor(color); 
+        setIsInvalidCard(false);  
+      } else {
+        setBankName('کارت ناشناخته است');
+
+        setIsInvalidCard(true);  
+      }
     } else {
       setBankName(''); 
-      setBankColor('black'); 
+      setIsInvalidCard(false);  
     }
   };
-
-
+  
 
 
   const handleSnackbarClose = () => {
@@ -203,15 +207,17 @@ const AddCard = ({ onBack }) => {
   helperText={(isInvalidCard && 'شماره کارت اشتباه است') || (formik.touched.cardNumber && formik.errors.cardNumber)}
   InputLabelProps={{
     sx: {
-      color: isInvalidCard ? 'red' : 'lightgrey', // تغییر رنگ بر اساس وضعیت
+      color: isInvalidCard ? 'red' : 'lightgrey', 
     }
   }}
   sx={{
     '& .MuiOutlinedInput-root': {
       '& fieldset': {
-        borderColor: isInvalidCard ? 'red' : '', // تغییر رنگ حاشیه
+        borderColor: isInvalidCard ? 'red' : '', 
       }
-    }
+    },
+    textAlign:'center',
+    justifyContent:'center'
   }}
 />
 
@@ -223,13 +229,13 @@ const AddCard = ({ onBack }) => {
   error={isInvalidCard}
   InputLabelProps={{
     sx: {
-      color: isInvalidCard ? 'red' : 'lightgrey', // تغییر رنگ بر اساس وضعیت
+      color: isInvalidCard ? 'red' : 'lightgrey', 
     }
   }}
   sx={{
     '& .MuiOutlinedInput-root': {
       '& fieldset': {
-        borderColor: isInvalidCard ? 'red' : '', // تغییر رنگ حاشیه
+        borderColor: isInvalidCard ? 'red' : '', 
       }
     }
   }}
@@ -250,7 +256,10 @@ const AddCard = ({ onBack }) => {
                     }
                   }}
                 />
-                <Box sx={{ display: 'flex', gap: 2 }}>
+                <Box sx={{}}>
+                 <Typography sx={{fontSize:'13px' , mb:1 , ml:2 , color:'gray'}}>تاریخ انقضا:</Typography>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+               
                   <TextField
                     label="ماه"
                     fullWidth
@@ -266,6 +275,7 @@ const AddCard = ({ onBack }) => {
                       }
                     }}
                   />
+                  <Typography sx={{fontSize:'25px'}}>/</Typography>
                   <TextField
                     label="سال"
                     fullWidth
@@ -284,43 +294,48 @@ const AddCard = ({ onBack }) => {
                   />
                 </Box>
               </Box>
+              </Box>
+              {bankName && formik.values.cardNumber.replace(/\D/g, '').length >= 6 && !isInvalidCard &&(
 
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-              <Paper
-  sx={{
-    p: 4,
-    backgroundColor: bankColor,  // استفاده از رنگ بانک
-    color: 'white',
-    borderRadius: 6,
-    boxShadow: 3,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: 1,
-    mb: 2,
-    position: 'relative', // اضافه کردن این خط برای استفاده از position:absolute
-  }}
+<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}>
+             
+<Paper
+sx={{
+p: 4,
+backgroundColor: bankColor,  
+color: 'white',
+borderRadius: 6,
+boxShadow: 3,
+display: 'flex',
+flexDirection: 'column',
+alignItems: 'center',
+gap: 1,
+mb: 2,
+position: 'relative', 
+}}
 >
- 
-  <Typography variant="h6" sx={{ color: '#ffbf00' }}>
-    {formik.values.cardNumber ? toPersianDigits(formik.values.cardNumber) : '•••• •••• •••• ••••'}
-  </Typography>
 
-  <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-    <Typography variant="body2" sx={{ flexGrow: 1 }}>
-      {formik.values.cardYear && formik.values.cardMonth
-        ? toPersianDigits(`تاریخ انقضا: ${formik.values.cardYear}/${formik.values.cardMonth}`)
-        : ''}
-    </Typography>
-    <Typography variant="body2" sx={{ flexGrow: 1, textAlign: 'right' }}>
-      {formik.values.name}
-    </Typography>
-  </Box>
+<Typography variant="h6" sx={{ color: '#ffbf00' }}>
+{formik.values.cardNumber ? toPersianDigits(formik.values.cardNumber) : '•••• •••• •••• ••••'}
+</Typography>
+
+<Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+<Typography variant="body2" sx={{ flexGrow: 1 }}>
+{formik.values.cardYear && formik.values.cardMonth
+? toPersianDigits(`تاریخ انقضا: ${formik.values.cardYear}/${formik.values.cardMonth}`)
+: ''}
+</Typography>
+<Typography variant="body2" sx={{ flexGrow: 1, textAlign: 'right' }}>
+{formik.values.name}
+</Typography>
+</Box>
 
 </Paper>
 
 
-              </motion.div>
+</motion.div>
+              )}
+          
 
               <Button variant="contained" color="primary" type="submit" fullWidth sx={{ p: 3 }}>
                 ثبت کارت جدید
