@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef , useEffect } from 'react';
 import { Box, TextField, Button, Paper, Typography ,Snackbar, Alert} from '@mui/material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { motion } from 'framer-motion';
@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 import { UseAppDispatch } from '../../store/configureStore';
 import { addCard } from '../account/accountSlice';
 import { unwrapResult ,unwrap } from '@reduxjs/toolkit';
+
 
 
 const AddCard = ({ onBack }) => {
@@ -57,30 +58,35 @@ const AddCard = ({ onBack }) => {
   const handleCardNumberChange = (e) => {
     const inputValue = e.target.value.replace(/\D/g, ''); 
     if (inputValue.length > 16) return;
-  
+
     const formattedNumber = formatCardNumber(inputValue);
     formik.setFieldValue('cardNumber', formattedNumber);
-  
+
     const firstSixDigits = inputValue.substring(0, 6);
     const bank = banks[firstSixDigits];
-  
-    if (inputValue.length >= 6) {
-      if (bank) {
-        setBankName(bank.name);
-        const color = bankColors[firstSixDigits] || 'red'; 
-        setBankColor(color); 
-        setIsInvalidCard(false);  
-      } else {
-        setBankName('کارت ناشناخته است');
 
-        setIsInvalidCard(true);  
-      }
+    if (inputValue.length >= 6) {
+        if (bank) {
+            if (bankName !== bank.name) {  // فقط زمانی که نام بانک تغییر کند
+                setBankName(bank.name);
+                const color = bankColors[firstSixDigits] || 'red'; 
+                setBankColor(color); 
+                setIsInvalidCard(false);  
+            }
+        } else {
+            if (bankName !== 'کارت ناشناخته است') { // بررسی تغییر نام بانک
+                setBankName('کارت ناشناخته است');
+                setIsInvalidCard(true);  
+            }
+        }
     } else {
-      setBankName(''); 
-      setIsInvalidCard(false);  
+        if (bankName !== '') { // فقط در صورت تغییر نام بانک
+            setBankName(''); 
+            setIsInvalidCard(false);  
+        }
     }
-  };
-  
+};
+
 
 
   const handleSnackbarClose = () => {
@@ -121,7 +127,8 @@ const AddCard = ({ onBack }) => {
           card_number: values.cardNumber.replace(/-/g, ''), 
           full_name: values.name,
           expiration_month: values.cardMonth,
-          expiration_year: values.cardYear
+          expiration_year: values.cardYear,
+          bank_name: bankName 
         };
         
         await dispatch(addCard(cardData)).unwrap(); 
@@ -130,14 +137,17 @@ const AddCard = ({ onBack }) => {
        setSnackbarOpen(true);
         setSnackbarSeverity('success');
         formik.resetForm();
+        setBankName('');
         setTimeout(() => {
           onBack();  
         }, 4000);
+        
       } catch (error) {
         setSnackbarMessage(error.error);
         setSnackbarOpen(true);
         setSnackbarSeverity('error');
         formik.resetForm();
+        setBankName('');
       }
     }
     
@@ -150,9 +160,11 @@ const AddCard = ({ onBack }) => {
     }
   };
 
+
+
   return (
     <Box maxWidth="full">
-      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end'}}>
         <Button variant="contained" color="primary" onClick={onBack} endIcon={<KeyboardBackspaceIcon />}>
           بازگشت
         </Button>
@@ -297,7 +309,6 @@ const AddCard = ({ onBack }) => {
               </Box>
               {bankName && formik.values.cardNumber.replace(/\D/g, '').length >= 6 && !isInvalidCard &&(
 
-<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}>
              
 <Paper
 sx={{
@@ -333,7 +344,7 @@ position: 'relative',
 </Paper>
 
 
-</motion.div>
+
               )}
           
 

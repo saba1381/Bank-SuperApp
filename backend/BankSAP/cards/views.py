@@ -16,6 +16,7 @@ class RegisterCardView(APIView):
         full_name = request.data.get('full_name')
         expiration_month = request.data.get('expiration_month')
         expiration_year = request.data.get('expiration_year')
+        bank_name = request.data.get('bank_name')
 
         # پیدا کردن کارت با شماره کارت وارد شده
         card = Card.objects.filter(card_number=card_number).first()

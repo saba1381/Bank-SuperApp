@@ -7,6 +7,7 @@ class Card(models.Model):
     full_name = models.CharField(max_length=100)  # نام و نام خانوادگی
     expiration_month = models.CharField(max_length=2)  # ماه انقضا (MM)
     expiration_year = models.CharField(max_length=2)  # سال انقضا (YY)
+    bank_name = models.CharField(max_length=50, blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='cards')
 
     def __str__(self):
