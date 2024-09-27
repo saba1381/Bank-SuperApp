@@ -97,10 +97,12 @@ const UserProfile = {
 
 const Card = {
   Transfer: (values: object) => requests.post("Cards/Transfer/", values),
+  AddCard: (values: object) => requests.post("card/add-card/", values),
 };
 
 const agent = {
   UserProfile,
+  Card
 };
 
 export default agent;

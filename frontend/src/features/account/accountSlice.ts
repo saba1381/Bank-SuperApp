@@ -143,6 +143,20 @@ export const changePassword = createAsyncThunk(
 );
 
 
+export const addCard = createAsyncThunk(
+    'account/addCard',
+    async (data: object, thunkAPI) => {
+        try {
+            const response = await agent.Card.AddCard(data);
+            return response; 
+        } catch (error: any) {
+            const errorMessage = error.data.detail || 'خطا در ثبت کارت';
+            return thunkAPI.rejectWithValue({ error: errorMessage });
+        }
+    }
+);
+
+
 export const accountSlice = createSlice({
     name: 'account',
     initialState,
@@ -184,7 +198,9 @@ export const accountSlice = createSlice({
         state.isLoading = false;
     
     });
+    
         builder
+        
             .addCase(updateUserProfile.pending, (state) => {
                 state.isLoading = true;
             })
@@ -230,9 +246,24 @@ export const accountSlice = createSlice({
         builder.addCase(verifyOTP.fulfilled, (state, action) => {
             state.user = action.payload;
         });
+        builder
+        .addCase(addCard.pending, (state) => {
+            state.isLoading = true; // Indicate loading state
+        })
+        .addCase(addCard.fulfilled, (state, action) => {
+            state.isLoading = false; // Loading complete
+            // You can add the new card to state here if needed
+            // Example: state.cards.push(action.payload);
+        
+        })
+        .addCase(addCard.rejected, (state, action) => {
+            state.isLoading = false; 
+
+        });
         builder.addMatcher(isAnyOf(signInUser.rejected, verifyOTP.rejected), (state) => {
             state.isLoading = false;
         });
+      
     }
 });
 

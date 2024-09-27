@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-from django.utils import timezone  # Import timezone
+from django.utils import timezone  
 
 class UserManager(BaseUserManager):
     def create_user(self, phone_number, national_code, password=None, **extra_fields):
@@ -26,8 +26,8 @@ class UserManager(BaseUserManager):
         return self.create_user(phone_number, national_code, password, **extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
-    phone_number = models.CharField(max_length=11, unique=True)
-    national_code = models.CharField(max_length=10, unique=True)
+    phone_number = models.CharField(max_length=11, unique=True , null=False)
+    national_code = models.CharField(max_length=10, unique=True , null=False)
     first_name = models.CharField(max_length=30, blank=True, null=True)  
     last_name = models.CharField(max_length=30, blank=True, null=True) 
     email = models.EmailField(max_length=255, unique=False, null=True, blank=True)  
@@ -35,8 +35,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_login = models.DateTimeField(null=True, blank=True)
     profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
 
-    USERNAME_FIELD = 'phone_number'
-    REQUIRED_FIELDS = ['national_code']
+    USERNAME_FIELD = 'national_code'
+    REQUIRED_FIELDS = ['phone_number']
 
     objects = UserManager()
 

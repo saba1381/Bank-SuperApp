@@ -40,9 +40,9 @@ const Header = () => {
     };
 
     useEffect(() => {
-        console.log('user:', user);
-        console.log('isLoading:', isLoading);
-        console.log('currentPath:', window.location.pathname);
+        //console.log('user:', user);
+        //console.log('isLoading:', isLoading);
+        //console.log('currentPath:', window.location.pathname);
     }, [user, isLoading]);
 
     return (
