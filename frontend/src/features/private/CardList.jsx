@@ -21,13 +21,52 @@ const cardVariants = {
     }),
 };
 
+const banks = {
+    '603799': { name: 'ملی', icon: '/BankIcons/meli.png' },
+    '589210': { name: 'سپه', icon: '/BankIcons/sepah.png' },
+    '621986': { name: 'سامان', icon: '/BankIcons/saman.png' },
+    '622106': { name: 'پارسیان', icon: '/BankIcons/parsian.png' },
+    '589463': { name: 'رفاه کارگران', icon: '/BankIcons/refah.png' },
+    '502229': { name: 'پاسارگاد', icon: '/BankIcons/pasargad.png' },
+    '610433': { name: 'ملت', icon: '/BankIcons/melat.png' },
+};
+
+// رنگ‌های بانک‌ها
+const bankColors = {
+    '603799': '#004d99',
+    '589210': '#eead32',
+    '621986': '#8ae7f9',
+    '622106': '#c83a08',
+    '589463': '#9b14ee',
+    '502229': '#080808',
+    '610433': '#df117e',
+};
+
+
+const getTextColor = (backgroundColor) => {
+    const color = backgroundColor.substring(1);
+    const rgb = parseInt(color, 16);
+    const r = (rgb >> 16) & 0xff;
+    const g = (rgb >>  8) & 0xff;
+    const b = (rgb >>  0) & 0xff;
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 125 ? 'black' : 'white';
+};
+
+const getBankInfo = (cardNumber) => {
+    const firstSixDigits = cardNumber.substring(0, 6);
+    const bank = banks[firstSixDigits];
+    const color = bankColors[firstSixDigits] || 'gray'; 
+    const textColor = getTextColor(color);
+    return { bank, color, textColor };
+};
 const CardList = ({ onBack }) => {
     const [showAddCard, setShowAddCard] = useState(false);
-    const dispatch = UseAppDispatch(); // استفاده از dispatch
-    const { cards, isLoading } = UseAppSelector((state) => state.account); // استفاده از useSelector
+    const dispatch = UseAppDispatch(); 
+    const { cards, isLoading } = UseAppSelector((state) => state.account); 
 
     useEffect(() => {
-        dispatch(fetchCards()); // فراخوانی fetchCards برای دریافت کارت‌ها
+        dispatch(fetchCards()); 
     }, [dispatch]);
 
     const handleAddCard = () => {
@@ -38,6 +77,10 @@ const CardList = ({ onBack }) => {
         setShowAddCard(false); 
     };
 
+    const refreshCardList = () => {
+        dispatch(fetchCards()); 
+    };
+
     function formatCardNumber(cardNumber) {
         return cardNumber.replace(/(\d{4})(?=\d)/g, '$1-');
     }
@@ -45,7 +88,7 @@ const CardList = ({ onBack }) => {
     return (
         <Box sx={{ paddingY: 2, paddingX: '0.2px' }}>
             {showAddCard ? (
-                <AddCard onBack={handleBackToList} />
+                <AddCard onBack={handleBackToList} onCardAdded={refreshCardList}/>
             ) : (
                 <>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
@@ -75,8 +118,10 @@ const CardList = ({ onBack }) => {
                             شما هیچ کارت بانکی را هنوز ثبت نکرده‌اید.
                         </Typography>
                     ) : (
-                        cards.map((card, index) => (
-                            <Link
+                        cards.map((card, index ) => {
+                            const { bank, color, textColor } = getBankInfo(card.card_number);
+                            return(
+                                <Link
                                 to={`/card-details/${card.card_number}`}
                                 key={index}
                                 style={{ textDecoration: 'none' }}
@@ -90,8 +135,8 @@ const CardList = ({ onBack }) => {
                                     <Paper
                                         sx={{
                                             p: 2,
-                                            mb: 2,
-                                            backgroundColor: 'white',
+                                            mb: {xs:2 , md:4},
+                                            backgroundColor: color,
                                             display: 'flex',
                                             justifyContent: 'space-between',
                                             alignItems: 'center',
@@ -100,11 +145,12 @@ const CardList = ({ onBack }) => {
                                             cursor: 'pointer',
                                             transition: '0.3s',
                                             width: '100%',
-                                            '&:hover': { backgroundColor: '#f1f1f1' },
+                                            color :textColor,
+                                            '&:hover': { opacity:'50%' },
                                         }}
                                     >
-                                        <Box>
-                                            <Typography variant="h6" sx={{ fontWeight: '12px', color: 'black' }}>
+                                        <Box >
+                                            <Typography variant="h6" sx={{ fontWeight: '12px', color: textColor }}>
                                                 بانک {card.bank_name}
                                             </Typography>
                                             <Typography variant="body2" sx={{ mb: 1 }}>
@@ -122,6 +168,8 @@ const CardList = ({ onBack }) => {
                                                 }}
                                                 sx={{
                                                     minWidth: 0,
+                                                    color : textColor,
+                                                    fontSize: '24px' ,
                                                     '&:hover': {
                                                         '& .MuiSvgIcon-root': {
                                                             color: 'pink',
@@ -129,13 +177,15 @@ const CardList = ({ onBack }) => {
                                                     },
                                                 }}
                                             >
-                                                <DeleteIcon />
+                                                <DeleteIcon  />
                                             </Button>
                                         </Box>
                                     </Paper>
                                 </motion.div>
                             </Link>
-                        ))
+                            )
+                            
+})
                     )}
                 </>
             )}

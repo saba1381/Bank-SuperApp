@@ -10,7 +10,7 @@ import { unwrapResult ,unwrap } from '@reduxjs/toolkit';
 
 
 
-const AddCard = ({ onBack }) => {
+const AddCard = ({ onBack , onCardAdded }) => {
   const [bankName, setBankName] = useState(''); 
   const [cardNumber, setCardNumber] = useState('');
   const yearInputRef = useRef(null); 
@@ -19,6 +19,7 @@ const AddCard = ({ onBack }) => {
   const [snackbarSeverity, setSnackbarSeverity] = useState('success'); 
   const [isInvalidCard, setIsInvalidCard] = useState(false);
   const [bankColor, setBankColor] = useState('black');  
+  const [textColor, setTextColor] = useState('white');
   const dispatch = UseAppDispatch();
 
   const banks = {
@@ -40,6 +41,17 @@ const AddCard = ({ onBack }) => {
     '589463': '#9b14ee ', 
     '502229': '#080808', 
     '610433': '#df117e', 
+  };
+
+  const getTextColor = (backgroundColor) => {
+    // استفاده از فرمول نسبت روشنایی برای تشخیص روشن یا تیره بودن رنگ
+    const color = backgroundColor.substring(1); // حذف علامت #
+    const rgb = parseInt(color, 16); 
+    const r = (rgb >> 16) & 0xff;
+    const g = (rgb >>  8) & 0xff;
+    const b = (rgb >>  0) & 0xff;
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 125 ? 'black' : 'white'; 
   };
 
   const formatCardNumber = (number) => {
@@ -67,20 +79,21 @@ const AddCard = ({ onBack }) => {
 
     if (inputValue.length >= 6) {
         if (bank) {
-            if (bankName !== bank.name) {  // فقط زمانی که نام بانک تغییر کند
+            if (bankName !== bank.name) {  
                 setBankName(bank.name);
                 const color = bankColors[firstSixDigits] || 'red'; 
                 setBankColor(color); 
+                setTextColor(getTextColor(color));
                 setIsInvalidCard(false);  
             }
         } else {
-            if (bankName !== 'کارت ناشناخته است') { // بررسی تغییر نام بانک
+            if (bankName !== 'کارت ناشناخته است') { 
                 setBankName('کارت ناشناخته است');
                 setIsInvalidCard(true);  
             }
         }
     } else {
-        if (bankName !== '') { // فقط در صورت تغییر نام بانک
+        if (bankName !== '') { 
             setBankName(''); 
             setIsInvalidCard(false);  
         }
@@ -103,12 +116,12 @@ const AddCard = ({ onBack }) => {
     },
     validationSchema: Yup.object({
       cardNumber: Yup.string()
-        .matches(/^\d{4}-\d{4}-\d{4}-\d{4}$/, 'شماره کارت باید 16 رقم باشد')
+        .matches(/^\d{4}-\d{4}-\d{4}-\d{4}$/, 'شماره کارت خود را کامل وارد کنید.')
         .required('شماره کارت الزامی است'),
         name: Yup.string()
-        .matches(/^[\u0600-\u06FF\s]+$/, 'نام و نام خانوادگی باید فارسی باشد')  // بررسی اینکه تنها حروف فارسی و فاصله وجود داشته باشد
+        .matches(/^[\u0600-\u06FF\s]+$/, 'نام و نام خانوادگی باید فارسی باشد')  
         .test('has-two-parts', 'لطفا نام و نام خانوادگی خود را کامل وارد کنید', function (value) {
-          return value && value.trim().split(/\s+/).length >= 2;  // بررسی اینکه حداقل دو کلمه وجود داشته باشد
+          return value && value.trim().split(/\s+/).length >= 2;  
         })
         .required('نام و نام خانوادگی الزامی است'),
       cardMonth: Yup.string()
@@ -138,6 +151,7 @@ const AddCard = ({ onBack }) => {
         setSnackbarSeverity('success');
         formik.resetForm();
         setBankName('');
+        onCardAdded();
         setTimeout(() => {
           onBack();  
         }, 4000);
@@ -312,7 +326,8 @@ const AddCard = ({ onBack }) => {
              
 <Paper
 sx={{
-p: 4,
+paddingX: 6,
+paddingY:2 ,
 backgroundColor: bankColor,  
 color: 'white',
 borderRadius: 6,
@@ -326,17 +341,17 @@ position: 'relative',
 }}
 >
 
-<Typography variant="h6" sx={{ color: '#ffbf00' }}>
+<Typography variant="h5" sx={{ color: textColor}}>
 {formik.values.cardNumber ? toPersianDigits(formik.values.cardNumber) : '•••• •••• •••• ••••'}
 </Typography>
 
 <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-<Typography variant="body2" sx={{ flexGrow: 1 }}>
+<Typography variant="body2" sx={{ flexGrow: 1 ,  color: textColor }}>
 {formik.values.cardYear && formik.values.cardMonth
 ? toPersianDigits(`تاریخ انقضا: ${formik.values.cardYear}/${formik.values.cardMonth}`)
 : ''}
 </Typography>
-<Typography variant="body2" sx={{ flexGrow: 1, textAlign: 'right' }}>
+<Typography variant="body2" sx={{ flexGrow: 1, textAlign: 'right' ,  color: textColor  }}>
 {formik.values.name}
 </Typography>
 </Box>
