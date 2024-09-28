@@ -9,6 +9,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { UseAppDispatch } from '../../../store/configureStore';
 import { changePassword } from '../../account/accountSlice';
 import { unwrapResult } from '@reduxjs/toolkit';
+import { motion } from 'framer-motion';
 
 
 const ChangePassword = ({ onBack }) => {
@@ -103,6 +104,12 @@ const handleSnackbarOpen = () => {
   setOverlayOpen(true);
 };
 
+const animationProps = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5 }
+};
+
   return (
     <Box
       sx={{
@@ -118,7 +125,7 @@ const handleSnackbarOpen = () => {
         width: "100%",
       }}
     >
-      {/* هدر */}
+
       <Box
         sx={{
           display: 'flex',
@@ -137,7 +144,7 @@ const handleSnackbarOpen = () => {
       </Box>
 
       <Container sx={{ paddingBottom: 4 }}>
-        {/* Button to open help dialog */}
+
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
           <Button onClick={handleSnackbarOpen} variant="outlined" sx={{ mb: 2, paddingX: 3, fontSize: 17 }}>
             راهنما
@@ -170,6 +177,7 @@ const handleSnackbarOpen = () => {
 
 
         <form onSubmit={formik.handleSubmit}>
+        <motion.div {...animationProps}>
           <TextField
             fullWidth
             id="currentPassword"
@@ -224,7 +232,9 @@ const handleSnackbarOpen = () => {
               },
           }}
       />
+       </motion.div>
 
+       <motion.div {...animationProps}>
           <TextField
             fullWidth
             id="newPassword"
@@ -279,6 +289,9 @@ const handleSnackbarOpen = () => {
               },
           }}
           />
+          </motion.div>
+
+          <motion.div {...animationProps}>
           <TextField
             fullWidth
             id="confirmPassword"
@@ -333,6 +346,8 @@ const handleSnackbarOpen = () => {
               },
           }}
           />
+          </motion.div>
+          <motion.div {...animationProps}>
           <Button
             variant="contained"
             color="primary"
@@ -342,6 +357,7 @@ const handleSnackbarOpen = () => {
           >
             تغییر
           </Button>
+          </motion.div>
         </form>
         <Snackbar
           open={snackbarOpen}

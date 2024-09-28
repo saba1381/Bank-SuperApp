@@ -171,7 +171,19 @@ export const fetchCards = createAsyncThunk(
     }
 );
 
-  
+export const deleteCard = createAsyncThunk(
+    'account/deleteCard',
+    async (cardNumber: string, thunkAPI) => {
+        try {
+            const response = await agent.Card.deleteCard({ cardNumber });
+            return response;
+        } catch (error: any) {
+            const errorMessage = error.data.detail || 'خطا در حذف کارت';
+            return thunkAPI.rejectWithValue({ error: errorMessage });
+        }
+    }
+);
+ 
 export const accountSlice = createSlice({
     name: 'account',
     initialState,
@@ -200,6 +212,7 @@ export const accountSlice = createSlice({
             state.user = action.payload;
         }
     },
+    
     extraReducers: (builder) => {
         builder
     .addCase(changePassword.pending, (state) => {
@@ -213,6 +226,13 @@ export const accountSlice = createSlice({
         state.isLoading = false;
     
     });
+    builder.addCase(deleteCard.fulfilled, (state, action) => {
+        state.cards = state.cards.filter(card => card.cardNumber !== action.meta.arg); // حذف کارت از لیست کارت‌ها
+    });
+    builder.addCase(deleteCard.rejected, (state, action) => {
+          toast.error('حذف کارت با مشکل روبه رو شده است');
+    });
+    
     
         builder
         

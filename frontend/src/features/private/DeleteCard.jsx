@@ -1,8 +1,11 @@
 import React  , {useState} from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle , Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { UseAppDispatch, UseAppSelector } from '../../store/configureStore';
+import { deleteCard } from '../account/accountSlice'; 
 
 const DeleteCardButton = ({ cardNumber, onDelete }) => {
+    const dispatch = UseAppDispatch(); 
     const [open, setOpen] = useState(false);
     const handleClickOpen = ()=>{
         setOpen(true);
@@ -11,27 +14,20 @@ const DeleteCardButton = ({ cardNumber, onDelete }) => {
     const handleClose = ()=>{
         setOpen(false);
     }
-    const deleteCard = async () => {
-        try {
-            const response = await fetch(`http://127.0.0.1:8000/api/card/delete-card/${cardNumber}/`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('access_token')}`,  
-                },
-            });
 
-            if (response.ok) {
+
+
+    const handleDelete=()=>{
+        dispatch(deleteCard(cardNumber))
+            .then(() => {
                 console.log("کارت با موفقیت حذف شد");
-                onDelete();  
+                onDelete();
                 handleClose();
-            } else {
-                console.error("خطا در حذف کارت");
-            }
-        } catch (error) {
-            console.error("مشکل در ارتباط با سرور", error);
-        }
-    };
+            })
+            .catch((error) => {
+                console.error("خطا در حذف کارت", error);
+            });
+    }
 
     return (
         <>
@@ -75,7 +71,7 @@ const DeleteCardButton = ({ cardNumber, onDelete }) => {
          <DialogActions sx={{ display: 'flex', justifyContent: 'start'}}>
          <Button
                  onClick={() => {
-                     deleteCard(); 
+                     handleDelete(); 
                  }}
                  autoFocus
                  color='primary'
