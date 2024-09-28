@@ -6,8 +6,9 @@ import AddIcon from '@mui/icons-material/Add';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import AddCard from './AddCard';  
-import { UseAppDispatch, UseAppSelector } from '../../store/configureStore'; // برای استفاده از ریداکس
+import { UseAppDispatch, UseAppSelector } from '../../store/configureStore';
 import { fetchCards } from '../account/accountSlice';
+import DeleteCardButton from './DeleteCard';
 
 const cardVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -64,6 +65,8 @@ const CardList = ({ onBack }) => {
     const [showAddCard, setShowAddCard] = useState(false);
     const dispatch = UseAppDispatch(); 
     const { cards, isLoading } = UseAppSelector((state) => state.account); 
+    const [isHoveringDeleteButton, setIsHoveringDeleteButton] = useState(false); 
+    const [hoveredCardIndex, setHoveredCardIndex] = useState(null);
 
     useEffect(() => {
         dispatch(fetchCards()); 
@@ -121,21 +124,18 @@ const CardList = ({ onBack }) => {
                         cards.map((card, index ) => {
                             const { bank, color, textColor } = getBankInfo(card.card_number);
                             return(
-                                <Link
-                                to={`/card-details/${card.card_number}`}
-                                key={index}
-                                style={{ textDecoration: 'none' }}
-                            >
+                               
                                 <motion.div
                                     initial="hidden"
                                     animate="visible"
                                     variants={cardVariants}
                                     custom={index}
+                                    key={index}
                                 >
                                     <Paper
                                         sx={{
                                             p: 2,
-                                            mb: {xs:2 , md:4},
+                                            mb: {xs:2 , md:5},
                                             backgroundColor: color,
                                             display: 'flex',
                                             justifyContent: 'space-between',
@@ -146,9 +146,17 @@ const CardList = ({ onBack }) => {
                                             transition: '0.3s',
                                             width: '100%',
                                             color :textColor,
-                                            '&:hover': { opacity:'50%' },
+                                            transform: hoveredCardIndex === index ? 'scale(1.01)' : 'scale(1)',
                                         }}
+                                        onMouseEnter={() => setHoveredCardIndex(index)} 
+                                        onMouseLeave={() => setHoveredCardIndex(null)} 
                                     >
+                                         <Link
+                                to={`/card-details/${card.card_number}`}
+                                
+                                style={{ textDecoration: 'none' }}
+                                onClick={(e) => e.stopPropagation()}
+                            >
                                         <Box >
                                             <Typography variant="h6" sx={{ fontWeight: '12px', color: textColor }}>
                                                 بانک {card.bank_name}
@@ -160,29 +168,21 @@ const CardList = ({ onBack }) => {
                                                 {formatCardNumber(card.card_number)}
                                             </Typography>
                                         </Box>
+                                        </Link>
+                                    
                                         <Box>
-                                            <Button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    console.log(`Delete card: ${card.cardNumber}`);
-                                                }}
-                                                sx={{
-                                                    minWidth: 0,
-                                                    color : textColor,
-                                                    fontSize: '24px' ,
-                                                    '&:hover': {
-                                                        '& .MuiSvgIcon-root': {
-                                                            color: 'pink',
-                                                        },
-                                                    },
-                                                }}
-                                            >
-                                                <DeleteIcon  />
-                                            </Button>
-                                        </Box>
+                                                <DeleteCardButton 
+                                                    cardNumber={card.card_number} 
+                                                    onDelete={refreshCardList}
+                                                    onMouseEnter={() => setIsHoveringDeleteButton(true)} // وقتی ماوس روی دکمه حذف است
+                                                onMouseLeave={() => setIsHoveringDeleteButton(false)}  
+                                                 
+                                                />
+                                            </Box>
+                                      
                                     </Paper>
                                 </motion.div>
-                            </Link>
+                            
                             )
                             
 })

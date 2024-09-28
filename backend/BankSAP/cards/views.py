@@ -56,3 +56,16 @@ class CardListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Card.objects.filter(user=self.request.user)  
+    
+
+
+class DeleteCardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, card_number):
+        try:
+            card = Card.objects.get(card_number=card_number, user=request.user)
+            card.delete()
+            return Response({"detail": "کارت با موفقیت حذف شد"}, status=status.HTTP_204_NO_CONTENT)
+        except Card.DoesNotExist:
+            return Response({"detail": "کارت یافت نشد"}, status=status.HTTP_404_NOT_FOUND)
