@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { UseAppDispatch , UseAppSelector} from '../../store/configureStore';
-import { fetchCardInfo } from '../account/accountSlice';
+import { fetchCardInfo , updateCard } from '../account/accountSlice';
 import { unwrapResult ,unwrap } from '@reduxjs/toolkit';
 import axios from 'axios'; 
 import { useSelector } from 'react-redux';
@@ -140,31 +140,42 @@ const EditCard = ({ onBack , cardNumber ,onCardAdded }) => {
         .matches(/^\d{2}$/, 'سال باید دو رقمی باشد')
         .required('پر کردن این فیلد الزامی است')
     }),
-    onSubmit: (values) => {
-      const updatedValues = {
-        card_number: values.cardNumber.replace(/-/g, ''),  
-        full_name: values.name,
-        expiration_month: values.cardMonth,
-        expiration_year: values.cardYear,
-        bank_name:values.bankName
-      };
-      //console.log('Updated values:', values);
-      axios.put(`http://127.0.0.1:8000/api/card/edit-card/${cardNumber}/`, updatedValues)
-        .then(response => {
-          setSnackbarMessage('ویرایش با موفقیت انجام شد');
-          setSnackbarSeverity('success');
-          setSnackbarOpen(true);
-          onCardAdded();
-          setTimeout(() => {
-            onBack(); 
-          }, 3000);
-        })
-        .catch(error => {
-          setSnackbarMessage('خطایی در به روز رسانی رخ داده است');
-          setSnackbarSeverity('error');
-          setSnackbarOpen(true);
-        });
+      onSubmit: async (values) => {
+        const updatedValues = {
+            card_number: values.cardNumber.replace(/-/g, ''),  
+            full_name: values.name,
+            expiration_month: values.cardMonth,
+            expiration_year: values.cardYear,
+            bank_name: values.bankName
+        };
+
+        console.log(updatedValues);
+    
+        // Ensure you have access to cardNumber
+        const cardNumber = values.cardNumber.replace(/-/g, '');
+    
+        try {
+            // Dispatch the updateCard thunk with cardNumber included
+            const response = await dispatch(updateCard({ cardNumber, ...updatedValues })).unwrap();
+            console.log(response);  
+            
+            // Handle success
+            setSnackbarMessage('ویرایش با موفقیت انجام شد');
+            setSnackbarSeverity('success');
+            setSnackbarOpen(true);
+            onCardAdded(); // Optionally call any additional actions
+            setTimeout(() => {
+                onBack(); // Navigate back after a delay
+            }, 3000);
+        } catch (error) {
+            // Handle error
+            setSnackbarMessage('خطایی در به روز رسانی رخ داده است');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+            console.log(error); 
+        }
     }
+    
   });
 
 

@@ -101,6 +101,7 @@ const Card = {
   CardList: () => requests.get("card/my-cards/"),
   deleteCard: (values : any) => requests.del(`card/delete-card/${values.cardNumber}/`, values),
   cardInfo: (values : any) => requests.get(`card/edit-card/${values.cardNumber}`),
+  updateCard: (values: any) => requests.put(`card/edit-card/${values.cardNumber}/`, values),
 };
 
 const agent = {

@@ -196,6 +196,22 @@ export const fetchCardInfo = createAsyncThunk('card/fetchCardInfo', async (cardN
     return response; 
   });
  
+
+  export const updateCard = createAsyncThunk(
+    'account/updateCard',
+    async (values: any, thunkAPI) => {
+        try {
+            const response = await agent.Card.updateCard(values);
+            console.log(response);
+            return response;  
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue({ error: error });
+        }
+    }
+);
+
+
+
 export const accountSlice = createSlice({
     name: 'account',
     initialState,
@@ -330,6 +346,21 @@ export const accountSlice = createSlice({
       state.isLoading = false;
       state.error = action.error.message ?? null;  // Capture error message or set to null
   });
+  builder
+    .addCase(updateCard.pending, (state) => {
+        state.isLoading = true; // Indicate loading state
+    })
+    .addCase(updateCard.fulfilled, (state, action) => {
+        state.isLoading = false; // Loading complete
+        // Optionally, you can update the card info in state if necessary
+        // e.g., state.cardInfo = action.payload; if the API returns updated info
+        //toast.success('کارت با موفقیت به روز رسانی شد'); // Show success message
+    })
+    .addCase(updateCard.rejected, (state, action) => {
+        state.isLoading = false; // Loading complete
+        //toast.error('خطا در به روز رسانی کارت'); // Show error message
+    });
+
 
         builder.addMatcher(isAnyOf(signInUser.rejected, verifyOTP.rejected), (state) => {
             state.isLoading = false;
