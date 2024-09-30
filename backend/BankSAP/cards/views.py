@@ -69,3 +69,29 @@ class DeleteCardView(APIView):
             return Response({"detail": "کارت با موفقیت حذف شد"}, status=status.HTTP_204_NO_CONTENT)
         except Card.DoesNotExist:
             return Response({"detail": "کارت یافت نشد"}, status=status.HTTP_404_NOT_FOUND)
+        
+
+class EditCardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, card_number):
+        try:
+            card = Card.objects.get(card_number=card_number, user=request.user)
+        except Card.DoesNotExist:
+            return Response({"detail": "کارت یافت نشد"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CardSerializer(card)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, card_number):
+        try:
+            card = Card.objects.get(card_number=card_number, user=request.user)
+        except Card.DoesNotExist:
+            return Response({"detail": "کارت یافت نشد"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CardSerializer(card, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

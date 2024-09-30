@@ -9,6 +9,8 @@ import AddCard from './AddCard';
 import { UseAppDispatch, UseAppSelector } from '../../store/configureStore';
 import { fetchCards } from '../account/accountSlice';
 import DeleteCardButton from './DeleteCard';
+import EditIcon from '@mui/icons-material/Edit'; 
+import EditCard from './EditCard';  
 
 const cardVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -32,7 +34,6 @@ const banks = {
     '610433': { name: 'ملت', icon: '/BankIcons/melat.png' },
 };
 
-// رنگ‌های بانک‌ها
 const bankColors = {
     '603799': '#004d99',
     '589210': '#eead32',
@@ -63,6 +64,7 @@ const getBankInfo = (cardNumber) => {
 };
 const CardList = ({ onBack }) => {
     const [showAddCard, setShowAddCard] = useState(false);
+    const [editingCard, setEditingCard] = useState(null);
     const dispatch = UseAppDispatch(); 
     const { cards, isLoading } = UseAppSelector((state) => state.account); 
     const [isHoveringDeleteButton, setIsHoveringDeleteButton] = useState(false); 
@@ -77,22 +79,30 @@ const CardList = ({ onBack }) => {
     };
 
     const handleBackToList = () => {
-        setShowAddCard(false); 
+        setShowAddCard(false);
+        setEditingCard(null); 
     };
 
     const refreshCardList = () => {
         dispatch(fetchCards()); 
     };
+    const handleEditCard = (card) => {
+        setEditingCard(card.card_number); // شماره کارت را ذخیره کنید
+    };
+   
 
     function formatCardNumber(cardNumber) {
         return cardNumber.replace(/(\d{4})(?=\d)/g, '$1-');
     }
 
     return (
-        <Box sx={{ paddingY: 2, paddingX: '0.2px' }}>
-            {showAddCard ? (
-                <AddCard onBack={handleBackToList} onCardAdded={refreshCardList}/>
-            ) : (
+        <Box sx={{ paddingY: 2}}>
+            {editingCard ? (
+                <EditCard cardNumber={editingCard} onBack={handleBackToList} onCardAdded={refreshCardList} />
+            ) 
+                : showAddCard ? (
+                    <AddCard onBack={handleBackToList} onCardAdded={refreshCardList} />
+                ) :  (
                 <>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
                         <Button
@@ -134,7 +144,8 @@ const CardList = ({ onBack }) => {
                                 >
                                     <Paper
                                         sx={{
-                                            p: 2,
+                                            paddingX:{xs:2 , sm:4} ,
+                                            paddingY : {xs:2 , sm:2},
                                             mb: {xs:2 , md:5},
                                             backgroundColor: color,
                                             display: 'flex',
@@ -170,12 +181,25 @@ const CardList = ({ onBack }) => {
                                         </Box>
                                         </Link>
                                     
-                                        <Box>
+                                        <Box sx={{display:'flex',flexDirection:'column' , gap:1}}>
+                                        <Button
+                                                startIcon={<EditIcon sx={{fontSize:{xs:'18px' , sm:'21px'}}}  />}
+                                                onClick={() => handleEditCard(card)} 
+                                                sx={{ color: textColor, minWidth: 0,
+                                                      paddingY: 0,
+                                                      paddingX:1,
+                                                    '&:hover': {
+                                                            color: 'pink',  
+                                                        },
+                                                    backgroundColor:'gray' ,fontSize:{xs:'11px' , sm:'15px'}}}
+                                            >
+                                                ویرایش کارت
+                                            </Button>
                                                 <DeleteCardButton 
                                                     cardNumber={card.card_number} 
                                                     onDelete={refreshCardList}
-                                                    onMouseEnter={() => setIsHoveringDeleteButton(true)} // وقتی ماوس روی دکمه حذف است
-                                                onMouseLeave={() => setIsHoveringDeleteButton(false)}  
+                                                    onMouseEnter={() => setIsHoveringDeleteButton(true)} 
+                                                    onMouseLeave={() => setIsHoveringDeleteButton(false)}  
                                                  
                                                 />
                                             </Box>

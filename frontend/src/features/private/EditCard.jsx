@@ -5,14 +5,14 @@ import { motion } from 'framer-motion';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { UseAppDispatch } from '../../store/configureStore';
-import { addCard } from '../account/accountSlice';
-import { unwrapResult ,unwrap } from '@reduxjs/toolkit';
+//import { addCard } from '../account/accountSlice';
+//import { unwrapResult ,unwrap } from '@reduxjs/toolkit';
+import axios from 'axios'; 
 
 
-
-const AddCard = ({ onBack , onCardAdded }) => {
+const EditCard = ({ onBack , cardNumber ,onCardAdded }) => {
   const [bankName, setBankName] = useState(''); 
-  const [cardNumber, setCardNumber] = useState('');
+  const [cardNumberState, setCardNumberState] = useState(''); 
   const yearInputRef = useRef(null); 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -21,6 +21,11 @@ const AddCard = ({ onBack , onCardAdded }) => {
   const [bankColor, setBankColor] = useState('black');  
   const [textColor, setTextColor] = useState('white');
   const dispatch = UseAppDispatch();
+  const [cardData, setCardData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true)
+
+
+
 
   const banks = {
     '603799': { name: 'ملی', icon: <img src="/BankIcons/meli.png" alt="ملی" /> },
@@ -44,6 +49,7 @@ const AddCard = ({ onBack , onCardAdded }) => {
   };
 
   const getTextColor = (backgroundColor) => {
+
     const color = backgroundColor.substring(1); 
     const rgb = parseInt(color, 16); 
     const r = (rgb >> 16) & 0xff;
@@ -79,7 +85,7 @@ const AddCard = ({ onBack , onCardAdded }) => {
     if (inputValue.length >= 6) {
         if (bank) {
             if (bankName !== bank.name) {  
-                setBankName(bank.name);
+                formik.setFieldValue('bankName', bank.name);
                 const color = bankColors[firstSixDigits] || 'red'; 
                 setBankColor(color); 
                 setTextColor(getTextColor(color));
@@ -87,7 +93,7 @@ const AddCard = ({ onBack , onCardAdded }) => {
             }
         } else {
             if (bankName !== 'کارت ناشناخته است') { 
-                setBankName('کارت ناشناخته است');
+              formik.setFieldValue('bankName', 'کارت ناشناخته است');
                 setIsInvalidCard(true);  
             }
         }
@@ -108,71 +114,107 @@ const AddCard = ({ onBack , onCardAdded }) => {
 
   const formik = useFormik({
     initialValues: {
-      cardNumber: '',
-      name: '',
-      cardMonth: '',
-      cardYear: ''
+      cardNumber: cardData ? cardData.card_number : '',
+      name: cardData ? cardData.full_name : '',
+      cardMonth: cardData ? cardData.expiration_month : '',
+      cardYear: cardData ? cardData.expiration_year : '',
     },
+    enableReinitialize: true, 
     validationSchema: Yup.object({
       cardNumber: Yup.string()
         .matches(/^\d{4}-\d{4}-\d{4}-\d{4}$/, 'شماره کارت خود را کامل وارد کنید.')
         .required('شماره کارت الزامی است'),
-        name: Yup.string()
-        .matches(/^[\u0600-\u06FF\s]+$/, 'نام و نام خانوادگی باید فارسی باشد')  
+      name: Yup.string()
+        .matches(/^[\u0600-\u06FF\s]+$/, 'نام و نام خانوادگی باید فارسی باشد')
         .test('has-two-parts', 'لطفا نام و نام خانوادگی خود را کامل وارد کنید', function (value) {
-          return value && value.trim().split(/\s+/).length >= 2;  
+          return value && value.trim().split(/\s+/).length >= 2;
         })
         .required('نام و نام خانوادگی الزامی است'),
       cardMonth: Yup.string()
         .matches(/^\d{1,2}$/, 'ماه باید یک یا دو رقمی باشد')
         .test('length', 'ماه باید دو رقمی باشد', (val) => val.length === 2)
         .test('month', 'ماه باید بین 1 تا 12 باشد', (val) => parseInt(val, 10) >= 1 && parseInt(val, 10) <= 12)
-        .required('ماه الزامی است'),
+        .required('پر کردن این فیلد الزامی است'),
       cardYear: Yup.string()
         .matches(/^\d{2}$/, 'سال باید دو رقمی باشد')
-        .required('سال الزامی است')
+        .required('پر کردن این فیلد الزامی است')
     }),
-    onSubmit: async (values) => {
-      try {
-        
-        const cardData = {
-          card_number: values.cardNumber.replace(/-/g, ''), 
-          full_name: values.name,
-          expiration_month: values.cardMonth,
-          expiration_year: values.cardYear,
-          bank_name: bankName 
-        };
-        
-        await dispatch(addCard(cardData)).unwrap(); 
-
-        setSnackbarMessage('کارت با موفقیت ثبت شد');
-       setSnackbarOpen(true);
-        setSnackbarSeverity('success');
-        formik.resetForm();
-        setBankName('');
-        onCardAdded();
-        setTimeout(() => {
-          onBack();  
-        }, 4000);
-        
-      } catch (error) {
-        setSnackbarMessage(error.error);
-        setSnackbarOpen(true);
-        setSnackbarSeverity('error');
-        formik.resetForm();
-        setBankName('');
-      }
+    onSubmit: (values) => {
+      const updatedValues = {
+        card_number: values.cardNumber.replace(/-/g, ''),  
+        full_name: values.name,
+        expiration_month: values.cardMonth,
+        expiration_year: values.cardYear,
+        bank_name:values.bankName
+      };
+      //console.log('Updated values:', values);
+      axios.put(`http://127.0.0.1:8000/api/card/edit-card/${cardNumber}/`, updatedValues)
+        .then(response => {
+          setSnackbarMessage('ویرایش با موفقیت انجام شد');
+          setSnackbarSeverity('success');
+          setSnackbarOpen(true);
+          onCardAdded();
+          setTimeout(() => {
+            onBack(); 
+          }, 3000);
+        })
+        .catch(error => {
+          setSnackbarMessage('خطایی در به روز رسانی رخ داده است');
+          setSnackbarSeverity('error');
+          setSnackbarOpen(true);
+        });
     }
-    
   });
 
+
+  useEffect(() => {
+    //console.log(`Requesting card with number: ${cardNumber}`);
+    const token = localStorage.getItem('access_token'); 
+  
+    if (!token) {
+      console.error('No access token found!'); 
+      return;
+    }
+  
+ if (cardNumber){
+      //console.log(`Sending GET request for card number: ${cardNumber}`); 
+      axios.get(`http://127.0.0.1:8000/api/card/edit-card/${cardNumber}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
+      })
+      .then(response => {
+        //console.log(response.bank_name)
+        setCardData(response);
+        const firstSixDigits = cardNumber.substring(0, 6);
+        const bank = banks[firstSixDigits];
+        if (bank) {
+          const color = bankColors[firstSixDigits] || 'red';
+          setBankColor(color); 
+          setTextColor(getTextColor(color));
+        formik.setValues({
+          cardNumber: formatCardNumber(response.card_number),
+          bankName:response.bank_name,
+          name: response.full_name,
+          cardMonth: response.expiration_month,
+          cardYear: response.expiration_year,
+        });
+      }
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching card data:', error);
+        setIsLoading(false);
+      });
+    }
+  }, [cardNumber]);
+  
   const handleMonthChange = (e) => {
     formik.handleChange(e);
     if (e.target.value.length === 2) {
       yearInputRef.current.focus(); 
     }
   };
-
 
   const animationProps = {
     initial: { opacity: 0, y: 20 },
@@ -213,19 +255,9 @@ const AddCard = ({ onBack , onCardAdded }) => {
                   color: 'black'
                 }}
               >
-                ثبت کارت جدید
+                ویرایش کارت بانکی
               </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  mb: 2,
-                  textAlign: 'center',
-                  fontSize: '0.6rem',
-                  color: 'gray'
-                }}
-              >
-                برای تعریف کارت جدید در موبایل بانک، اطلاعات زیر را وارد کنید.
-              </Typography>
+             
               <Box sx={{ display: 'grid', gap: 2, mb: 4 }}>
               <motion.div {...animationProps}>
               <TextField
@@ -257,10 +289,11 @@ const AddCard = ({ onBack , onCardAdded }) => {
 <TextField
   label="نام بانک"
   fullWidth
-  value={bankName}
+  value={formik.values.bankName}
   InputProps={{ readOnly: true }}
   error={isInvalidCard}
   InputLabelProps={{
+    shrink: Boolean(formik.values.bankName),
     sx: {
       color: isInvalidCard ? 'red' : 'lightgrey', 
     }
@@ -274,6 +307,7 @@ const AddCard = ({ onBack , onCardAdded }) => {
   }}
 />
 </motion.div>
+
 <motion.div {...animationProps}>
                 <TextField
                   label="نام و نام خانوادگی"
@@ -311,6 +345,7 @@ const AddCard = ({ onBack , onCardAdded }) => {
                       }
                     }}
                   />
+                  
                   <Typography sx={{fontSize:'25px'}}>/</Typography>
                   <TextField
                     label="سال"
@@ -328,11 +363,12 @@ const AddCard = ({ onBack , onCardAdded }) => {
                       }
                     }}
                   />
+                
                 </Box>
               </Box>
               </motion.div>
               </Box>
-              {bankName && formik.values.cardNumber.replace(/\D/g, '').length >= 6 && !isInvalidCard &&(
+
 
              
 <Paper
@@ -369,13 +405,8 @@ position: 'relative',
 
 </Paper>
 
-
-
-              )}
-          
-
               <Button variant="contained" color="primary" type="submit" fullWidth sx={{ p: 3 }}>
-                ثبت کارت جدید
+              ویرایش کارت
               </Button>
             </Paper>
           </form>
@@ -394,4 +425,4 @@ position: 'relative',
   );
 };
 
-export default AddCard;
+export default EditCard;
