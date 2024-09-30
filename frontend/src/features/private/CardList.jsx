@@ -9,7 +9,7 @@ import AddCard from './AddCard';
 import { UseAppDispatch, UseAppSelector } from '../../store/configureStore';
 import { fetchCards } from '../account/accountSlice';
 import DeleteCardButton from './DeleteCard';
-import EditIcon from '@mui/icons-material/Edit'; 
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import EditCard from './EditCard';  
 
 const cardVariants = {
@@ -87,7 +87,7 @@ const CardList = ({ onBack }) => {
         dispatch(fetchCards()); 
     };
     const handleEditCard = (card) => {
-        setEditingCard(card.card_number); // شماره کارت را ذخیره کنید
+        setEditingCard(card.card_number); 
     };
    
 
@@ -181,19 +181,27 @@ const CardList = ({ onBack }) => {
                                         </Box>
                                         </Link>
                                     
-                                        <Box sx={{display:'flex',flexDirection:'column' , gap:1}}>
+                                        <Box sx={{display:'flex',flexDirection:'column'}}>
                                         <Button
-                                                startIcon={<EditIcon sx={{fontSize:{xs:'18px' , sm:'21px'}}}  />}
+                                                
                                                 onClick={() => handleEditCard(card)} 
-                                                sx={{ color: textColor, minWidth: 0,
+                                                sx={{ color: textColor,
                                                       paddingY: 0,
                                                       paddingX:1,
                                                     '&:hover': {
                                                             color: 'pink',  
+                                                            
                                                         },
-                                                    backgroundColor:'gray' ,fontSize:{xs:'11px' , sm:'15px'}}}
+                                                        fontSize: { xs: '23px', sm: '30px' },
+                                                        display: 'flex', 
+                                                        alignItems: 'center',
+                                                        gap: 0 }}
                                             >
-                                                ویرایش کارت
+                                                <EditNoteIcon sx={{ margin: 0 }} />
+                                                <Typography variant="h6" component="span" sx={{fontSize:{xs:'11px' , sm:'15px' }}}>
+                                                     ویرایش کارت
+                                                </Typography>
+                                                 
                                             </Button>
                                                 <DeleteCardButton 
                                                     cardNumber={card.card_number} 

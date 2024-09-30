@@ -23,32 +23,19 @@ const SplashScreenBox = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
       >
-        <Typography
-          component="span"
-          variant="h3"
-          sx={{
-            fontSize: { xs: '2rem', sm: '3rem' },
-            background: 'linear-gradient(to right, #2c5282, #2a4365)',
-            backgroundClip: 'text',
-            color: 'transparent',
-            textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
-          }}
-        >
-          همراه
-        </Typography>
+       
 
         <Typography
           component="span"
           variant="h3"
           sx={{
             fontSize: { xs: '2rem', sm: '3rem' },
-            background: 'linear-gradient(to right, #805ad5, #6b46c1)',
-            backgroundClip: 'text',
-            color: 'transparent',
+            
+            color: 'white',
             textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
           }}
         >
-          بانک
+           موبایل بانک   
         </Typography>
       </motion.div>
     </Box>

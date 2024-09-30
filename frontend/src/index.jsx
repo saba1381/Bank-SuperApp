@@ -55,7 +55,8 @@ function App() {
           <ThemeProvider theme={theme}>
             <Box component="div" dir="rtl" sx={{ display: "flex", flexDirection: "column", maxHeight: '100vh' }}>
               <CssBaseline />
-              <Header /> 
+              {!showSplash && <Header />}
+
               {showSplash ? (
                 <SplashScreenBox />
               ) : (

@@ -45,7 +45,7 @@ const DeleteCardButton = ({ cardNumber, onDelete }) => {
                 '&:hover': {
                         color: 'pink',  
                     },
-                backgroundColor:'gray'
+                
             }}
         >
             <DeleteIcon sx={{fontSize:{xs:'18px' , sm:'21px'}}} />

@@ -49,14 +49,19 @@ const Header = () => {
         <AppBar
             position="sticky"
             sx={{
-                background: 'linear-gradient(to right, #2560eb, #7c3aed)',
+                background: 'linear-gradient(to right, #7c33ed, #2460eb)',
                 boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.1)',
             }}
         >
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <AssuredWorkloadIcon style={{ fontSize: '1.875rem', marginRight: '1rem', marginLeft: '0.5rem' }} />
-                    <Typography variant="h4" sx={{ display: { xs: 'none', sm: 'block' } }}>
+                    
+                    <Avatar 
+                        src={`${process.env.PUBLIC_URL}/favicon.ico`} 
+                        alt="App Icon" 
+                        sx={{ width: 30, height: 30, marginRight: '1rem', marginLeft: '0.5rem'}} 
+                    />
+                    <Typography variant="h4" sx={{ display: 'block' , fontSize:{xs:'20px' , md:'24px'} }}>
                         موبایل بانک
                     </Typography>
                 </Box>
