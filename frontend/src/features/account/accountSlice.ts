@@ -4,16 +4,21 @@ import agent from "../../api/agent";
 import { toast } from "react-toastify";
 import { router } from "../../router/Routes";
 import { setLoginStepToOTP } from "../../layout/appSlice";
+import { log } from 'console';
 interface AccountState {
     user: User | null,
     isLoading: boolean,
-    cards: Array<any> | [], // اضافه کردن وضعیت کارت‌ها
+    cards: Array<any> | [],
+    cardInfo: Card | null,    
+    error: string | null, 
 }
 
 const initialState: AccountState = {
     user: null,
     isLoading: false,
-    cards: [], // مقدار اولیه برای کارت‌ها
+    cards: [], 
+    cardInfo: null,     
+    error: null,    
 };
 
 export const verifyOTP = createAsyncThunk(
@@ -183,6 +188,13 @@ export const deleteCard = createAsyncThunk(
         }
     }
 );
+
+
+
+export const fetchCardInfo = createAsyncThunk('card/fetchCardInfo', async (cardNumber) => {
+    const response = await agent.Card.cardInfo({ cardNumber });
+    return response; 
+  });
  
 export const accountSlice = createSlice({
     name: 'account',
@@ -232,10 +244,7 @@ export const accountSlice = createSlice({
     builder.addCase(deleteCard.rejected, (state, action) => {
           toast.error('حذف کارت با مشکل روبه رو شده است');
     });
-    
-    
         builder
-        
             .addCase(updateUserProfile.pending, (state) => {
                 state.isLoading = true;
             })
@@ -261,7 +270,7 @@ export const accountSlice = createSlice({
                 //    toast.error('خطا در دریافت اطلاعات پروفایل');
                 //}
             });
-
+          
             builder.addCase(refreshTokensAsync.rejected, (state) => {
                 state.user = null;
                 localStorage.removeItem('user');
@@ -283,7 +292,7 @@ export const accountSlice = createSlice({
         });
         builder
         .addCase(addCard.pending, (state) => {
-            state.isLoading = true; // Indicate loading state
+            state.isLoading = true; 
         })
         .addCase(addCard.fulfilled, (state, action) => {
             state.isLoading = false; // Loading complete
@@ -297,15 +306,29 @@ export const accountSlice = createSlice({
         });
         builder
   .addCase(fetchCards.pending, (state) => {
-    state.isLoading = true; // نشان‌دهنده وضعیت در حال بارگذاری
+    state.isLoading = true; 
   })
   .addCase(fetchCards.fulfilled, (state, action) => {
-    state.isLoading = false; // بارگذاری کامل شد
-    state.cards = action.payload; // ذخیره لیست کارت‌ها در state
+    state.isLoading = false;
+    state.cards = action.payload; 
   })
   .addCase(fetchCards.rejected, (state) => {
-    state.isLoading = false; // بارگذاری با خطا مواجه شد
+    state.isLoading = false; 
     toast.error('خطا در دریافت لیست کارت‌ها');
+  });
+  builder
+  .addCase(fetchCardInfo.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;  // Reset error state
+  })
+  .addCase(fetchCardInfo.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.cardInfo = action.payload;  // Store the fetched card data
+      state.error = null;  // Reset error on successful fetch
+  })
+  .addCase(fetchCardInfo.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.error.message ?? null;  // Capture error message or set to null
   });
 
         builder.addMatcher(isAnyOf(signInUser.rejected, verifyOTP.rejected), (state) => {
@@ -314,6 +337,9 @@ export const accountSlice = createSlice({
       
     }
 });
+
+
+
 
 export const { signOut, setUser } = accountSlice.actions;
 export default accountSlice.reducer;

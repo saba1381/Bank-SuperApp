@@ -4,10 +4,11 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { motion } from 'framer-motion';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { UseAppDispatch } from '../../store/configureStore';
-//import { addCard } from '../account/accountSlice';
-//import { unwrapResult ,unwrap } from '@reduxjs/toolkit';
+import { UseAppDispatch , UseAppSelector} from '../../store/configureStore';
+import { fetchCardInfo } from '../account/accountSlice';
+import { unwrapResult ,unwrap } from '@reduxjs/toolkit';
 import axios from 'axios'; 
+import { useSelector } from 'react-redux';
 
 
 const EditCard = ({ onBack , cardNumber ,onCardAdded }) => {
@@ -22,7 +23,7 @@ const EditCard = ({ onBack , cardNumber ,onCardAdded }) => {
   const [textColor, setTextColor] = useState('white');
   const dispatch = UseAppDispatch();
   const [cardData, setCardData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true)
+  const { isLoading, cardInfo, error } = useSelector((state) => state.account);
 
 
 
@@ -168,46 +169,27 @@ const EditCard = ({ onBack , cardNumber ,onCardAdded }) => {
 
 
   useEffect(() => {
-    //console.log(`Requesting card with number: ${cardNumber}`);
-    const token = localStorage.getItem('access_token'); 
-  
-    if (!token) {
-      console.error('No access token found!'); 
-      return;
+    if (cardNumber) {
+        dispatch(fetchCardInfo(cardNumber));
     }
-  
- if (cardNumber){
-      //console.log(`Sending GET request for card number: ${cardNumber}`); 
-      axios.get(`http://127.0.0.1:8000/api/card/edit-card/${cardNumber}/`, {
-        headers: {
-          Authorization: `Bearer ${token}`, 
-        },
-      })
-      .then(response => {
-        //console.log(response.bank_name)
-        setCardData(response);
+}, [cardNumber, dispatch]);
+
+useEffect(() => {
+    if (cardInfo) {
         const firstSixDigits = cardNumber.substring(0, 6);
         const bank = banks[firstSixDigits];
-        if (bank) {
-          const color = bankColors[firstSixDigits] || 'red';
-          setBankColor(color); 
-          setTextColor(getTextColor(color));
+        const color = bankColors[firstSixDigits] || 'red';
+        setBankColor(color);
+        setTextColor(getTextColor(color));
         formik.setValues({
-          cardNumber: formatCardNumber(response.card_number),
-          bankName:response.bank_name,
-          name: response.full_name,
-          cardMonth: response.expiration_month,
-          cardYear: response.expiration_year,
+            cardNumber: formatCardNumber(cardInfo.card_number),
+            bankName: cardInfo.bank_name,
+            name: cardInfo.full_name,
+            cardMonth: cardInfo.expiration_month,
+            cardYear: cardInfo.expiration_year,
         });
-      }
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching card data:', error);
-        setIsLoading(false);
-      });
     }
-  }, [cardNumber]);
+}, [cardInfo]);
   
   const handleMonthChange = (e) => {
     formik.handleChange(e);
