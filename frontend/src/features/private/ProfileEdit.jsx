@@ -5,10 +5,11 @@ import { motion } from 'framer-motion';
 import * as yup from 'yup';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import axios from 'axios';  
 import { UseAppDispatch } from '../../store/configureStore';
 import { fetchUserProfile , updateUserProfile} from '../../features/account/accountSlice';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+
 
 
 const validationSchema = yup.object({
@@ -43,6 +44,8 @@ const ProfileEdit = ({ onClose }) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('error'); 
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     if (!user) {
@@ -126,7 +129,7 @@ const ProfileEdit = ({ onClose }) => {
   return (
     <Container maxWidth="full">
       <Box sx={{ mt: 1, mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
-        <Button variant="contained" color="primary" onClick={onClose} endIcon={<KeyboardBackspaceIcon />}>
+        <Button variant="contained" color="primary" onClick={() => navigate('/cp')} endIcon={<KeyboardBackspaceIcon />}>
           بازگشت
         </Button>
       </Box>

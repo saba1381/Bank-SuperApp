@@ -8,6 +8,8 @@ import { useTheme } from "@mui/material/styles";
 import { useMediaQuery } from "@mui/material";
 import { AnimatePresence, motion } from "framer-motion";
 import Settings from "./settings";
+import { useNavigate } from "react-router-dom";
+
 
 
 
@@ -16,6 +18,7 @@ const BottomMenu = ({ showSettings, setShowSettings }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [activeMenu, setActiveMenu] = useState(null);
+  const navigate = useNavigate();
 
   const getIconSize = () => (isMobile ? 24 : 30);
 

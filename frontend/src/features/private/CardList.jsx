@@ -11,6 +11,7 @@ import { fetchCards } from '../account/accountSlice';
 import DeleteCardButton from './DeleteCard';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import EditCard from './EditCard';  
+import { useNavigate } from 'react-router-dom';
 
 const cardVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -69,6 +70,7 @@ const CardList = ({ onBack }) => {
     const { cards, isLoading } = UseAppSelector((state) => state.account); 
     const [isHoveringDeleteButton, setIsHoveringDeleteButton] = useState(false); 
     const [hoveredCardIndex, setHoveredCardIndex] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         dispatch(fetchCards()); 
@@ -96,7 +98,7 @@ const CardList = ({ onBack }) => {
     }
 
     return (
-        <Box sx={{ paddingY: 2}}>
+        <Box sx={{ paddingY: 3 , paddingX :{xs:1 , md:4}}}>
             {editingCard ? (
                 <EditCard cardNumber={editingCard} onBack={handleBackToList} onCardAdded={refreshCardList} />
             ) 
@@ -108,7 +110,7 @@ const CardList = ({ onBack }) => {
                         <Button
                             variant="contained"
                             startIcon={<AddIcon />}
-                            onClick={handleAddCard}
+                            onClick={() => navigate('/cp/user-cards/add-card')}
                             sx={{ px: 3 }}
                         >
                             کارت جدید
@@ -116,7 +118,7 @@ const CardList = ({ onBack }) => {
                         <Button
                             variant="contained"
                             endIcon={<KeyboardBackspaceIcon />}
-                            onClick={onBack}
+                            onClick={() => navigate('/cp')}
                         >
                             بازگشت
                         </Button>
@@ -184,7 +186,7 @@ const CardList = ({ onBack }) => {
                                         <Box sx={{display:'flex',flexDirection:'column'}}>
                                         <Button
                                                 
-                                                onClick={() => handleEditCard(card)} 
+                                                onClick={() => navigate('/cp/user-cards/edit-card')}
                                                 sx={{ color: textColor,
                                                       paddingY: 0,
                                                       paddingX:1,
@@ -199,7 +201,7 @@ const CardList = ({ onBack }) => {
                                             >
                                                 <EditNoteIcon sx={{ margin: 0 }} />
                                                 <Typography variant="h6" component="span" sx={{fontSize:{xs:'11px' , sm:'15px' }}}>
-                                                     ویرایش کارت
+                                                     ویرایش 
                                                 </Typography>
                                                  
                                             </Button>

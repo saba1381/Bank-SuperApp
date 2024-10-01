@@ -6,8 +6,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { UseAppDispatch , UseAppSelector} from '../../store/configureStore';
 import { fetchCardInfo , updateCard } from '../account/accountSlice';
-import { unwrapResult ,unwrap } from '@reduxjs/toolkit';
-import axios from 'axios'; 
+import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 
@@ -24,6 +23,7 @@ const EditCard = ({ onBack , cardNumber ,onCardAdded }) => {
   const dispatch = UseAppDispatch();
   const [cardData, setCardData] = useState(null);
   const { isLoading, cardInfo, error } = useSelector((state) => state.account);
+  const navigate = useNavigate();
 
 
 
@@ -217,9 +217,9 @@ useEffect(() => {
 
 
   return (
-    <Box maxWidth="full">
+    <Box maxWidth="full" sx={{paddingY : 4 , paddingX:{xs:1,sm:2 , md:4}}}>
       <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end'}}>
-        <Button variant="contained" color="primary" onClick={onBack} endIcon={<KeyboardBackspaceIcon />}>
+        <Button variant="contained" color="primary" onClick={() => navigate('/cp/user-cards')} endIcon={<KeyboardBackspaceIcon />}>
           بازگشت
         </Button>
       </Box>

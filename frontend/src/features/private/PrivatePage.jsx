@@ -11,8 +11,10 @@
     import CardList from './CardList';
     import DeleteIcon from '@mui/icons-material/Delete';
     import { motion } from "framer-motion";
-    import ProfileEdit from "./ProfileEdit";
+    import ProfileEdit from "../private/ProfileEdit";
     import BottomMenu from "./bottomMenu/BottomMenu";
+    import { useNavigate } from 'react-router-dom';
+   
 
     const systems = [
         { title: 'لیست کارت ها', icon: BsCreditCard, color: '#1976d2' },
@@ -41,6 +43,7 @@
     const handleHistoryClick = () => setShowHistory(true);
     const handleServicesClick = () => setShowServices(true);
     const handleSettingsClick = () => setShowSettings(true);
+    const navigate = useNavigate();
 
         useEffect(() => {
             const loadDataAsync = async () => {
@@ -80,6 +83,10 @@
         const itemVariants = {
             hidden: { opacity: 0, y: 20 },
             visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+        };
+
+        const handleProfileEditClick = () => {
+            navigate('/cp/edit-profile');  
         };
 
         return (
@@ -133,9 +140,9 @@
                                             }}
                                             onClick={() => {
                                                 if (system.title === 'لیست کارت ها') {
-                                                    setShowCardList(true);
+                                                    navigate('/cp/user-cards');
                                                 }else if (system.title === 'ویرایش پروفایل'){
-                                                    setShowProfileEdit(true);
+                                                    handleProfileEditClick();
                                                 }
                                             }}
                                         >

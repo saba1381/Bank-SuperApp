@@ -4,7 +4,6 @@ import { FaChevronLeft } from 'react-icons/fa';
 import { styled } from '@mui/system';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import axios from 'axios';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { UseAppDispatch } from '../../../store/configureStore';
 import { changePassword } from '../../account/accountSlice';

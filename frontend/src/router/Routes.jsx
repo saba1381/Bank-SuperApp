@@ -8,6 +8,12 @@ import PrivatePage from "../features/private/PrivatePage";
 import ServerError from "../errors/ServerError";
 import NotFound from "../errors/NotFound"; 
 import ActivationCode from '../features/auth/ActivationCode'; 
+import ProfileEdit from '../features/private/ProfileEdit';
+import CardList from "../features/private/CardList";
+import EditCard from "../features/private/EditCard";
+import AddCard from "../features/private/AddCard";
+import ChangePassword from "../features/private/bottomMenu/ChangePassword";
+import Settings from "react-multi-date-picker/plugins/settings";
 
 export const router = createBrowserRouter([
     {
@@ -15,7 +21,7 @@ export const router = createBrowserRouter([
         element: <App />,
         children: [
             {
-                element: <AlreadyAuth />, // برای جلوگیری از دسترسی لاگین شده‌ها به این صفحات
+                element: <AlreadyAuth />, 
                 children: [
                     {
                         path: "sign-in",
@@ -34,10 +40,16 @@ export const router = createBrowserRouter([
             {
                 element: <RequireAuth />, 
                 children: [
-                    { path: "cp", element: <PrivatePage /> }
+                    { path: "cp", element: <PrivatePage /> },
+                    { path: "cp/edit-profile", element: <ProfileEdit /> },
+                    { path: "cp/user-cards", element: <CardList /> }, 
+                    { path: "cp/user-cards/add-card", element: <AddCard /> }, 
+                    { path: "cp/user-cards/edit-card", element: <EditCard /> },
+                    { path: "cp/edit-password", element: <ChangePassword /> },    
+                    { path: "cp/settings", element: <Settings /> },    
                 ]
             },
-            // Redirect root to "sign-in" unless authenticated
+
             { path: "", element: <Navigate to="/sign-in" /> },
             { path: "server-error", element: <ServerError /> },
             { path: "not-found", element: <NotFound /> },

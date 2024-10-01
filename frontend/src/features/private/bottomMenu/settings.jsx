@@ -10,6 +10,7 @@ import ChangePassword from './ChangePassword';
 import { useSelector } from 'react-redux';
 import { UseAppDispatch } from '../../../store/configureStore';
 import { fetchUserProfile, fetchCurrentUser } from '../../account/accountSlice';
+import { useNavigate } from 'react-router-dom';
 
 
 const Settings = ({ onClose }) => {
@@ -18,6 +19,7 @@ const Settings = ({ onClose }) => {
   const { user, isLoading } = useSelector((state) => state.account);
   const dispatch = UseAppDispatch();
   const isCPPage =window.location.pathname === '/cp';
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!user && localStorage.getItem('user')) {

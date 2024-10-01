@@ -6,9 +6,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { UseAppDispatch } from '../../store/configureStore';
 import { addCard } from '../account/accountSlice';
-import { unwrapResult ,unwrap } from '@reduxjs/toolkit';
-
-
+import { useNavigate } from 'react-router-dom';
 
 const AddCard = ({ onBack , onCardAdded }) => {
   const [bankName, setBankName] = useState(''); 
@@ -21,6 +19,7 @@ const AddCard = ({ onBack , onCardAdded }) => {
   const [bankColor, setBankColor] = useState('black');  
   const [textColor, setTextColor] = useState('white');
   const dispatch = UseAppDispatch();
+  const navigate = useNavigate();
 
   const banks = {
     '603799': { name: 'ملی', icon: <img src="/BankIcons/meli.png" alt="ملی" /> },
@@ -153,7 +152,7 @@ const AddCard = ({ onBack , onCardAdded }) => {
         onCardAdded();
         setTimeout(() => {
           onBack();  
-        }, 4000);
+        }, 2000);
         
       } catch (error) {
         setSnackbarMessage(error.error);
@@ -182,9 +181,9 @@ const AddCard = ({ onBack , onCardAdded }) => {
 
 
   return (
-    <Box maxWidth="full">
+    <Box maxWidth="full" sx={{paddingY : 4 , paddingX:{xs:1,sm:2 , md:4}}}>
       <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end'}}>
-        <Button variant="contained" color="primary" onClick={onBack} endIcon={<KeyboardBackspaceIcon />}>
+        <Button variant="contained" color="primary" onClick={() => navigate('/cp/user-cards')} endIcon={<KeyboardBackspaceIcon />}>
           بازگشت
         </Button>
       </Box>
@@ -381,7 +380,7 @@ position: 'relative',
           </form>
           <Snackbar
         open={snackbarOpen}
-        autoHideDuration={4000} 
+        autoHideDuration={2000} 
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >

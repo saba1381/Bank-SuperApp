@@ -50,7 +50,7 @@ const DeleteCardButton = ({ cardNumber, onDelete }) => {
         >
             <DeleteIcon sx={{fontSize:{xs:'18px' , sm:'21px'}}} />
             <Typography variant="h6" component="span" sx={{fontSize:{xs:'11px' , sm:'15px'}}}>
-                    حذف کارت
+                    حذف 
                 </Typography>
         </Button>
          <Dialog
