@@ -128,13 +128,13 @@ const ProfileEdit = () => {
   };
 
   return (
-    <Container maxWidth="full">
+    <Container maxWidth="full" sx={{ height:'125vh' , paddingY:3}}>
       <Box sx={{ mt: 1, mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
         <Button variant="contained" color="primary" onClick={() => navigate('/cp')} endIcon={<KeyboardBackspaceIcon />}>
           بازگشت
         </Button>
       </Box>
-      <Paper elevation={4} sx={{ p: 4, borderRadius: 5, width: { md: '70%', sx: '100%' }, mx: 'auto' }}>
+      <Paper elevation={4} sx={{ p: 4, borderRadius: 5, width: { md: '70%', sx: '100%' }, mx: 'auto'  }}>
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <Typography variant="h5" align="center" gutterBottom>
             ویرایش پروفایل

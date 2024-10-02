@@ -1,117 +1,107 @@
-import React, { useState } from "react";
-import { Box, IconButton, Typography } from "@mui/material";
-import { ImProfile } from "react-icons/im";
-import { IoMdNotifications } from "react-icons/io";
-import { RiServiceLine } from "react-icons/ri";
-import { FiSettings } from "react-icons/fi";
-import { useTheme } from "@mui/material/styles";
-import { useMediaQuery } from "@mui/material";
-import { AnimatePresence, motion } from "framer-motion";
-import Settings from "./settings";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { FaHome, FaBell, FaCreditCard, FaUserCircle, FaCog } from 'react-icons/fa';
+import { Box, Typography } from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-
-
-
-
-const BottomMenu = ({ showSettings, setShowSettings }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [activeMenu, setActiveMenu] = useState(null);
+const BottomMenu = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const getIconSize = () => (isMobile ? 24 : 30);
-
-  const handleSettingsClick = () => {
-    setShowSettings(true);
-    setActiveMenu("settings");
-  };
-
-  const menuItems = [
-    { label: "پروفایل", Icon: ImProfile, id: "profile" },
-    { label: "رخدادها", Icon: IoMdNotifications, id: "notifications" },
-    { label: "خدمات", Icon: RiServiceLine, id: "services" },
-    { label: "تنظیمات", Icon: FiSettings, id: "settings", onClick: handleSettingsClick },
-  ];
-
-  if (!isMobile) return null;
+  const isSettingsPage = location.pathname.startsWith('/cp/setting');
 
   return (
-    <>
-      <AnimatePresence>
-        {showSettings && (
-          <motion.div
-            initial={{ x: "-100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            transition={{ duration: 0.3 }}
-            style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", zIndex: 2000 }}
-          >
-            <Box
-              sx={{
-                position: "absolute",
-                top: 0,
-                width: "100%",
-                height: "100%",
-
-                zIndex: 1001, // بالاتر از تنظیمات
-                overflow: "hidden",
-              }}
-            >
-              <Settings onClose={() => { setShowSettings(false); setActiveMenu(null); }} />
-            </Box>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <Box
-        sx={{
-          position: "fixed",
-          bottom: 0,
-          width: "100%",
-          display: "flex",
-          justifyContent: "space-around",
-          backgroundColor: "white",
-          boxShadow: "0 -2px 10px rgba(0,0,0,0.1)",
-          py: 0,
-          px: 1,
-          paddingBottom: 1,
-          zIndex: 999,
-        }}
+    <Box sx={{
+      position: 'fixed',
+      bottom: 0,
+      width: '100%',
+      backgroundColor: '#fff',
+      boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)',
+      borderTop: '1px solid #ddd',
+      display: 'flex',
+      justifyContent: 'space-around',
+      padding: '10px 0',
+      zIndex: 1000
+    }}>
+      {/* Menu Item: خانه */}
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        cursor: 'pointer',
+        '&:hover svg': { color: '#6b7280' },
+        '&:hover': { '& *': { color: '#6b7280' } }
+      }}
+      onClick={() => navigate('/home')}
       >
-        {menuItems.map((item) => (
-          <Box
-            key={item.id}
-            textAlign="center"
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "column",
-              color: activeMenu === item.id ? "navy" : "gray",
-              "&:hover": { color: "navy" },
-              "&:active": { color: "navy" },
-            }}
-          >
-            <IconButton
-              onClick={item.onClick || (() => setActiveMenu(item.id))}
-              color="primary"
-              sx={{
-                color: "inherit",
-                "&:hover": { color: "navy" },
-              }}
-            >
-              <item.Icon size={getIconSize()} />
-            </IconButton>
-            <Typography
-              variant="caption"
-              sx={{ color: "inherit", "&:hover": { color: "navy" } }}
-            >
-              {item.label}
-            </Typography>
-          </Box>
-        ))}
+        <FaHome style={{ color: '#3b82f6', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: '#4b5563', fontSize: '12px' }}>خانه</Typography>
       </Box>
-    </>
+
+      {/* Menu Item: اعلانات */}
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        cursor: 'pointer',
+        '&:hover svg': { color: '#6b7280' },
+        '&:hover': { '& *': { color: '#6b7280' } }
+      }}
+      onClick={() => navigate('/notifications')}
+      >
+        <FaBell style={{ color: '#3b82f6', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: '#4b5563', fontSize: '12px' }}>اعلانات</Typography>
+      </Box>
+
+      {/* Menu Item: کارت‌ها */}
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        cursor: 'pointer',
+        '&:hover svg': { color: '#6b7280' },
+        '&:hover': { '& *': { color: '#6b7280' } }
+      }}
+      onClick={() => navigate('/cards')}
+      >
+        <FaCreditCard style={{ color: '#3b82f6', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: '#4b5563', fontSize: '12px' }}>کارت‌ها</Typography>
+      </Box>
+
+      {/* Menu Item: پروفایل */}
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        cursor: 'pointer',
+        '&:hover svg': { color: '#6b7280' },
+        '&:hover': { '& *': { color: '#6b7280' } }
+      }}
+      onClick={() => navigate('/profile')}
+      >
+        <FaUserCircle style={{ color: '#3b82f6', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: '#4b5563', fontSize: '12px' }}>پروفایل</Typography>
+      </Box>
+
+      {/* Menu Item: تنظیمات */}
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        cursor: 'pointer',
+        '&:hover svg': { color: '#6b7280' },
+        '&:hover': { '& *': { color: '#6b7280' } }
+      }}
+      onClick={() => navigate('/cp/setting')}
+      >
+        <FaCog style={{
+          color: isSettingsPage ? '#6b7280' : '#3b82f6',
+          fontSize: '24px',
+          transition: 'color 0.3s',
+          marginBottom: '4px'
+        }} />
+        <Typography variant="caption" sx={{ color: '#4b5563', fontSize: '12px' }}>تنظیمات</Typography>
+      </Box>
+    </Box>
   );
 };
 

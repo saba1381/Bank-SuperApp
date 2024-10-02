@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -21,12 +21,20 @@ import {
   signOut,
   fetchCurrentUser,
 } from "../features/account/accountSlice";
+import { useHeader } from "../components/contexts/HeaderContext";
+import { useLocation } from "react-router-dom";
 
-const Header = () => {
+
+const Header = ({ pathname }) => {
   const { user, isLoading } = useSelector((state) => state.account);
   const dispatch = UseAppDispatch();
   const isCPPage = window.location.pathname.startsWith("/cp");
+  const isSettingPage = window.location.pathname.startsWith("/cp/setting");
   const [openDialog, setOpenDialog] = React.useState(false);
+  const { headerTitle, setHeaderTitle } = useHeader();
+  const location = useLocation();
+  const showLogoutIcon = user && location.pathname.startsWith("/cp") && !location.pathname.includes("/cp/setting") && !isLoading;
+
 
   useEffect(() => {
     if (!user && isCPPage) {
@@ -48,10 +56,16 @@ const Header = () => {
   };
 
   useEffect(() => {
-    //console.log('user:', user);
-    //console.log('isLoading:', isLoading);
-    //console.log('currentPath:', window.location.pathname);
-  }, [user, isLoading]);
+    const path = location.pathname;
+
+    if (path==="/cp/setting") {
+      setHeaderTitle("تنظیمات");
+    } else if (path.startsWith("/cp/setting/edit-password")) {
+      setHeaderTitle("تغییر رمز عبور");
+    } else {
+      setHeaderTitle("موبایل بانک");
+    }
+  }, [setHeaderTitle, location.pathname]); 
 
   return (
     <AppBar
@@ -59,6 +73,7 @@ const Header = () => {
       sx={{
         background: "linear-gradient(to right, #7c33ed, #2460eb)",
         boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.1)",
+        paddingY:1
       }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -77,11 +92,11 @@ const Header = () => {
             variant="h4"
             sx={{ display: "block", fontSize: { xs: "20px", md: "24px" } }}
           >
-            موبایل بانک
+             {headerTitle}
           </Typography>
         </Box>
 
-        {user && isCPPage && !isLoading && (
+        {user && showLogoutIcon  && !isLoading && (
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <LogoutIcon onClick={handleLogoutClick} />
           </Box>
@@ -94,6 +109,7 @@ const Header = () => {
         PaperProps={{
           sx: {
             borderRadius: "16px",
+            zIndex:1000
           },
         }}
       >

@@ -18,7 +18,8 @@ import SplashScreenBox from './SplashScreenBox';
 import { Helmet } from 'react-helmet';
 import Header from './components/Header'
 import { router } from "./router/Routes";
-import BottomMenu from './features/private/bottomMenu/BottomMenu';
+import { HeaderProvider } from "./components/contexts/HeaderContext";
+
 
 
 
@@ -36,6 +37,7 @@ serviceWorkerRegistration.unregister();
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
+
   
 
   useEffect(() => {
@@ -52,12 +54,14 @@ function App() {
 
   return (
     <StrictMode>
+      
       <Provider store={store}>
+      <HeaderProvider>
         <CacheProvider value={cacheRtl}>
           <ThemeProvider theme={theme}>
             <Box component="div" dir="rtl" sx={{ display: "flex", flexDirection: "column", maxHeight: '100vh' }}>
               <CssBaseline />
-              {!showSplash && <Header />}
+            
 
               {showSplash ? (
                 <SplashScreenBox />
@@ -76,7 +80,9 @@ function App() {
             </Box>
           </ThemeProvider>
         </CacheProvider>
+        </HeaderProvider>
       </Provider>
+    
     </StrictMode>
   );
 }

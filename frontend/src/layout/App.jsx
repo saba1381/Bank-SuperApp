@@ -10,6 +10,7 @@ import { fetchCurrentUser } from "../features/account/accountSlice";
 import { sleep } from "../util/util";
 import BottomMenu from '../features/private/bottomMenu/BottomMenu';
 import { useSelector } from 'react-redux';
+import Header from '../components/Header';
 
 export default function App() {
   const dispatch = UseAppDispatch();
@@ -48,17 +49,13 @@ export default function App() {
 
   return (
     <Box sx={{display:"flex",flexDirection:"column",maxHeight:"100vh",width:"100%"}}>
+      <Header />
       <Box
       component={"main"}
       sx={{flexGrow:1}}
       >
            {user && isCPPage && !isLoading && (<BottomMenu
-                    showSettings={showSettings}
-                    setShowSettings={setShowSettings}
-                    onProfileClick={handleProfileClick}
-                    onHistoryClick={handleHistoryClick}
-                    onServicesClick={handleServicesClick}
-                    onSettingsClick={handleSettingsClick}
+
                   /> )}
         
        

@@ -13,7 +13,7 @@ import CardList from "../features/private/CardList";
 import EditCard from "../features/private/EditCard";
 import AddCard from "../features/private/AddCard";
 import ChangePassword from "../features/private/bottomMenu/ChangePassword";
-import Settings from "react-multi-date-picker/plugins/settings";
+import Settings from "../features/private/bottomMenu/settings";
 
 export const router = createBrowserRouter([
     {
@@ -45,8 +45,9 @@ export const router = createBrowserRouter([
                     { path: "cp/user-cards", element: <CardList /> }, 
                     { path: "cp/user-cards/add-card", element: <AddCard /> }, 
                     { path: "cp/user-cards/edit-card", element: <EditCard /> },
-                   // { path: "cp/edit-password", element: <ChangePassword /> },    
-                   // { path: "cp/settings", element: <Settings /> },    
+                    { path: "cp/setting", element: <Settings /> }, 
+                    { path: "cp/setting/edit-password", element: <ChangePassword /> },    
+                       
                 ]
             },
 
