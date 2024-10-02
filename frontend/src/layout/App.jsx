@@ -8,12 +8,24 @@ import LoadingComponent from "../components/LoadingComponent";
 import { UseAppDispatch } from "../store/configureStore";
 import { fetchCurrentUser } from "../features/account/accountSlice";
 import { sleep } from "../util/util";
-
+import BottomMenu from '../features/private/bottomMenu/BottomMenu';
+import { useSelector } from 'react-redux';
 
 export default function App() {
   const dispatch = UseAppDispatch();
+  const { user, isLoading } = useSelector((state) => state.account);
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState('register');
+  const [showProfile, setShowProfile] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [showServices, setShowServices] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const isCPPage = window.location.pathname.startsWith('/cp'); 
+
+  const handleProfileClick = () => setShowProfile(true);
+  const handleHistoryClick = () => setShowHistory(true);
+  const handleServicesClick = () => setShowServices(true);
+  const handleSettingsClick = () => setShowSettings(true);
 
 
   const initApp = useCallback(async () => {
@@ -40,6 +52,15 @@ export default function App() {
       component={"main"}
       sx={{flexGrow:1}}
       >
+           {user && isCPPage && !isLoading && (<BottomMenu
+                    showSettings={showSettings}
+                    setShowSettings={setShowSettings}
+                    onProfileClick={handleProfileClick}
+                    onHistoryClick={handleHistoryClick}
+                    onServicesClick={handleServicesClick}
+                    onSettingsClick={handleSettingsClick}
+                  /> )}
+        
        
             <Outlet />
       </Box>

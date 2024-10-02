@@ -5,12 +5,13 @@ import { motion } from 'framer-motion';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { UseAppDispatch , UseAppSelector} from '../../store/configureStore';
-import { fetchCardInfo , updateCard } from '../account/accountSlice';
+import { fetchCardInfo , updateCard , fetchCards } from '../account/accountSlice';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 
-const EditCard = ({ onBack , cardNumber ,onCardAdded }) => {
+const EditCard = () => {
   const [bankName, setBankName] = useState(''); 
   const [cardNumberState, setCardNumberState] = useState(''); 
   const yearInputRef = useRef(null); 
@@ -24,9 +25,8 @@ const EditCard = ({ onBack , cardNumber ,onCardAdded }) => {
   const [cardData, setCardData] = useState(null);
   const { isLoading, cardInfo, error } = useSelector((state) => state.account);
   const navigate = useNavigate();
-
-
-
+  const location = useLocation();
+  const { cardNumber } = location.state; 
 
   const banks = {
     '603799': { name: 'ملی', icon: <img src="/BankIcons/meli.png" alt="ملی" /> },
@@ -119,6 +119,7 @@ const EditCard = ({ onBack , cardNumber ,onCardAdded }) => {
       name: cardData ? cardData.full_name : '',
       cardMonth: cardData ? cardData.expiration_month : '',
       cardYear: cardData ? cardData.expiration_year : '',
+      id: cardData ? cardData.id : '', 
     },
     enableReinitialize: true, 
     validationSchema: Yup.object({
@@ -142,6 +143,7 @@ const EditCard = ({ onBack , cardNumber ,onCardAdded }) => {
     }),
       onSubmit: async (values) => {
         const updatedValues = {
+            id: values.id, 
             card_number: values.cardNumber.replace(/-/g, ''),  
             full_name: values.name,
             expiration_month: values.cardMonth,
@@ -155,24 +157,22 @@ const EditCard = ({ onBack , cardNumber ,onCardAdded }) => {
         const cardNumber = values.cardNumber.replace(/-/g, '');
     
         try {
-            // Dispatch the updateCard thunk with cardNumber included
-            const response = await dispatch(updateCard({ cardNumber, ...updatedValues })).unwrap();
+
+            const response = await dispatch(updateCard(updatedValues)).unwrap();
             console.log(response);  
-            
-            // Handle success
+
             setSnackbarMessage('ویرایش با موفقیت انجام شد');
             setSnackbarSeverity('success');
             setSnackbarOpen(true);
-            onCardAdded(); // Optionally call any additional actions
+            dispatch(fetchCards()); 
             setTimeout(() => {
-                onBack(); // Navigate back after a delay
+              navigate('/cp/user-cards/') 
             }, 3000);
         } catch (error) {
-            // Handle error
+            console.error("Error details: ", error)
             setSnackbarMessage('خطایی در به روز رسانی رخ داده است');
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
-            console.log(error); 
         }
     }
     
@@ -198,6 +198,7 @@ useEffect(() => {
             name: cardInfo.full_name,
             cardMonth: cardInfo.expiration_month,
             cardYear: cardInfo.expiration_year,
+            id: cardInfo.id,
         });
     }
 }, [cardInfo]);
@@ -219,7 +220,7 @@ useEffect(() => {
   return (
     <Box maxWidth="full" sx={{paddingY : 4 , paddingX:{xs:1,sm:2 , md:4}}}>
       <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end'}}>
-        <Button variant="contained" color="primary" onClick={() => navigate('/cp/user-cards')} endIcon={<KeyboardBackspaceIcon />}>
+        <Button variant="contained" color="primary" onClick={() => navigate('/cp/user-cards/')} endIcon={<KeyboardBackspaceIcon />}>
           بازگشت
         </Button>
       </Box>

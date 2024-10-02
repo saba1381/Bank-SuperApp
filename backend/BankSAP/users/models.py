@@ -26,10 +26,10 @@ class UserManager(BaseUserManager):
         return self.create_user(phone_number, national_code, password, **extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
-    phone_number = models.CharField(max_length=11, unique=True , null=False)
-    national_code = models.CharField(max_length=10, unique=True , null=False)
-    first_name = models.CharField(max_length=30, blank=True, null=True)  
-    last_name = models.CharField(max_length=30, blank=True, null=True) 
+    phone_number = models.CharField(max_length=11, unique=True , null=False , blank=False)
+    national_code = models.CharField(max_length=10, unique=True , null=False , blank=False)
+    first_name = models.CharField(max_length=30, blank=False, null=False)  
+    last_name = models.CharField(max_length=30, blank=False, null=False) 
     email = models.EmailField(max_length=255, unique=False, null=True, blank=True)  
     gender = models.CharField(max_length=10, choices=[('male', 'مرد'), ('female', 'زن')], blank=True, null=True)
     last_login = models.DateTimeField(null=True, blank=True)

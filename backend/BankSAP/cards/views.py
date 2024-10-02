@@ -18,30 +18,28 @@ class RegisterCardView(APIView):
         expiration_year = request.data.get('expiration_year')
         bank_name = request.data.get('bank_name')
 
-        # پیدا کردن کارت با شماره کارت وارد شده
         card = Card.objects.filter(card_number=card_number).first()
 
         if card:
-            # اگر کارت توسط همان کاربر ثبت شده بود
             if card.user == request.user:
                 return Response(
                     {"detail": "این کارت قبلاً توسط شما ثبت شده است"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             else:
-                # اگر کارت توسط کاربر دیگری ثبت شده بود، اما اطلاعات نادرست بود
+                
                 if card.full_name != full_name or card.expiration_month != expiration_month or card.expiration_year != expiration_year:
                     return Response(
                         {"detail": "اطلاعات کارت اشتباه است"},
                         status=status.HTTP_400_BAD_REQUEST
                     )
                 else:
-                    # اگر کارت توسط کاربر دیگری ثبت شده و اطلاعات درست است
+                    
                     return Response(
                         {"detail": "این کارت قبلاً توسط کاربر دیگری ثبت شده است"},
                         status=status.HTTP_400_BAD_REQUEST
                     )
-        # اگر کارت قبلاً ثبت نشده بود، آن را ثبت کن
+    
         serializer = CardSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
@@ -83,9 +81,9 @@ class EditCardView(APIView):
         serializer = CardSerializer(card)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, card_number):
+    def put(self, request, id):
         try:
-            card = Card.objects.get(card_number=card_number, user=request.user)
+            card = Card.objects.get(id=id, user=request.user)
         except Card.DoesNotExist:
             return Response({"detail": "کارت یافت نشد"}, status=status.HTTP_404_NOT_FOUND)
 

@@ -15,12 +15,12 @@ import { useNavigate } from 'react-router-dom';
 const validationSchema = yup.object({
   first_name: yup
     .string('نام خود را وارد کنید')
-    .matches(/^[\u0600-\u06FF\s]+$/, 'نام باید به زبان فارسی باشد'),
-    //.required('نام ضروری است'),
+    .matches(/^[\u0600-\u06FF\s]+$/, 'نام باید به زبان فارسی باشد')
+    .required('نام ضروری است'),
   last_name: yup
     .string('نام خانوادگی خود را وارد کنید')
-    .matches(/^[\u0600-\u06FF\s]+$/, 'نام خانوادگی باید به زبان فارسی باشد'),
-    //.required('نام خانوادگی ضروری است'),
+    .matches(/^[\u0600-\u06FF\s]+$/, 'نام خانوادگی باید به زبان فارسی باشد')
+    .required('نام خانوادگی ضروری است'),
   email: yup
     .string('ایمیل خود را وارد کنید')
     .email('ایمیل معتبر وارد کنید'),
@@ -33,10 +33,10 @@ const validationSchema = yup.object({
     .matches(/^[0-9]+$/, 'شماره موبایل باید فقط شامل اعداد باشد')
     .test('len', 'شماره موبایل باید 11 رقم باشد', val => val && val.length === 11)
     .test('start', 'شماره موبایل معتبر نیست', val => val && val.startsWith('09'))
-    //.required('شماره موبایل ضروری است'),
+    .required('شماره موبایل ضروری است'),
 });
 
-const ProfileEdit = ({ onClose }) => {
+const ProfileEdit = () => {
   const dispatch = UseAppDispatch();
   const { user, isLoading } = useSelector((state) => state.account);
   const [profileImage, setProfileImage] = useState(null);
@@ -63,6 +63,7 @@ const ProfileEdit = ({ onClose }) => {
       avatar : user?.profile_image || ''
     },
     enableReinitialize: true,
+    validationSchema, 
     onSubmit: async (values) => {
       const formData = new FormData();
       formData.append('first_name', values.first_name);
@@ -84,7 +85,7 @@ const ProfileEdit = ({ onClose }) => {
         setSnackbarSeverity('success');
         setOpenSnackbar(true);
         setTimeout(() => {
-          onClose();
+          navigate('/cp')
         }, 4000);
       } catch (error) {
         
@@ -185,7 +186,11 @@ const ProfileEdit = ({ onClose }) => {
                   fullWidth
                   id="first_name"
                   name="first_name"
-                  label="نام"
+                  label={
+                    <span>
+                      نام <span style={{ color: 'red' }}>*</span>
+                    </span>
+                  }
                   variant="outlined"
                   value={formik.values.first_name}
                   onChange={formik.handleChange}
@@ -208,7 +213,11 @@ const ProfileEdit = ({ onClose }) => {
                   fullWidth
                   id="last_name"
                   name="last_name"
-                  label="نام خانوادگی"
+                  label={
+                    <span>
+                      نام خانوادگی <span style={{ color: 'red' }}>*</span>
+                    </span>
+                  }
                   variant="outlined"
                   value={formik.values.last_name}
                   onChange={formik.handleChange}
@@ -231,7 +240,7 @@ const ProfileEdit = ({ onClose }) => {
                   fullWidth
                   id="email"
                   name="email"
-                  label="ایمیل"
+                  label="ایمیل(اختیاری)"
                   variant="outlined"
                   value={formik.values.email}
                   onChange={formik.handleChange}
@@ -254,7 +263,11 @@ const ProfileEdit = ({ onClose }) => {
                   fullWidth
                   id="phone_number"
                   name="phone_number"
-                  label="شماره موبایل"
+                  label={
+                    <span>
+                      شماره موبایل <span style={{ color: 'red' }}>*</span>
+                    </span>
+                  }
                   variant="outlined"
                   value={formik.values.phone_number}
                   onChange={formik.handleChange}
@@ -292,7 +305,7 @@ const ProfileEdit = ({ onClose }) => {
                   }}
                 >
                   <MenuItem value="">
-                    انتخاب جنسیت
+                    جنسیت  (اختاری)
                   </MenuItem>
                   <MenuItem value="male">مرد</MenuItem>
                   <MenuItem value="female">زن</MenuItem>

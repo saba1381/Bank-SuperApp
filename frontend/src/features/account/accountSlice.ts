@@ -201,8 +201,8 @@ export const fetchCardInfo = createAsyncThunk('card/fetchCardInfo', async (cardN
     'account/updateCard',
     async (values: any, thunkAPI) => {
         try {
-            const response = await agent.Card.updateCard(values);
-            console.log(response);
+            const response = await agent.Card.updateCard(values.id);
+
             return response;  
         } catch (error: any) {
             return thunkAPI.rejectWithValue({ error: error });

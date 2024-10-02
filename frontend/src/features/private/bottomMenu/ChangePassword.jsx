@@ -7,8 +7,9 @@ import * as Yup from 'yup';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { UseAppDispatch } from '../../../store/configureStore';
 import { changePassword } from '../../account/accountSlice';
-import { unwrapResult } from '@reduxjs/toolkit';
+import { unwrapResult , unwrap } from '@reduxjs/toolkit';
 import { motion } from 'framer-motion';
+
 
 
 const ChangePassword = ({ onBack }) => {
@@ -29,6 +30,7 @@ const ChangePassword = ({ onBack }) => {
   const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
 
   const dispatch = UseAppDispatch();
+
 
   const Overlay = styled('div')(({ theme }) => ({
     position: 'fixed',
@@ -62,18 +64,18 @@ const ChangePassword = ({ onBack }) => {
       newPassword: Yup.string().required('پر کردن این فیلد ضروری است'),
       confirmPassword: Yup.string().oneOf([Yup.ref('newPassword'), null], 'رمز عبور جدید و تکرار آن باید یکسان باشند').required('پر کردن این فیلد ضروری است')
     }),
-    onSubmit: async (values , { setErrors }) => {
+    onSubmit: async (values) => {
       try {
         const response = await dispatch(changePassword({
           current_password: values.currentPassword,
           new_password: values.newPassword
-      })).then(unwrapResult);
+      })).unwrap();
 
         console.log(response)
         setSnackbarMessage(response.detail);
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
-        formik.resetForm(); 
+        //formik.resetForm(); 
 
       } catch (error) {
 
@@ -82,6 +84,7 @@ const ChangePassword = ({ onBack }) => {
           const serverErrors = error.error;
     
           if (serverErrors) {
+            console.log(serverErrors);
             setSnackbarMessage(serverErrors); 
             formik.resetForm(); 
           } else {
@@ -346,7 +349,7 @@ const animationProps = {
           }}
           />
           </motion.div>
-          <motion.div {...animationProps}>
+          
           <Button
             variant="contained"
             color="primary"
@@ -356,13 +359,13 @@ const animationProps = {
           >
             تغییر
           </Button>
-          </motion.div>
+  
         </form>
         <Snackbar
           open={snackbarOpen}
           onClose={handleSnackbarClose}
           autoHideDuration={4000}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          anchorOrigin={{ vertical: "bottom", horizontal: 'center' }}
           action={
             <IconButton
               aria-label="close"
@@ -376,7 +379,7 @@ const animationProps = {
           <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%', borderRadius: '20px' }}>
       
             <Typography>
-              {snackbarMessage}
+              {snackbarMessage} 
             </Typography>
           </Alert>
         </Snackbar>

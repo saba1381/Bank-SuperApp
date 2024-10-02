@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import { RouterProvider } from "react-router-dom";
+import { RouterProvider, useLocation } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./store/configureStore";
 import { StrictMode } from "react";
@@ -16,18 +16,11 @@ import { theme } from "./theme";
 import * as serviceWorkerRegistration from "./serviceWorkerResgistration";
 import SplashScreenBox from './SplashScreenBox';
 import { Helmet } from 'react-helmet';
-import Header from './components/Header'
+import Header from './components/Header';
 import { router } from "./router/Routes";
-import BottomMenu from './features/private/bottomMenu/BottomMenu';
+import { BrowserRouter } from 'react-router-dom';
+import BottomMenu from './features/private/bottomMenu/BottomMenu'; // منوی پایین
 
-
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
-if (process.env.NODE_ENV === 'production') {
-  console.log = () => {};
-  console.error = () => {};
-  console.debug = () => {};
-}
 const cacheRtl = createCache({
   key: "muirtl",
   stylisPlugins: [prefixer, rtlPlugin],
@@ -36,7 +29,18 @@ serviceWorkerRegistration.unregister();
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
-  
+  const location = useLocation();
+  const isCPPage = window.location.pathname.startsWith('/cp');
+
+  const [showProfile, setShowProfile] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [showServices, setShowServices] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+
+  const handleProfileClick = () => setShowProfile(true);
+  const handleHistoryClick = () => setShowHistory(true);
+  const handleServicesClick = () => setShowServices(true);
+  const handleSettingsClick = () => setShowSettings(true);
 
   useEffect(() => {
     const hasVisited = localStorage.getItem('hasVisited');
@@ -51,6 +55,7 @@ function App() {
   }, []);
 
   return (
+    
     <StrictMode>
       <Provider store={store}>
         <CacheProvider value={cacheRtl}>
@@ -62,11 +67,22 @@ function App() {
               {showSplash ? (
                 <SplashScreenBox />
               ) : (
+                <>
+               
                 
-                <RouterProvider router={router} />
-               
+                {/* نمایش BottomMenu فقط در صفحاتی که زیرمجموعه‌ی /cp هستند */}
+                {isCPPage &&(
+                  <BottomMenu
+                    showSettings={showSettings}
+                    setShowSettings={setShowSettings}
+                    onProfileClick={handleProfileClick}
+                    onHistoryClick={handleHistoryClick}
+                    onServicesClick={handleServicesClick}
+                    onSettingsClick={handleSettingsClick}
+                  />
+                )}
+              </>
               )}
-               
               <ToastContainer
                 position="top-center"
                 rtl
@@ -81,4 +97,9 @@ function App() {
   );
 }
 
-root.render(<App />);
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);
