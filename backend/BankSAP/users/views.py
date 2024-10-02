@@ -160,6 +160,9 @@ class ChangePasswordView(APIView):
             print("Current password is incorrect.")
             return Response({"detail": "رمز عبور فعلی خود را اشتباه وارد کردید."}, status=status.HTTP_400_BAD_REQUEST)
         
+        if current_password == new_password:
+            return Response({"detail": "رمز عبور جدید نمی‌تواند با رمز عبور فعلی یکسان باشد."}, status=status.HTTP_400_BAD_REQUEST)
+        
         validator = CustomPasswordValidator()
         try:
             validator.validate(new_password) 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import {
   Box,
   Typography,
@@ -60,6 +60,7 @@ const ChangePassword = ({ onBack }) => {
     setOverlayOpen(false);
   };
 
+
   const formik = useFormik({
     initialValues: {
       currentPassword: "",
@@ -85,24 +86,27 @@ const ChangePassword = ({ onBack }) => {
           })
         ).unwrap();
 
-        console.log(response);
+
+        
         setSnackbarMessage(response.detail);
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
-        //formik.resetForm();
+
+        formik.resetForm();
       } catch (error) {
+ 
         if (error && error.error) {
           const serverErrors = error.error;
 
-          if (serverErrors) {
-            console.log(serverErrors);
             setSnackbarMessage(serverErrors);
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
+            console.log("Snackbar Open:", snackbarOpen); 
             formik.resetForm();
-          } else {
-            setSnackbarMessage("خطایی رخ داده است.");
-            formik.resetForm();
-          }
+
         } else {
+          setSnackbarOpen(true);
+          setSnackbarSeverity("error");
           setSnackbarMessage("خطایی رخ داده است.");
         }
 
@@ -138,6 +142,7 @@ const ChangePassword = ({ onBack }) => {
         width: "100%",
         paddingX: { sm: 4, md: 35 },
         paddingY: 4,
+
       }}
     >
      
@@ -188,6 +193,13 @@ const ChangePassword = ({ onBack }) => {
               ×
             </IconButton>
           }
+          sx={{
+            position: 'fixed',
+            top: 90,
+            left: 0,
+            right: 0,
+            zIndex: 1300, // عدد zIndex بزرگتر از هدر شما
+          }}
         >
           <Alert
             onClose={handleSnackbarClose}
@@ -404,17 +416,26 @@ const ChangePassword = ({ onBack }) => {
           open={snackbarOpen}
           onClose={handleSnackbarClose}
           autoHideDuration={4000}
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          sx={{
+            position: 'fixed',
+            top: 74,
+            left: 0,
+            right: 0,
+            zIndex: 1300, 
+          }}
           action={
             <IconButton
               aria-label="close"
               color="inherit"
               onClick={handleSnackbarClose}
             >
+              
               ×
             </IconButton>
           }
         >
+          
           <Alert
             onClose={handleSnackbarClose}
             severity={snackbarSeverity}
@@ -423,7 +444,9 @@ const ChangePassword = ({ onBack }) => {
             <Typography>{snackbarMessage}</Typography>
           </Alert>
         </Snackbar>
+
       </Container>
+
     </Box>
   );
 };
