@@ -142,6 +142,7 @@ const ChangePassword = ({ onBack }) => {
         width: "100%",
         paddingX: { sm: 4, md: 35 },
         paddingY: 4,
+        height:'100%'
 
       }}
     >
@@ -183,7 +184,7 @@ const ChangePassword = ({ onBack }) => {
         <Snackbar
           open={overlayOpen}
           onClose={handleSnackbarClose}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          anchorOrigin={{ vertical: "center", horizontal: "center" }}
           action={
             <IconButton
               aria-label="close"
@@ -194,17 +195,17 @@ const ChangePassword = ({ onBack }) => {
             </IconButton>
           }
           sx={{
-            position: 'fixed',
-            top: 90,
+            
+            top: 0,
             left: 0,
             right: 0,
-            zIndex: 1300, // عدد zIndex بزرگتر از هدر شما
+            zIndex: 1500, 
           }}
         >
           <Alert
             onClose={handleSnackbarClose}
             severity="info"
-            sx={{ width: "100%", borderRadius: "20px" }}
+            sx={{ width: "100%", borderRadius: "20px" , zIndex:1300 }}
           >
             <Typography variant="h6">تغییر رمز موبایل بانک:</Typography>
             <Typography>
@@ -415,11 +416,11 @@ const ChangePassword = ({ onBack }) => {
         <Snackbar
           open={snackbarOpen}
           onClose={handleSnackbarClose}
-          autoHideDuration={4000}
+          autoHideDuration={2000}
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
           sx={{
-            position: 'fixed',
-            top: 74,
+            mt:{sm:'90px'},
+            top: 84,
             left: 0,
             right: 0,
             zIndex: 1300, 

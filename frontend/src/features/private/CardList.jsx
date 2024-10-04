@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Paper, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Paper,
+  Button,
+  IconButton,
+  Snackbar,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import AddIcon from "@mui/icons-material/Add";
@@ -12,6 +19,7 @@ import DeleteCardButton from "./DeleteCard";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import EditCard from "./EditCard";
 import { useNavigate } from "react-router-dom";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -70,6 +78,7 @@ const CardList = ({ onBack }) => {
   const [isHoveringDeleteButton, setIsHoveringDeleteButton] = useState(false);
   const [hoveredCardIndex, setHoveredCardIndex] = useState(null);
   const navigate = useNavigate();
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   useEffect(() => {
     dispatch(fetchCards());
@@ -94,12 +103,21 @@ const CardList = ({ onBack }) => {
     });
   };
 
+  const handleCopyCardNumber = (cardNumber) => {
+    navigator.clipboard.writeText(cardNumber);
+    setOpenSnackbar(true); 
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false); 
+  };
+
   function formatCardNumber(cardNumber) {
     return cardNumber.replace(/(\d{4})(?=\d)/g, "$1-");
   }
 
   return (
-    <Box sx={{ paddingY: 3, paddingX: { xs: 1, md: 4 } }}>
+    <Box sx={{ paddingY: 3, paddingX: { xs: 1, md: 4 }, height:'100vh' }}>
       {editingCard ? (
         <EditCard
           cardNumber={editingCard.card_number}
@@ -185,6 +203,19 @@ const CardList = ({ onBack }) => {
                         </Typography>
                         <Typography variant="caption">
                           {formatCardNumber(card.card_number)}
+                          <IconButton
+                            onClick={(e) => {
+                              e.preventDefault(); 
+                              e.stopPropagation(); 
+                              handleCopyCardNumber(card.card_number);
+                            }}
+                            sx={{
+                              color: textColor,
+                              "&:hover": { color: "pink" },
+                            }}
+                          >
+                            <ContentCopyIcon />
+                          </IconButton>
                         </Typography>
                       </Box>
                     </Link>
@@ -228,6 +259,17 @@ const CardList = ({ onBack }) => {
           )}
         </>
       )}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        message="شماره کارت کپی شد!"
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        ContentProps={{
+          sx: { backgroundColor: "green" },
+        }}
+        sx={{ borderRadius: "20px" }}
+      />
     </Box>
   );
 };

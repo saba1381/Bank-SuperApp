@@ -204,7 +204,7 @@ const AddCard = () => {
   return (
     <Box
       maxWidth="full"
-      sx={{ paddingY: 4, paddingX: { xs: 1, sm: 2, md: 4 } }}
+      sx={{ paddingY: 4, paddingX: { xs: 1, sm: 2, md: 4 } , height:'130vh' }}
     >
       <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
         <Button

@@ -8,7 +8,8 @@ const BottomMenu = () => {
   const location = useLocation();
 
   const isSettingsPage = location.pathname.startsWith('/cp/setting');
-
+  const isCPPage = location.pathname==='/cp';
+  const isListCardPage = location.pathname.startsWith('/cp/user-cards');
   return (
     <Box sx={{
       position: 'fixed',
@@ -31,13 +32,13 @@ const BottomMenu = () => {
         '&:hover svg': { color: '#6b7280' },
         '&:hover': { '& *': { color: '#6b7280' } }
       }}
-      onClick={() => navigate('/home')}
+      onClick={() => navigate('/cp')}
       >
-        <FaHome style={{ color: '#3b82f6', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
-        <Typography variant="caption" sx={{ color: '#4b5563', fontSize: '12px' }}>خانه</Typography>
+        <FaHome style={{ color: isCPPage ? '#6b7280' : '#3b82f6',fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: isCPPage ? '#6b7280' : '#3b82f6', fontSize: '12px' }}>خانه</Typography>
       </Box>
 
-      {/* Menu Item: اعلانات */}
+    
       <Box sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -49,7 +50,7 @@ const BottomMenu = () => {
       onClick={() => navigate('/notifications')}
       >
         <FaBell style={{ color: '#3b82f6', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
-        <Typography variant="caption" sx={{ color: '#4b5563', fontSize: '12px' }}>اعلانات</Typography>
+        <Typography variant="caption" sx={{ color: '#3b82f6', fontSize: '12px' }}>اعلانات</Typography>
       </Box>
 
       {/* Menu Item: کارت‌ها */}
@@ -61,10 +62,10 @@ const BottomMenu = () => {
         '&:hover svg': { color: '#6b7280' },
         '&:hover': { '& *': { color: '#6b7280' } }
       }}
-      onClick={() => navigate('/cards')}
+      onClick={() => navigate('/cp/user-cards')}
       >
-        <FaCreditCard style={{ color: '#3b82f6', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
-        <Typography variant="caption" sx={{ color: '#4b5563', fontSize: '12px' }}>کارت‌ها</Typography>
+        <FaCreditCard style={{ color: isListCardPage ? '#6b7280' : '#3b82f6',fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: isListCardPage ? '#6b7280' : '#3b82f6',fontSize: '12px' }}>کارت‌ها</Typography>
       </Box>
 
       {/* Menu Item: پروفایل */}
@@ -79,7 +80,7 @@ const BottomMenu = () => {
       onClick={() => navigate('/profile')}
       >
         <FaUserCircle style={{ color: '#3b82f6', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
-        <Typography variant="caption" sx={{ color: '#4b5563', fontSize: '12px' }}>پروفایل</Typography>
+        <Typography variant="caption" sx={{ color: '#3b82f6', fontSize: '12px' }}>پروفایل</Typography>
       </Box>
 
       {/* Menu Item: تنظیمات */}
@@ -99,7 +100,7 @@ const BottomMenu = () => {
           transition: 'color 0.3s',
           marginBottom: '4px'
         }} />
-        <Typography variant="caption" sx={{ color: '#4b5563', fontSize: '12px' }}>تنظیمات</Typography>
+        <Typography variant="caption" sx={{ color: isSettingsPage ? '#6b7280' : '#3b82f6',fontSize: '12px' }}>تنظیمات</Typography>
       </Box>
     </Box>
   );

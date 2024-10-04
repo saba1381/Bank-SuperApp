@@ -108,7 +108,7 @@ const profileImageURL = user?.profile_image && user.profile_image.startsWith('/m
 
           <Container>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb:2}}>
-        <Button variant="contained" color="primary" onClick={() => navigate('/cp/')} endIcon={<KeyboardBackspaceIcon />}>
+        <Button variant="contained" color="primary" onClick={() => navigate('/cp')} endIcon={<KeyboardBackspaceIcon />}>
           بازگشت
         </Button>
       </Box>

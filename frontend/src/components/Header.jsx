@@ -63,7 +63,7 @@ const Header = ({ pathname }) => {
     } else if (path.startsWith("/cp/setting/edit-password")) {
       setHeaderTitle("تغییر رمز عبور");
     } else {
-      setHeaderTitle("موبایل بانک");
+      setHeaderTitle(" ");
     }
   }, [setHeaderTitle, location.pathname]); 
 
@@ -73,19 +73,20 @@ const Header = ({ pathname }) => {
       sx={{
         background: "linear-gradient(to right, #7c33ed, #2460eb)",
         boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.1)",
-        paddingY:1
+        paddingY:1, 
+
       }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Avatar
-            src={`${process.env.PUBLIC_URL}/favicon.ico`}
+            src={`${process.env.PUBLIC_URL}/logo.png`}
             alt="App Icon"
+            variant="square"
             sx={{
-              width: 30,
-              height: 30,
-              marginRight: "1rem",
-              marginLeft: "0.5rem",
+              width: 70,
+              height: 70,
+              marginLeft: "0.1rem",
             }}
           />
           <Typography

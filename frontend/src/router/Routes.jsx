@@ -46,7 +46,8 @@ export const router = createBrowserRouter([
                     { path: "cp/user-cards/add-card", element: <AddCard /> }, 
                     { path: "cp/user-cards/edit-card", element: <EditCard /> },
                     { path: "cp/setting", element: <Settings /> }, 
-                    { path: "cp/setting/edit-password", element: <ChangePassword /> },    
+                    { path: "cp/setting/edit-password", element: <ChangePassword /> },   
+
                        
                 ]
             },

@@ -330,7 +330,7 @@ export const accountSlice = createSlice({
   })
   .addCase(fetchCards.rejected, (state) => {
     state.isLoading = false; 
-    toast.error('خطا در دریافت لیست کارت‌ها');
+    //toast.error('خطا در دریافت لیست کارت‌ها');
   });
   builder
   .addCase(fetchCardInfo.pending, (state) => {
