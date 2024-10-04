@@ -11,6 +11,7 @@ import { FaLongArrowAltLeft } from 'react-icons/fa';
 import { UseAppDispatch } from '../../store/configureStore';
 import { registerUser } from '../account/accountSlice';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+//import { toPersianNumbers } from '../../util/util';
 
 
 
@@ -54,6 +55,7 @@ const validationSchema = Yup.object({
 
 export default function Register() {
     const [showActivationCode, setShowActivationCode] = useState(false);
+    const [mobile, setMobile] = useState('');
     const dispatch = UseAppDispatch();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -86,6 +88,7 @@ export default function Register() {
                 ));
         
                 if (response.meta.requestStatus === 'fulfilled') {
+                    setMobile(values.mobile);
                     localStorage.setItem('phone_number', values.mobile);
                     localStorage.setItem('national_code', values.nationalId);
                     setShowActivationCode(true); 
@@ -450,7 +453,7 @@ export default function Register() {
                     </form>
                 </StyledPaper>
             ) : (
-                <ActivationCode />
+                <ActivationCode mobile={mobile} />
             )}
         </Box>
     );

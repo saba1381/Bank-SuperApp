@@ -25,22 +25,30 @@ import { useHeader } from "../components/contexts/HeaderContext";
 import { useLocation } from "react-router-dom";
 
 
-const Header = ({ pathname }) => {
+const Header = () => {
   const { user, isLoading } = useSelector((state) => state.account);
   const dispatch = UseAppDispatch();
-  const isCPPage = window.location.pathname.startsWith("/cp");
+  const isCPPage = window.location.pathname==="/cp";
   const isSettingPage = window.location.pathname.startsWith("/cp/setting");
   const [openDialog, setOpenDialog] = React.useState(false);
   const { headerTitle, setHeaderTitle } = useHeader();
   const location = useLocation();
   const showLogoutIcon = user && location.pathname.startsWith("/cp") && !location.pathname.includes("/cp/setting") && !isLoading;
 
-
+{/* 
   useEffect(() => {
     if (!user && isCPPage) {
       dispatch(fetchUserProfile());
     }
   }, [dispatch, user, isCPPage]);
+
+  useEffect(() => {
+    if (!user && localStorage.getItem('user')) {
+        dispatch(fetchUserProfile()); 
+    }
+}, [dispatch, user]);
+
+*/}
 
   const handleLogoutClick = () => {
     setOpenDialog(true);

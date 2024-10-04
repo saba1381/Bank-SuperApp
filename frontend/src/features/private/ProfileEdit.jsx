@@ -8,7 +8,7 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { UseAppDispatch } from '../../store/configureStore';
 import { fetchUserProfile , updateUserProfile} from '../../features/account/accountSlice';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate ,useLocation  } from 'react-router-dom';
 
 
 
@@ -45,6 +45,7 @@ const ProfileEdit = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('error'); 
   const navigate = useNavigate();
+  const location = useLocation();
 
 
   useEffect(() => {
@@ -126,11 +127,16 @@ const ProfileEdit = () => {
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
+  const handleBackClick = () => {
+    // Check if there is a state passed from the previous location
+    const from = location.state?.from || '/cp'; // Default to '/cp' if no state
+    navigate(from);
+  };
 
   return (
     <Container maxWidth="full" sx={{ height:'125vh' , paddingY:3}}>
       <Box sx={{ mt: 1, mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
-        <Button variant="contained" color="primary" onClick={() => navigate('/cp')} endIcon={<KeyboardBackspaceIcon />}>
+        <Button variant="contained" color="primary" onClick={handleBackClick} endIcon={<KeyboardBackspaceIcon />}>
           بازگشت
         </Button>
       </Box>

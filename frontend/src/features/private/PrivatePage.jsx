@@ -19,7 +19,6 @@ import CardList from "./CardList";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { motion } from "framer-motion";
 import ProfileEdit from "../private/ProfileEdit";
-
 import { useNavigate } from "react-router-dom";
 
 const systems = [
@@ -170,16 +169,28 @@ const PrivatePage = () => {
                       alignItems="center"
                       justifyContent="center"
                     >
-                      <Link
-                        href="#"
-                        underline="none"
-                        color="inherit"
-                        sx={{ color: system.color }}
+                      <Box
+                        sx={{
+                          width: 50, // Adjust size as needed
+                          height: 50, // Adjust size as needed
+                          backgroundColor: system.color,
+                          borderRadius: "50%", // Make it circular
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
                       >
-                        {React.createElement(system.icon, {
-                          size: getIconSize(),
-                        })}
-                      </Link>
+                        <Link
+                          href="#"
+                          underline="none"
+                          color="inherit"
+                          sx={{ color: "white" }} // Change color to white for better contrast
+                        >
+                          {React.createElement(system.icon, {
+                            size: getIconSize(),
+                          })}
+                        </Link>
+                      </Box>
                       <Box
                         mt={2}
                         color="text.primary"

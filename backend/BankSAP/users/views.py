@@ -48,7 +48,7 @@ class RegisterView(APIView):
         print(f"Generated OTP for {phone_number}: {otp}")
 
         cache.set(phone_number, otp, timeout=300)  
-        cache.set(f'user_data_{phone_number}', request.data, timeout=300)  
+        cache.set(f'user_data_{phone_number}', request.data, timeout=120)  
 
         user_data = {
             'phone_number': phone_number,
@@ -79,6 +79,8 @@ class VerifyOTPView(APIView):
         user_data = cache.get(f'user_data_{phone_number}')
 
         print(f"Cached OTP: {cached_otp}, User Data: {user_data}")  
+        if cached_otp is None:
+            return Response({"detail": "کد شما منقضی شد، لطفا دوباره تلاش کنید."}, status=status.HTTP_400_BAD_REQUEST)
 
         if cached_otp and int(otp) == cached_otp:
             if user_data:

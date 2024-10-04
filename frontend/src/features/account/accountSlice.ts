@@ -109,10 +109,7 @@ export const fetchCurrentUser = createAsyncThunk(
 export const fetchUserProfile = createAsyncThunk(
     'account/fetchUserProfile',
     async (_, thunkAPI) => {
-        const currentPath = window.location.pathname;
-        if (currentPath !== '/cp') {
-            return thunkAPI.rejectWithValue({ error: 'Not in CP page' });
-        }
+        
         try {
             const response = await agent.UserProfile.profileInfo();
             return response;
