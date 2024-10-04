@@ -12,6 +12,7 @@ import { useNavigate ,useLocation  } from 'react-router-dom';
 
 
 
+
 const validationSchema = yup.object({
   first_name: yup
     .string('نام خود را وارد کنید')
@@ -39,20 +40,26 @@ const validationSchema = yup.object({
 const ProfileEdit = () => {
   const dispatch = UseAppDispatch();
   const { user, isLoading } = useSelector((state) => state.account);
+  const accountState = useSelector((state) => state.account);
+console.log("Account state:", accountState);
   const [profileImage, setProfileImage] = useState(null);
   const [selectedImageFile, setSelectedImageFile] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('error'); 
+  const [hasFetchedOnce, setHasFetchedOnce] = useState(false);  
   const navigate = useNavigate();
   const location = useLocation();
 
 
+
   useEffect(() => {
-    if (!user) {
+  
+    if (user && !isLoading && !hasFetchedOnce) {
       dispatch(fetchUserProfile());
+      setHasFetchedOnce(true); 
     }
-  }, [dispatch, user]);
+  }, [dispatch, user, isLoading, hasFetchedOnce]);
 
   const formik = useFormik({
     initialValues: {
@@ -104,6 +111,7 @@ const ProfileEdit = () => {
   : user?.profile_image 
     ? `http://127.0.0.1:8000/media/${user.profile_image}`
     : '/default-profile.png';
+
 
 
 

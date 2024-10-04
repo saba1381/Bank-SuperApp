@@ -30,12 +30,15 @@ const Settings = () => {
   const dispatch = UseAppDispatch();
   const isCPPage = window.location.pathname === "/cp/setting";
   const navigate = useNavigate();
+  const [hasFetchedOnce, setHasFetchedOnce] = useState(false);  
 
   useEffect(() => {
-    if (!user && localStorage.getItem("user")) {
+    
+    if (user && !isLoading && !hasFetchedOnce) {
       dispatch(fetchUserProfile());
+      setHasFetchedOnce(true);
     }
-  }, [dispatch, user]);
+  }, [dispatch, user, isLoading, hasFetchedOnce]);
 
   const profileImageURL =
     user?.profile_image && user.profile_image.startsWith("/media/")
@@ -149,7 +152,7 @@ const Settings = () => {
                         marginLeft:2
                       }}
                     >
-                      {user.first_name} {user.last_name} هلو
+                      {user.first_name} {user.last_name} 
                     </Typography>
                   </Box>
                   <IconButton onClick={handleEditProfileClick} sx={{ ml: 1 , '&:hover' : {color:'pink'} }}>

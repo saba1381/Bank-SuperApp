@@ -35,20 +35,8 @@ const Header = () => {
   const location = useLocation();
   const showLogoutIcon = user && location.pathname.startsWith("/cp") && !location.pathname.includes("/cp/setting") && !isLoading;
 
-{/* 
-  useEffect(() => {
-    if (!user && isCPPage) {
-      dispatch(fetchUserProfile());
-    }
-  }, [dispatch, user, isCPPage]);
 
-  useEffect(() => {
-    if (!user && localStorage.getItem('user')) {
-        dispatch(fetchUserProfile()); 
-    }
-}, [dispatch, user]);
 
-*/}
 
   const handleLogoutClick = () => {
     setOpenDialog(true);

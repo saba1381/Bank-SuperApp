@@ -151,15 +151,16 @@ const EditCard = () => {
             bank_name: values.bankName
         };
 
-        console.log(updatedValues);
+        console.log("ID:", updatedValues.id); // بررسی وجود id
+    console.log("Updated Values:", updatedValues);
     
         // Ensure you have access to cardNumber
         const cardNumber = values.cardNumber.replace(/-/g, '');
     
         try {
 
-            const response = await dispatch(updateCard(updatedValues)).unwrap();
-            console.log(response);  
+            const response = await dispatch(updateCard(updatedValues));
+            console.log("Response from updateCard:", response);
 
             setSnackbarMessage('ویرایش با موفقیت انجام شد');
             setSnackbarSeverity('success');
@@ -169,7 +170,6 @@ const EditCard = () => {
               navigate('/cp/user-cards/') 
             }, 3000);
         } catch (error) {
-            console.error("Error details: ", error)
             setSnackbarMessage('خطایی در به روز رسانی رخ داده است');
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
@@ -218,7 +218,7 @@ useEffect(() => {
 
 
   return (
-    <Box maxWidth="full" sx={{paddingY : 4 , paddingX:{xs:1,sm:2 , md:4}}}>
+    <Box maxWidth="full" sx={{paddingY : 4 , paddingX:{xs:1,sm:2 , md:4} , height:'150vh'}}>
       <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end'}}>
         <Button variant="contained" color="primary" onClick={() => navigate('/cp/user-cards/')} endIcon={<KeyboardBackspaceIcon />}>
           بازگشت

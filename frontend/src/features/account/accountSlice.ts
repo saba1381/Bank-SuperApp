@@ -112,6 +112,7 @@ export const fetchUserProfile = createAsyncThunk(
         
         try {
             const response = await agent.UserProfile.profileInfo();
+            console.log(response);
             return response;
         } catch (error: any) {
             return thunkAPI.rejectWithValue({ error: error.response?.data });
@@ -190,6 +191,7 @@ export const deleteCard = createAsyncThunk(
 
 export const fetchCardInfo = createAsyncThunk('card/fetchCardInfo', async (cardNumber) => {
     const response = await agent.Card.cardInfo({ cardNumber });
+    //console.log(response);
     return response; 
   });
  
@@ -198,8 +200,8 @@ export const fetchCardInfo = createAsyncThunk('card/fetchCardInfo', async (cardN
     'account/updateCard',
     async (values: any, thunkAPI) => {
         try {
-            const response = await agent.Card.updateCard(values.id);
-
+            console.log(values)
+            const response = await agent.Card.updateCard(values.id, values);
             return response;  
         } catch (error: any) {
             return thunkAPI.rejectWithValue({ error: error });
