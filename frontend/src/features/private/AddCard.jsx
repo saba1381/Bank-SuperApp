@@ -91,6 +91,7 @@ const AddCard = () => {
     if (inputValue.length > 16) return;
 
     const formattedNumber = formatCardNumber(inputValue);
+
     formik.setFieldValue("cardNumber", formattedNumber);
 
     const firstSixDigits = inputValue.substring(0, 6);

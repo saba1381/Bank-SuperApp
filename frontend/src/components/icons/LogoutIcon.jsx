@@ -16,7 +16,7 @@ const LogoutIcon = ({ onClick }) => {
         >
           خروج
         </Typography>
-        <RiLogoutCircleLine style={{ fontSize: '1.5rem', marginRight: { md: '1.3rem', xs: '0' } }} />
+        <RiLogoutCircleLine style={{ fontSize: '1.2rem', marginRight: { md: '1.3rem', xs: '0' } }} />
       </Box>
     </IconButton>
   );

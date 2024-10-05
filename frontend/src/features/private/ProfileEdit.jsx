@@ -142,7 +142,7 @@ console.log("Account state:", accountState);
   };
 
   return (
-    <Container maxWidth="full" sx={{ height:{sm:'120vh' , xs:'110vh'}  , paddingY:3}} >
+    <Container maxWidth="full" sx={{ height:{sm:'120vh' , xs:'110vh'}  , paddingY:1}} >
       <Box sx={{  mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
         <Button variant="contained" color="primary" onClick={handleBackClick} endIcon={<KeyboardBackspaceIcon />}>
           بازگشت

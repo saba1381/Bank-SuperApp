@@ -20,6 +20,7 @@ import EditNoteIcon from "@mui/icons-material/EditNote";
 import EditCard from "./EditCard";
 import { useNavigate } from "react-router-dom";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { toPersianNumbers } from './../../util/util'
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -117,7 +118,7 @@ const CardList = ({ onBack }) => {
   }
 
   return (
-    <Box sx={{ paddingY: 3, paddingX: { xs: 1, md: 4 }, height:'100vh' }}>
+    <Box sx={{ paddingTop:{md:7 , xs:3},paddingBottom:12 ,paddingX: { xs: 1, md: 4 }, maxHeight:'auto',minHeight:'auto' ,overflowY: 'auto'  }}>
       {editingCard ? (
         <EditCard
           cardNumber={editingCard.card_number}
@@ -202,7 +203,7 @@ const CardList = ({ onBack }) => {
                           {card.full_name}
                         </Typography>
                         <Typography variant="caption">
-                          {formatCardNumber(card.card_number)}
+                          {toPersianNumbers(formatCardNumber(card.card_number))}
                           <IconButton
                             onClick={(e) => {
                               e.preventDefault(); 

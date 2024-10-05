@@ -80,8 +80,8 @@ const Header = () => {
             alt="App Icon"
             variant="square"
             sx={{
-              width: 70,
-              height: 70,
+              width: {xs:60 , md:70},
+              height: {xs:60 , md:70},
               marginLeft: "0.1rem",
             }}
           />
