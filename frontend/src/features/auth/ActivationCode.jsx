@@ -4,10 +4,11 @@ import { Helmet } from 'react-helmet';
 import { TextField, Button, Box, Typography } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { useDispatch } from 'react-redux'; // Import Redux hook
-import { verifyOTP } from '../account/accountSlice'; // Import the action for OTP verification
+import { useDispatch } from 'react-redux'; 
+import { verifyOTP } from '../account/accountSlice'; 
 import Register from './Register';
 import { CircularProgress } from '@mui/material';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 
 const validationSchema = Yup.object({
@@ -26,18 +27,18 @@ export default function ActivationCode({ mobile }) {
     const [timer, setTimer] = useState(120); 
     const [otpExpired, setOtpExpired] = useState(false);
     useEffect(() => {
-        // شروع تایمر با useEffect
+    
         const countdown = setInterval(() => {
             setTimer((prev) => {
                 if (prev === 1) {
                     clearInterval(countdown);
-                    setOtpExpired(true); // زمان تمام شده، کد منقضی شده
+                    setOtpExpired(true); 
                 }
                 return prev - 1;
             });
         }, 1000);
 
-        // تمیز کردن تایمر وقتی کامپوننت unmount می‌شود
+        
         return () => clearInterval(countdown);
     }, []); 
 
@@ -134,7 +135,7 @@ export default function ActivationCode({ mobile }) {
     }
 
     return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh',width:{xs:'100%' , sm:'60%' , md:'50%'} }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh',width:{xs:'100%' , sm:'60%' , md:'55%'} }}>
             <Helmet>
                 <title>کد فعالسازی</title>
             </Helmet>
@@ -145,7 +146,7 @@ export default function ActivationCode({ mobile }) {
 
                 <form onSubmit={formik.handleSubmit} dir="ltr">
                     <Typography variant="body2" color="primary" align="center" mb={3}>
-                            کد پیامک شده به {mobile} را وارد کنید.
+                            کد پیامک شده به {mobile} را وارد کنید
                     </Typography>
 
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>
@@ -158,7 +159,7 @@ export default function ActivationCode({ mobile }) {
                                 onKeyDown={(e) => handleBackspace(e, index)}
                                 inputProps={{ maxLength: 1, style: { textAlign: 'center' } }}
                                 variant="outlined"
-                                sx={{ width: '40px' }}
+                                sx={{ width: '50px' }}
                             />
                         ))}
                     </Box>
@@ -168,9 +169,12 @@ export default function ActivationCode({ mobile }) {
                             {formik.errors.code}
                         </Typography>
                     )}
-                     <Typography variant="body2" align="center" sx={{ color: otpExpired ? 'red' : 'navy', mb: 2 }}>
-                     {otpExpired ? 'کد فعالسازی شما منقضی شد، دوباره تلاش کنید' : `${formatTime(timer)}`}
-                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: otpExpired ? 'red' : 'navy', mb: 2 }}>
+                    {!otpExpired && <AccessTimeIcon sx={{ ml: 1 }} />}
+                        <Typography variant="body2" sx={{alignItems:'center'}}>
+                            {otpExpired ? 'کد فعالسازی شما منقضی شد، دوباره تلاش کنید' : `${formatTime(timer)}`}
+                        </Typography>
+                    </Box>
 
                     <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                         <Button
@@ -180,7 +184,7 @@ export default function ActivationCode({ mobile }) {
                             disabled={formik.isSubmitting || otpExpired} 
                             sx={{ width: '50%', bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' } }}
                         >
-                            {loading ? <CircularProgress size={24} color="inherit" /> : 'تایید'}
+                            {loading ? <CircularProgress size={24} sx={{color:'white'}} /> : 'تایید'}
                         </Button>
                     </Box>
 

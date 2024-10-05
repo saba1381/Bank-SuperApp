@@ -28,6 +28,9 @@ const AddCard = () => {
   const [textColor, setTextColor] = useState("white");
   const dispatch = UseAppDispatch();
   const navigate = useNavigate();
+  const cardNum = useRef(null);
+  const yourName = useRef(null);
+  const exDate = useRef(null);
 
   const banks = {
     603799: { name: "ملی", icon: <img src="/BankIcons/meli.png" alt="ملی" /> },
@@ -201,10 +204,17 @@ const AddCard = () => {
     transition: { duration: 0.5 },
   };
 
+  const handleKeyDown = (event, nextFieldRef) => {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        nextFieldRef.current.focus();
+    }
+};
+
   return (
     <Box
       maxWidth="full"
-      sx={{ paddingY: 4, paddingX: { xs: 1, sm: 2, md: 4 } , height:'130vh' }}
+      sx={{ paddingY: 2, paddingX: { xs: 1, sm: 2, md: 4 } , height:{sm:'160vh' , xs:'105vh'} }}
     >
       <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
         <Button
@@ -263,6 +273,8 @@ const AddCard = () => {
                   name="cardNumber"
                   value={formik.values.cardNumber}
                   onChange={handleCardNumberChange}
+                  onKeyDown={(e) => handleKeyDown(e, yourName)}
+                  inputRef={cardNum}
                   inputProps={{ maxLength: 19 }}
                   error={
                     isInvalidCard ||
@@ -317,6 +329,8 @@ const AddCard = () => {
                   name="name"
                   value={formik.values.name}
                   onChange={formik.handleChange}
+                  onKeyDown={(e) => handleKeyDown(e, exDate)}
+                  inputRef={yourName}
                   inputProps={{ maxLength: 15 }}
                   error={formik.touched.name && Boolean(formik.errors.name)}
                   helperText={formik.touched.name && formik.errors.name}
@@ -342,6 +356,7 @@ const AddCard = () => {
                       value={formik.values.cardMonth}
                       onChange={handleMonthChange}
                       inputProps={{ maxLength: 2 }}
+                      inputRef={exDate}
                       error={
                         formik.touched.cardMonth &&
                         Boolean(formik.errors.cardMonth)

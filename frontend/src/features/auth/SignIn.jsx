@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState , useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { BiErrorCircle } from "react-icons/bi";
@@ -10,7 +10,7 @@ import { UseAppDispatch } from '../../store/configureStore';
 import { signInUser } from '../account/accountSlice';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'; 
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-
+import { CircularProgress } from '@mui/material';
 
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -60,6 +60,10 @@ export default function SignIn() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const handleClickShowPassword = () => setShowPassword(!showPassword);
     const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
+    const nationalIdRef = useRef(null);
+    const passwordRef = useRef(null);
+    const [loading, setLoading] = useState(false);
+    
 
     useEffect(() => {
         const accessToken = localStorage.getItem('access_token');
@@ -81,6 +85,7 @@ export default function SignIn() {
         validateOnBlur: false,
         validateOnChange: false,
         onSubmit: async (values, { setSubmitting, setFieldError }) => {
+            setLoading(true); 
             localStorage.removeItem('access_token');
     
             if (values.rememberMe) {
@@ -107,6 +112,7 @@ export default function SignIn() {
             }
     
             setSubmitting(false);
+            setLoading(false);
         },
     });
 
@@ -120,6 +126,12 @@ export default function SignIn() {
         setSnackbarOpen(false);
         setOverlayOpen(false); 
     };
+    const handleKeyDown = (event, nextFieldRef) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            nextFieldRef.current.focus();
+        }
+    };
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: { xs: '80vh', md: '100vh' } }}>
@@ -130,7 +142,7 @@ export default function SignIn() {
             <StyledPaper sx={{ p: { xs: 2, md: 6 } }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
                     <Typography variant="h3" align="start" gutterBottom>
-                        <GradientText>ورود به حساب</GradientText>
+                        <GradientText>ورود به موبایل بانک</GradientText>
                     </Typography>
                     <Button
                         variant="outlined"
@@ -158,6 +170,8 @@ export default function SignIn() {
                         value={formik.values.nationalId}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        onKeyDown={(e) => handleKeyDown(e, passwordRef)}
+                        inputRef={nationalIdRef}
                         error={formik.touched.nationalId && Boolean(formik.errors.nationalId)}
                         helperText={formik.touched.nationalId && formik.errors.nationalId}
                         variant="outlined"
@@ -202,6 +216,7 @@ export default function SignIn() {
     value={formik.values.password}
     onChange={formik.handleChange}
     onBlur={formik.handleBlur}
+    inputRef={passwordRef}
     error={formik.touched.password && Boolean(formik.errors.password)}
     helperText={formik.touched.password && formik.errors.password}
     variant="outlined"
@@ -260,7 +275,7 @@ export default function SignIn() {
                                 '&:hover': { bgcolor: 'primary.dark' },
                             }}
                         >
-                            ورود به موبایل بانک
+                                    {loading ? <CircularProgress size={24} sx={{color:'white'}} /> : 'ورود'}  
                         </Button>
                     </Box>
 

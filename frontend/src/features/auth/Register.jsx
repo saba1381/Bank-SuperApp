@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useRef } from 'react';
 import {  Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { TextField, Button, Box, Typography, Paper, Alert, Link as MuiLink , IconButton, InputAdornment } from '@mui/material';
@@ -61,6 +61,12 @@ export default function Register() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const handleClickShowPassword = () => setShowPassword(!showPassword);
     const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
+    const firstNameRef = useRef(null);
+    const lastNameRef = useRef(null);
+    const passwordRef = useRef(null);
+    const confirmPasswordRef = useRef(null);
+    const nationalIdRef = useRef(null);
+    const mobileRef = useRef(null);
 
 
     const formik = useFormik({
@@ -113,6 +119,13 @@ export default function Register() {
         ,
     });
 
+    const handleKeyDown = (event, nextFieldRef) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            nextFieldRef.current.focus();
+        }
+    };
+
     return (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' , p:{ sm:3 , md:4} , paddingY:{sm:6, md:3}}}>
             <Helmet>
@@ -138,6 +151,8 @@ export default function Register() {
                             name="firstName"
                             value={formik.values.firstName}
                             onChange={formik.handleChange}
+                            onKeyDown={(e) => handleKeyDown(e, lastNameRef)}
+                            inputRef={firstNameRef}
                             onBlur={formik.handleBlur}
                             error={formik.touched.firstName && Boolean(formik.errors.firstName)}
                             helperText={formik.touched.firstName && formik.errors.firstName}
@@ -181,6 +196,8 @@ export default function Register() {
                             value={formik.values.lastName}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, passwordRef)}
+                            inputRef={lastNameRef}
                             error={formik.touched.lastName && Boolean(formik.errors.lastName)}
                             helperText={formik.touched.lastName && formik.errors.lastName}
                             InputProps={{
@@ -223,6 +240,8 @@ export default function Register() {
                 value={formik.values.password}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
+                onKeyDown={(e) => handleKeyDown(e, confirmPasswordRef)}
+                inputRef={passwordRef}
                 error={formik.touched.password && Boolean(formik.errors.password)}
                 helperText={formik.touched.password && formik.errors.password}
                 InputProps={{
@@ -277,6 +296,8 @@ export default function Register() {
                 value={formik.values.confirmPassword}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
+                onKeyDown={(e) => handleKeyDown(e, nationalIdRef)}
+                inputRef={confirmPasswordRef}
                 error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
                 helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
                 InputProps={{
@@ -330,6 +351,8 @@ export default function Register() {
                             value={formik.values.nationalId}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
+                            onKeyDown={(e) => handleKeyDown(e, mobileRef)}
+                            inputRef={nationalIdRef}
                             error={formik.touched.nationalId && Boolean(formik.errors.nationalId)}
                             helperText={formik.touched.nationalId && formik.errors.nationalId}
                             InputProps={{
@@ -372,6 +395,7 @@ export default function Register() {
                             value={formik.values.mobile}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
+                            inputRef={mobileRef}
                             error={formik.touched.mobile && Boolean(formik.errors.mobile)}
                             helperText={formik.touched.mobile && formik.errors.mobile}
                             InputProps={{

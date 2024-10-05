@@ -69,7 +69,7 @@ const Header = () => {
       sx={{
         background: "linear-gradient(to right, #7c33ed, #2460eb)",
         boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.1)",
-        paddingY:1, 
+        paddingY:0.2, 
 
       }}
     >

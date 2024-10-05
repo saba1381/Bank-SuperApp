@@ -21,6 +21,7 @@ import { motion } from "framer-motion";
 import ProfileEdit from "../private/ProfileEdit";
 import { useNavigate } from "react-router-dom";
 
+
 const systems = [
   { title: "لیست کارت ها", icon: BsCreditCard, color: "#1976d2" },
   { title: "سوابق تراکنش", icon: MdHistory, color: "#388e3c" },
@@ -100,6 +101,7 @@ const PrivatePage = () => {
   };
 
   return (
+
     <Container
       maxWidth="xl"
       sx={{
@@ -112,6 +114,7 @@ const PrivatePage = () => {
         overflowY: "auto",
       }}
     >
+      
       <Box sx={{ width: "100%", px: 3 }}>
         {showCardList ? (
           <CardList cards={cards} onBack={() => setShowCardList(false)} />
