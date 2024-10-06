@@ -58,7 +58,10 @@ const Header = () => {
       setHeaderTitle("تنظیمات");
     } else if (path.startsWith("/cp/setting/edit-password")) {
       setHeaderTitle("تغییر رمز عبور");
-    } else {
+    }else if (path === "/cp/transfer"){
+        setHeaderTitle('کارت به کارت')
+    }
+     else {
       setHeaderTitle(" ");
     }
   }, [setHeaderTitle, location.pathname]); 
@@ -87,7 +90,7 @@ const Header = () => {
           />
           <Typography
             variant="h4"
-            sx={{ display: "block", fontSize: { xs: "20px", md: "24px" } }}
+            sx={{ display: "block", fontSize: { xs: "20px", md: "24px" } , ml:1}}
           >
              {headerTitle}
           </Typography>

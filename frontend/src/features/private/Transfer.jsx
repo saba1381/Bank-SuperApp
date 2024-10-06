@@ -14,9 +14,9 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { UseAppDispatch } from "../../store/configureStore";
 import { addCard, fetchCards } from "../account/accountSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const AddCard = () => {
+const Transfer = () => {
   const [bankName, setBankName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const yearInputRef = useRef(null);
@@ -27,10 +27,11 @@ const AddCard = () => {
   const [bankColor, setBankColor] = useState("black");
   const [textColor, setTextColor] = useState("white");
   const dispatch = UseAppDispatch();
-  const navigate = useNavigate();
   const cardNum = useRef(null);
   const yourName = useRef(null);
   const exDate = useRef(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const banks = {
     603799: { name: "ملی", icon: <img src="/BankIcons/meli.png" alt="ملی" /> },
@@ -126,39 +127,43 @@ const AddCard = () => {
 
   const formik = useFormik({
     initialValues: {
-      cardNumber: "",
-      name: "",
+      initialCard: "",
+      desCard: "",
+      amount: "",
+      cvv2: "",
       cardMonth: "",
       cardYear: "",
     },
     validationSchema: Yup.object({
-      cardNumber: Yup.string()
+        initialCard: Yup.string()
         .matches(
           /^\d{4}-\d{4}-\d{4}-\d{4}$/,
-          "شماره کارت خود را کامل وارد کنید."
+          "شماره کارت مبدا را کامل وارد کنید."
         )
-        .required("شماره کارت الزامی است"),
-      name: Yup.string()
-        .matches(/^[\u0600-\u06FF\s]+$/, "نام و نام خانوادگی باید فارسی باشد")
-        .test(
-          "has-two-parts",
-          "لطفا نام و نام خانوادگی خود را کامل وارد کنید",
-          function (value) {
-            return value && value.trim().split(/\s+/).length >= 2;
-          }
+        .required("شماره کارت مبدا الزامی است"),
+        desCard: Yup.string()
+        .matches(
+          /^\d{4}-\d{4}-\d{4}-\d{4}$/,
+          "شماره کارت مقصد را کامل وارد کنید."
         )
-        .required("نام و نام خانوادگی الزامی است"),
+        .required("شماره کارت مقصد الزامی است"),
+        amount: Yup.string()
+    .matches(/^\d{1,10}$/, "مبلغ باید بین 1 تا 10 رقم باشد")
+    .required("مبلغ را به ریال وارد کنید"),
+    cvv2: Yup.string()
+    .matches(/^\d{3}$/, "کد شما معتبر نیست")
+    .required("cvv2 را وارد کنید"),
       cardMonth: Yup.string()
         .matches(/^\d{1,2}$/, "ماه باید یک یا دو رقمی باشد")
         .test("length", "ماه باید دو رقمی باشد", (val) => val.length === 2)
         .test(
           "month",
-          "ماه معتبر نیست",
+          "ماه باید بین 1 تا 12 باشد",
           (val) => parseInt(val, 10) >= 1 && parseInt(val, 10) <= 12
         )
         .required("ماه الزامی است"),
       cardYear: Yup.string()
-        .matches(/^\d{2}$/, "سال معتبر نیست")
+        .matches(/^\d{2}$/, "سال باید دو رقمی باشد")
         .required("سال الزامی است"),
     }),
     onSubmit: async (values) => {
@@ -206,22 +211,30 @@ const AddCard = () => {
   };
 
   const handleKeyDown = (event, nextFieldRef) => {
-    if (event.key === 'Enter') {
-        event.preventDefault();
-        nextFieldRef.current.focus();
+    if (event.key === "Enter") {
+      event.preventDefault();
+      nextFieldRef.current.focus();
     }
-};
+  };
+  const handleBackClick = () => {
+    const previousPage = location.state?.from || "/cp";
+    navigate(previousPage);
+  };
 
   return (
     <Box
       maxWidth="full"
-      sx={{ paddingY: 2, paddingX: { xs: 1, sm: 2, md: 4 } , height:{sm:'160vh' , xs:'105vh'} }}
+      sx={{
+        paddingY: 2,
+        paddingX: { xs: 1, sm: 2, md: 4 },
+        height: { sm: "160vh", xs: "105vh" },
+      }}
     >
-      <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
+      <Box sx={{ mb: 1, display: "flex", justifyContent: "flex-end" }}>
         <Button
           variant="contained"
           color="primary"
-          onClick={() => navigate("/cp/user-cards")}
+          onClick={handleBackClick}
           endIcon={<KeyboardBackspaceIcon />}
         >
           بازگشت
@@ -233,58 +246,33 @@ const AddCard = () => {
           justifyContent: "center",
           width: "100%",
           mb: 2,
+          paddingY: 1,
         }}
       >
         <form onSubmit={formik.handleSubmit}>
           <Paper
             elevation={3}
-            sx={{ p: { xs: 2, md: 4 }, borderRadius: 6, width: "100%" }}
+            sx={{ p: { xs: 5, md: 4 }, borderRadius: 6, width: "100%" }}
           >
-            <Typography
-              variant="h4"
-              sx={{
-                mb: 1,
-                textAlign: "center",
-                fontSize: {
-                  xs: "1.3rem",
-                  sm: "2rem",
-                  md: "1.7rem",
-                },
-                color: "black",
-              }}
-            >
-              ثبت کارت جدید
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{
-                mb: 2,
-                textAlign: "center",
-                fontSize: "0.6rem",
-                color: "gray",
-              }}
-            >
-              برای تعریف کارت جدید در موبایل بانک، اطلاعات زیر را وارد کنید.
-            </Typography>
             <Box sx={{ display: "grid", gap: 2, mb: 4 }}>
               <motion.div {...animationProps}>
                 <TextField
-                  label="شماره کارت"
+                  label=" انتخاب کارت مبدا "
                   fullWidth
-                  name="cardNumber"
-                  value={formik.values.cardNumber}
+                  name="initialCard"
+                  value={formik.values.initialCard}
                   onChange={handleCardNumberChange}
                   onKeyDown={(e) => handleKeyDown(e, yourName)}
                   inputRef={cardNum}
                   inputProps={{ maxLength: 19 }}
                   error={
                     isInvalidCard ||
-                    (formik.touched.cardNumber &&
-                      Boolean(formik.errors.cardNumber))
+                    (formik.touched.initialCard &&
+                      Boolean(formik.errors.initialCard))
                   }
                   helperText={
                     (isInvalidCard && "شماره کارت اشتباه است") ||
-                    (formik.touched.cardNumber && formik.errors.cardNumber)
+                    (formik.touched.initialCard && formik.errors.initialCard)
                   }
                   InputLabelProps={{
                     sx: {
@@ -304,11 +292,18 @@ const AddCard = () => {
               </motion.div>
               <motion.div {...animationProps}>
                 <TextField
-                  label="نام بانک"
+                  label="به کارت "
                   fullWidth
-                  value={bankName}
-                  InputProps={{ readOnly: true }}
-                  error={isInvalidCard}
+                  name="desCard"
+                  value={formik.values.desCard}
+                  onChange={handleCardNumberChange}
+                  //onKeyDown={(e) => handleKeyDown(e, nextField)}
+                  //inputRef={cardNumDestination}
+                  inputProps={{ maxLength: 19 }}
+                  error={
+                    formik.touched.desCard && Boolean(formik.errors.desCard)
+                  }
+                  helperText={formik.touched.desCard && formik.errors.desCard}
                   InputLabelProps={{
                     sx: {
                       color: isInvalidCard ? "red" : "grey",
@@ -320,21 +315,40 @@ const AddCard = () => {
                         borderColor: isInvalidCard ? "red" : "",
                       },
                     },
+                    textAlign: "center",
+                    justifyContent: "center",
                   }}
                 />
               </motion.div>
               <motion.div {...animationProps}>
                 <TextField
-                  label="نام و نام خانوادگی"
+                  label="مبلغ"
                   fullWidth
-                  name="name"
-                  value={formik.values.name}
+                  name="amount"
+                  value={formik.values.amount}
                   onChange={formik.handleChange}
-                  onKeyDown={(e) => handleKeyDown(e, exDate)}
-                  inputRef={yourName}
-                  inputProps={{ maxLength: 15 }}
-                  error={formik.touched.name && Boolean(formik.errors.name)}
-                  helperText={formik.touched.name && formik.errors.name}
+                  //inputRef={amountInput}
+                  inputProps={{ maxLength: 10 }}
+                  error={formik.touched.amount && Boolean(formik.errors.amount)}
+                  helperText={formik.touched.amount && formik.errors.amount}
+                  InputLabelProps={{
+                    sx: {
+                      color: "grey",
+                    },
+                  }}
+                />
+              </motion.div>
+              <motion.div {...animationProps}>
+                <TextField
+                  label="کد اعتبار سنجی دوم (CVV2)"
+                  fullWidth
+                  name="cvv2"
+                  value={formik.values.cvv2}
+                  onChange={formik.handleChange}
+                  //inputRef={cvvInput}
+                  inputProps={{ maxLength: 3 }}
+                  error={formik.touched.cvv2 && Boolean(formik.errors.cvv2)}
+                  helperText={formik.touched.cvv2 && formik.errors.cvv2}
                   InputLabelProps={{
                     sx: {
                       color: "grey",
@@ -371,7 +385,9 @@ const AddCard = () => {
                         },
                       }}
                     />
-                    <Typography sx={{ fontSize: {sm:'30px' , xs:'25px'} }}>/</Typography>
+                    <Typography sx={{ fontSize: { sm: "30px", xs: "25px" } }}>
+                      /
+                    </Typography>
                     <TextField
                       label="سال"
                       fullWidth
@@ -457,7 +473,7 @@ const AddCard = () => {
               fullWidth
               sx={{ p: 3 }}
             >
-              ثبت کارت جدید
+              تایید و ادامه
             </Button>
           </Paper>
         </form>
@@ -480,4 +496,4 @@ const AddCard = () => {
   );
 };
 
-export default AddCard;
+export default Transfer;

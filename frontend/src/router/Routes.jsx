@@ -14,6 +14,8 @@ import EditCard from "../features/private/EditCard";
 import AddCard from "../features/private/AddCard";
 import ChangePassword from "../features/private/bottomMenu/ChangePassword";
 import Settings from "../features/private/bottomMenu/settings";
+import Transfer from "../features/private/Transfer";
+
 
 export const router = createBrowserRouter([
     {
@@ -47,6 +49,7 @@ export const router = createBrowserRouter([
                     { path: "cp/user-cards/edit-card", element: <EditCard /> },
                     { path: "cp/setting", element: <Settings /> }, 
                     { path: "cp/setting/edit-password", element: <ChangePassword /> },   
+                    { path: "cp/transfer", element: <Transfer /> },
 
                        
                 ]

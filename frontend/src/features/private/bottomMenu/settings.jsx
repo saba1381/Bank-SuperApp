@@ -69,7 +69,7 @@ const Settings = () => {
   };
 
   const handleEditProfileClick = () => {
-    navigate("/cp/edit-profile");
+    navigate("/cp/edit-profile", { state: { from: "/cp/setting" } });
   };
 
   return (
@@ -81,7 +81,7 @@ const Settings = () => {
           initial={{ opacity: 0, x: "-100%" }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: "-100%" }}
-          transition={{ type: "tween", duration: 0.7 }}
+          transition={{ type: "tween", duration: 0.5 }}
           style={{
             width: "100%",
             height: "100%",
@@ -105,7 +105,7 @@ const Settings = () => {
               boxShadow: "0 -2px 2px rgba(0,0,0,0.1)",
               overflowY: "auto",
               width: "100%",
-              paddingY: 12,
+              paddingY: 9,
               paddingX: { sm: 6, md: 35, xl: 40 },
             }}
           >

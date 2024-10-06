@@ -97,7 +97,7 @@ const PrivatePage = () => {
   };
 
   const handleProfileEditClick = () => {
-    navigate("/cp/edit-profile");
+    navigate("/cp/edit-profile", { state: { from: "/cp" || "/cp/" } });
   };
 
   return (
@@ -105,8 +105,8 @@ const PrivatePage = () => {
     <Container
       maxWidth="xl"
       sx={{
-        py: 0,
-        px: 0,
+        paddingY:0,
+        paddingX: 0,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -163,6 +163,8 @@ const PrivatePage = () => {
                         navigate("/cp/user-cards");
                       } else if (system.title === "ویرایش پروفایل") {
                         handleProfileEditClick();
+                      }else if (system.title === "کارت به کارت") {
+                        navigate("/cp/transfer", { state: { from: "/cp" } });
                       }
                     }}
                   >
@@ -174,10 +176,10 @@ const PrivatePage = () => {
                     >
                       <Box
                         sx={{
-                          width: 50, // Adjust size as needed
-                          height: 50, // Adjust size as needed
+                          width: 50,
+                          height: 50, 
                           backgroundColor: system.color,
-                          borderRadius: "50%", // Make it circular
+                          borderRadius: "50%", 
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",

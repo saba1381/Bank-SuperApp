@@ -136,10 +136,11 @@ console.log("Account state:", accountState);
     setOpenSnackbar(false);
   };
   const handleBackClick = () => {
-    // Check if there is a state passed from the previous location
-    const from = location.state?.from || '/cp'; // Default to '/cp' if no state
-    navigate(from);
+    const previousPage = location.state?.from || "/cp"; 
+    navigate(previousPage);
   };
+
+
 
   return (
     <Container maxWidth="full" sx={{ height:{sm:'120vh' , xs:'110vh'}  , paddingY:1}} >
@@ -319,7 +320,7 @@ console.log("Account state:", accountState);
                   }}
                 >
                   <MenuItem value="">
-                    جنسیت  (اختاری)
+                    جنسیت  (اختیاری)
                   </MenuItem>
                   <MenuItem value="male">مرد</MenuItem>
                   <MenuItem value="female">زن</MenuItem>

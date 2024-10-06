@@ -40,6 +40,7 @@ const DeleteCardButton = ({ cardNumber, onDelete }) => {
             }}
             sx={{
                 minWidth: 0,
+
                 color: 'inherit',
                 fontSize: '24px',
                 '&:hover': {

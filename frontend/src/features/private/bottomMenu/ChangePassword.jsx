@@ -160,11 +160,11 @@ const ChangePassword = ({ onBack }) => {
       ></Box>
 
       <Container sx={{ paddingBottom: 4, paddingY: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, width: '100%' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 6, width: '100%' }}>
   <Button
     onClick={handleSnackbarOpen}
     variant="outlined"
-    sx={{ mb: 2, paddingX: 3, fontSize: 17 }}
+    sx={{ paddingX: 3, paddingY: 1, fontSize: 14, height: '40px' }}
   >
     راهنما
   </Button>
@@ -174,6 +174,7 @@ const ChangePassword = ({ onBack }) => {
     color="primary"
     onClick={() => navigate("/cp/setting")}
     endIcon={<KeyboardBackspaceIcon />}
+    sx={{ paddingX: 3, paddingY: 2, fontSize: 14, height: '40px'}}
   >
     بازگشت
   </Button>

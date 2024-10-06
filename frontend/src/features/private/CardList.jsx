@@ -20,7 +20,8 @@ import EditNoteIcon from "@mui/icons-material/EditNote";
 import EditCard from "./EditCard";
 import { useNavigate } from "react-router-dom";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { toPersianNumbers } from './../../util/util'
+import { toPersianNumbers } from './../../util/util';
+import { BiTransfer } from "react-icons/bi";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -168,9 +169,9 @@ const CardList = ({ onBack }) => {
                 >
                   <Paper
                     sx={{
-                      paddingX: { xs: 2, sm: 4 },
+                      paddingX: { xs: 3, sm: 4 },
                       paddingY: { xs: 2, sm: 2 },
-                      mb: { xs: 2, md: 5 },
+                      mb: { xs: 2, md: 4 },
                       backgroundColor: color,
                       display: "flex",
                       justifyContent: "space-between",
@@ -221,11 +222,12 @@ const CardList = ({ onBack }) => {
                       </Box>
                     </Link>
 
-                    <Box sx={{ display: "flex", flexDirection: "column" }}>
+                    <Box sx={{ display: "flex", flexDirection: "column"  }}>
                       <Button
                         onClick={() => handleEditCard(card)}
                         sx={{
                           color: textColor,
+                          height:'20px',
                           paddingY: 0,
                           paddingX: 1,
                           "&:hover": {
@@ -252,6 +254,31 @@ const CardList = ({ onBack }) => {
                         onMouseEnter={() => setIsHoveringDeleteButton(true)}
                         onMouseLeave={() => setIsHoveringDeleteButton(false)}
                       />
+                       <Button
+                        onClick={() => navigate("/cp/transfer", { state: { from: "/cp/user-cards" } })} 
+                        sx={{
+                          color: textColor,
+                          height:'20px',
+                          paddingY: 0,
+                          paddingX: 1,
+                          "&:hover": {
+                            color: "pink",
+                          },
+                          fontSize: { xs: "23px", sm: "30px" },
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 0,
+                        }}
+                      >
+                        <BiTransfer size={24} />
+                        <Typography
+                          variant="h6"
+                          component="span"
+                          sx={{ fontSize: { xs: "11px", sm: "15px" } }}
+                        >
+                          کارت به کارت
+                        </Typography>
+                      </Button>
                     </Box>
                   </Paper>
                 </motion.div>
