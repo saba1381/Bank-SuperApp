@@ -133,41 +133,28 @@ const AddCard = () => {
     },
     validationSchema: Yup.object({
       cardNumber: Yup.string()
-        .matches(
-          /^\d{4}-\d{4}-\d{4}-\d{4}$/,
-          "شماره کارت خود را کامل وارد کنید."
-        )
+        .matches(/^\d{4}-\d{4}-\d{4}-\d{4}$/, "شماره کارت خود را کامل وارد کنید.")
         .required("شماره کارت الزامی است"),
       name: Yup.string()
         .matches(/^[\u0600-\u06FF\s]+$/, "نام و نام خانوادگی باید فارسی باشد")
-        .test(
-          "has-two-parts",
-          "لطفا نام و نام خانوادگی خود را کامل وارد کنید",
-          function (value) {
-            return value && value.trim().split(/\s+/).length >= 2;
-          }
-        )
+        .test("has-two-parts", "لطفا نام و نام خانوادگی خود را کامل وارد کنید", function (value) {
+          return value && value.trim().split(/\s+/).length >= 2;
+        })
         .required("نام و نام خانوادگی الزامی است"),
       cardMonth: Yup.string()
         .matches(/^\d{1,2}$/, "ماه باید یک یا دو رقمی باشد")
-        .test("length", "ماه باید دو رقمی باشد", (val) => val.length === 2)
-        .test(
-          "month",
-          "ماه معتبر نیست",
-          (val) => parseInt(val, 10) >= 1 && parseInt(val, 10) <= 12
-        )
-        .required("ماه الزامی است"),
+        .test("month", "ماه معتبر نیست", (val) => !val || (parseInt(val, 10) >= 1 && parseInt(val, 10) <= 12)),
       cardYear: Yup.string()
         .matches(/^\d{2}$/, "سال معتبر نیست")
-        .required("سال الزامی است"),
     }),
+    
     onSubmit: async (values) => {
       try {
         const cardData = {
           card_number: values.cardNumber.replace(/-/g, ""),
           full_name: values.name,
-          expiration_month: values.cardMonth,
-          expiration_year: values.cardYear,
+          expiration_month: values.cardMonth || null,
+          expiration_year: values.cardYear || null,
           bank_name: bankName,
         };
 
@@ -199,6 +186,15 @@ const AddCard = () => {
     }
   };
 
+  const renderExpirationDate = () => {
+    if (!formik.values.cardMonth || !formik.values.cardYear) {
+      return null; // اگر تاریخ انقضا وارد نشده است، چیزی نمایش ندهد
+    }
+    return `تاریخ انقضا: ${toPersianDigits(formik.values.cardYear)}/${toPersianDigits(formik.values.cardMonth)}`;
+  };
+  
+  
+
   const animationProps = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -223,6 +219,7 @@ const AddCard = () => {
           color="primary"
           onClick={() => navigate("/cp/user-cards")}
           endIcon={<KeyboardBackspaceIcon />}
+          sx={{fontSize:'1.1rem'}}
         >
           بازگشت
         </Button>
@@ -246,7 +243,7 @@ const AddCard = () => {
                 mb: 1,
                 textAlign: "center",
                 fontSize: {
-                  xs: "1.3rem",
+                  xs: "1.6rem",
                   sm: "2rem",
                   md: "1.7rem",
                 },
@@ -260,13 +257,13 @@ const AddCard = () => {
               sx={{
                 mb: 2,
                 textAlign: "center",
-                fontSize: "0.6rem",
+                fontSize: "0.9rem",
                 color: "gray",
               }}
             >
               برای تعریف کارت جدید در موبایل بانک، اطلاعات زیر را وارد کنید.
             </Typography>
-            <Box sx={{ display: "grid", gap: 2, mb: 4 }}>
+            <Box sx={{ display: "grid", gap: 4, mb: 4  }}>
               <motion.div {...animationProps}>
                 <TextField
                   label="شماره کارت"
@@ -276,7 +273,7 @@ const AddCard = () => {
                   onChange={handleCardNumberChange}
                   onKeyDown={(e) => handleKeyDown(e, yourName)}
                   inputRef={cardNum}
-                  inputProps={{ maxLength: 19 }}
+                  inputProps={{maxLength: 19 }}
                   error={
                     isInvalidCard ||
                     (formik.touched.cardNumber &&
@@ -289,6 +286,15 @@ const AddCard = () => {
                   InputLabelProps={{
                     sx: {
                       color: isInvalidCard ? "red" : "grey",
+                      '&.Mui-focused': {
+                                    color: '#1C3AA9',
+                                    fontSize: {xs: '1.3rem'},
+                                    transform: 'translate(-7px, -14px) scale(0.75)'
+                                },
+                                '&.Mui-error': {
+                                    color: 'pink',
+                                },
+                                 fontSize:'1rem'
                     },
                   }}
                   sx={{
@@ -309,9 +315,19 @@ const AddCard = () => {
                   value={bankName}
                   InputProps={{ readOnly: true }}
                   error={isInvalidCard}
+                  
                   InputLabelProps={{
                     sx: {
                       color: isInvalidCard ? "red" : "grey",
+                      '&.Mui-focused': {
+                                    color: '#1C3AA9',
+                                    fontSize: {xs: '1.3rem'},
+                                    transform: 'translate(-1px, -14px) scale(0.75)'
+                                },
+                                '&.Mui-error': {
+                                    color: 'pink',
+                                },
+                                 fontSize:'1rem'
                     },
                   }}
                   sx={{
@@ -320,12 +336,13 @@ const AddCard = () => {
                         borderColor: isInvalidCard ? "red" : "",
                       },
                     },
+                 
                   }}
                 />
               </motion.div>
               <motion.div {...animationProps}>
                 <TextField
-                  label="نام و نام خانوادگی"
+                  label="نام کارت"
                   fullWidth
                   name="name"
                   value={formik.values.name}
@@ -338,6 +355,16 @@ const AddCard = () => {
                   InputLabelProps={{
                     sx: {
                       color: "grey",
+                      '&.Mui-focused': {
+                                    color: '#1C3AA9',
+                                    fontSize: {xs: '1.3rem'},
+                                    transform: 'translate(-3px, -14px) scale(0.75)'
+                                },
+                                '&.Mui-error': {
+                                    color: 'pink',
+                                },
+                                fontSize:'1rem'
+                               
                     },
                   }}
                 />
@@ -345,7 +372,7 @@ const AddCard = () => {
               <motion.div {...animationProps}>
                 <Box sx={{}}>
                   <Typography
-                    sx={{ fontSize: "13px", mb: 1, ml: 2, color: "gray" }}
+                    sx={{ fontSize: "16px", mb: 1, ml: 2, color: "grey" }}
                   >
                     تاریخ انقضا:
                   </Typography>
@@ -368,6 +395,15 @@ const AddCard = () => {
                       InputLabelProps={{
                         sx: {
                           color: "grey",
+                          '&.Mui-focused': {
+                                    color: '#1C3AA9',
+                                    fontSize: {xs: '1.3rem'},
+                                    transform: 'translate(6px, -14px) scale(0.75)'
+                                },
+                                '&.Mui-error': {
+                                    color: 'pink',
+                                },
+                                 fontSize:'1rem'
                         },
                       }}
                     />
@@ -390,6 +426,15 @@ const AddCard = () => {
                       InputLabelProps={{
                         sx: {
                           color: "grey",
+                          '&.Mui-focused': {
+                                    color: '#1C3AA9',
+                                    fontSize: {xs: '1.3rem'},
+                                    transform: 'translate(6px, -14px) scale(0.75)'
+                                },
+                                '&.Mui-error': {
+                                    color: 'pink',
+                                },
+                                 fontSize:'1rem'
                         },
                       }}
                     />
@@ -402,7 +447,7 @@ const AddCard = () => {
               !isInvalidCard && (
                 <Paper
                   sx={{
-                    paddingX: 6,
+                    paddingX: 7,
                     paddingY: 2,
                     backgroundColor: bankColor,
                     color: "white",
@@ -416,7 +461,7 @@ const AddCard = () => {
                     position: "relative",
                   }}
                 >
-                  <Typography variant="h5" sx={{ color: textColor }}>
+                  <Typography variant="h6" sx={{ color: textColor }}>
                     {formik.values.cardNumber
                       ? toPersianDigits(formik.values.cardNumber)
                       : "•••• •••• •••• ••••"}
@@ -431,17 +476,13 @@ const AddCard = () => {
                     }}
                   >
                     <Typography
-                      variant="body2"
+                      variant="h6"
                       sx={{ flexGrow: 1, color: textColor }}
                     >
-                      {formik.values.cardYear && formik.values.cardMonth
-                        ? toPersianDigits(
-                            `تاریخ انقضا: ${formik.values.cardYear}/${formik.values.cardMonth}`
-                          )
-                        : ""}
+                      {renderExpirationDate()}
                     </Typography>
                     <Typography
-                      variant="body2"
+                      variant="h6"
                       sx={{ flexGrow: 1, textAlign: "right", color: textColor }}
                     >
                       {formik.values.name}

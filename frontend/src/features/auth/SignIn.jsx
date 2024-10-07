@@ -196,9 +196,12 @@ export default function SignIn() {
                         }}
                         InputLabelProps={{
                             sx: {
-                                color: 'lightgrey',
+                                color: 'grey',
+                                
                                 '&.Mui-focused': {
-                                    color: 'lightgrey',
+                                    color: '#1C3AA9',
+                                    fontSize: {xs: '1.3rem'},
+                                    transform: 'translate(3px, -13px) scale(0.75)'
                                 },
                                 '&.Mui-error': {
                                     color: 'pink',
@@ -244,17 +247,21 @@ export default function SignIn() {
                     aria-label="toggle password visibility"
                     onClick={handleClickShowPassword}
                     edge="end"
+                    
                 >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                    {showPassword ? <VisibilityOff sx={{fontSize:'1.5rem'}}/> : <Visibility sx={{fontSize:'1.5rem'}} />}
                 </IconButton>
             </InputAdornment>
         ),
     }}
     InputLabelProps={{
         sx: {
-            color: 'lightgrey',
+            color: 'grey',
+            
             '&.Mui-focused': {
-                color: 'lightgrey',
+                color: '#1C3AA9',
+                fontSize: {xs: '1.3rem'},
+                transform: 'translate(2px, -13px) scale(0.75)'
             },
             '&.Mui-error': {
                 color: 'pink',

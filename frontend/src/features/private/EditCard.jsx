@@ -133,14 +133,14 @@ const EditCard = () => {
         })
         .required('نام و نام خانوادگی الزامی است'),
       cardMonth: Yup.string()
-        .matches(/^\d{1,2}$/, 'ماه باید یک یا دو رقمی باشد')
-        .test('length', 'ماه باید دو رقمی باشد', (val) => val.length === 2)
-        .test('month', 'ماه باید بین 1 تا 12 باشد', (val) => parseInt(val, 10) >= 1 && parseInt(val, 10) <= 12)
-        .required('پر کردن این فیلد الزامی است'),
+        .matches(/^\d{1,2}$/, 'ماه معتبر نیست')
+        .test('length', 'ماه معتبر نیست', (val) => !val || val.length === 2) 
+        .test('month', 'ماه معتبر نیست', (val) => !val || (parseInt(val, 10) >= 1 && parseInt(val, 10) <= 12)), 
       cardYear: Yup.string()
-        .matches(/^\d{2}$/, 'سال باید دو رقمی باشد')
-        .required('پر کردن این فیلد الزامی است')
+        .matches(/^\d{2}$/, 'سال معتبر نیست')
+        .nullable(), // اختیاری
     }),
+    
       onSubmit: async (values) => {
         const updatedValues = {
             id: values.id, 
@@ -151,7 +151,7 @@ const EditCard = () => {
             bank_name: values.bankName
         };
 
-        console.log("ID:", updatedValues.id); // بررسی وجود id
+        console.log("ID:", updatedValues.id); 
     console.log("Updated Values:", updatedValues);
     
         // Ensure you have access to cardNumber
@@ -220,7 +220,7 @@ useEffect(() => {
   return (
     <Box maxWidth="full" sx={{paddingY : 4 , paddingX:{xs:1,sm:2 , md:4} , height:'150vh'}}>
       <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end'}}>
-        <Button variant="contained" color="primary" onClick={() => navigate('/cp/user-cards/')} endIcon={<KeyboardBackspaceIcon />}>
+        <Button variant="contained" sx={{fontSize:'1.2rem'}} color="primary" onClick={() => navigate('/cp/user-cards/')} endIcon={<KeyboardBackspaceIcon />}>
           بازگشت
         </Button>
       </Box>
@@ -242,7 +242,7 @@ useEffect(() => {
                   mb: 1,
                   textAlign: 'center',
                   fontSize: {
-                    xs: '1.3rem',
+                    xs: '1.5rem',
                     sm: '2rem',
                     md: '1.7rem',
                   },
@@ -252,7 +252,7 @@ useEffect(() => {
                 ویرایش کارت بانکی
               </Typography>
              
-              <Box sx={{ display: 'grid', gap: 2, mb: 4 }}>
+              <Box sx={{ display: 'grid', gap: 5, mb: 4 , mt:5 }}>
               <motion.div {...animationProps}>
               <TextField
   label="شماره کارت"
@@ -265,7 +265,17 @@ useEffect(() => {
   helperText={(isInvalidCard && 'شماره کارت اشتباه است') || (formik.touched.cardNumber && formik.errors.cardNumber)}
   InputLabelProps={{
     sx: {
-      color: isInvalidCard ? 'red' : 'lightgrey', 
+      color: isInvalidCard ? 'red' : 'grey', 
+      transform: 'translate(-6px, -14px) scale(1)',
+      '&.Mui-focused': {
+                                    color: '#1C3AA9',
+                                    fontSize: {xs: '1.3rem'},
+                                    transform: 'translate(-6px, -14px) scale(0.75)'
+                                },
+                                '&.Mui-error': {
+                                    color: 'pink',
+                                },
+                                 fontSize:'1rem'
     }
   }}
   sx={{
@@ -289,7 +299,18 @@ useEffect(() => {
   InputLabelProps={{
     shrink: Boolean(formik.values.bankName),
     sx: {
-      color: isInvalidCard ? 'red' : 'lightgrey', 
+      color: isInvalidCard ? 'red' : 'grey', 
+      transform: 'translate(-5px, -14px) scale(1)',
+      '&.Mui-focused': {
+                                    color: '#1C3AA9',
+                                    fontSize: {xs: '1.3rem'},
+                                    transform: 'translate(-3px, -14px) scale(0.75)'
+                                },
+                                '&.Mui-error': {
+                                    color: 'pink',
+                                },
+                                 fontSize:'1rem'
+    
     }
   }}
   sx={{
@@ -304,7 +325,7 @@ useEffect(() => {
 
 <motion.div {...animationProps}>
                 <TextField
-                  label="نام و نام خانوادگی"
+                  label="نام کارت"
                   fullWidth
                   name="name"
                   value={formik.values.name}
@@ -314,47 +335,90 @@ useEffect(() => {
                   helperText={formik.touched.name && formik.errors.name}
                   InputLabelProps={{
                     sx: {
-                      color: 'lightgrey',
+                      color: 'grey',
+                      transform: 'translate(-6px, -14px) scale(1)',
+                      '&.Mui-focused': {
+                                    color: '#1C3AA9',
+                                    fontSize: {xs: '1.3rem'},
+                                    transform: 'translate(-2px, -14px) scale(0.75)'
+                                },
+                                '&.Mui-error': {
+                                    color: 'pink',
+                                },
+                                 fontSize:'1rem'
+    
+    
                     }
                   }}
                 />
                 </motion.div>
                 <motion.div {...animationProps}>
                 <Box sx={{}}>
-                 <Typography sx={{fontSize:'13px' , mb:1 , ml:2 , color:'gray'}}>تاریخ انقضا:</Typography>
+                 <Typography sx={{fontSize: "16px" , mb:1 , ml:2 , color:'grey'}}>تاریخ انقضا:</Typography>
                 <Box sx={{ display: 'flex', gap: 1 }}>
                
                   <TextField
-                    label="ماه"
+                    label={formik.values.cardMonth ? "ماه" : ""}
+                    placeholder="ماه"
                     fullWidth
                     name="cardMonth"
                     value={formik.values.cardMonth}
                     onChange={handleMonthChange}
-                    inputProps={{ maxLength: 2 }}
+                    inputProps={{ 
+                      maxLength: 2,
+                      style: { fontSize: '1.1rem', color: 'grey' },
+                    }}
                     error={formik.touched.cardMonth && Boolean(formik.errors.cardMonth)}
                     helperText={formik.touched.cardMonth && formik.errors.cardMonth}
                     InputLabelProps={{
+                      
                       sx: {
-                        color: 'lightgrey',
-                      }
+                        color: "grey",
+                        transform: 'translate(4px, -14px) scale(0.9)',
+                        '&.Mui-focused': {
+                                  color: '#1C3AA9',
+                                  fontSize: {xs: '1.3rem'},
+                                  transform: 'translate(7px, -14px) scale(0.75)'
+                              },
+                              '&.Mui-error': {
+                                  color: 'pink',
+                              },
+                               fontSize:'1.2rem'
+                      },
                     }}
                   />
                   
                   <Typography sx={{fontSize:'25px'}}>/</Typography>
                   <TextField
-                    label="سال"
+                    label={formik.values.cardYear ? "سال" : ""}
+                    placeholder="سال"
                     fullWidth
                     name="cardYear"
                     value={formik.values.cardYear}
                     onChange={formik.handleChange}
-                    inputProps={{ maxLength: 2 }}
+                    inputProps={{ 
+                      maxLength: 2,
+                      style: { fontSize: '1.1rem', color: 'grey' },
+                    }}
                     inputRef={yearInputRef}
                     error={formik.touched.cardYear && Boolean(formik.errors.cardYear)}
                     helperText={formik.touched.cardYear && formik.errors.cardYear}
                     InputLabelProps={{
                       sx: {
-                        color: 'lightgrey',
-                      }
+                        color: "grey",
+                        transform: 'translate(4px, -14px) scale(0.9)',
+                        '&.Mui-focused': {
+                                  color: '#1C3AA9',
+                                  fontSize: {xs: '1.3rem'},
+                                  transform: 'translate(6px, -12px) scale(0.75)'
+                              },
+                              '&.Mui-error': {
+                                  color: 'pink',
+                              },
+                               fontSize:'1.2rem',
+                               
+
+                      },
                     }}
                   />
                 
@@ -368,7 +432,7 @@ useEffect(() => {
 <Paper
 sx={{
 paddingX: 6,
-paddingY:2 ,
+paddingY:3 ,
 backgroundColor: bankColor,  
 color: 'white',
 borderRadius: 6,
@@ -382,24 +446,24 @@ position: 'relative',
 }}
 >
 
-<Typography variant="h5" sx={{ color: textColor}}>
+<Typography variant="h4" sx={{ color: textColor}}>
 {formik.values.cardNumber ? toPersianDigits(formik.values.cardNumber) : '•••• •••• •••• ••••'}
 </Typography>
 
 <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-<Typography variant="body2" sx={{ flexGrow: 1 ,  color: textColor }}>
+<Typography variant="h6" sx={{ flexGrow: 1 ,  color: textColor }}>
 {formik.values.cardYear && formik.values.cardMonth
 ? toPersianDigits(`تاریخ انقضا: ${formik.values.cardYear}/${formik.values.cardMonth}`)
 : ''}
 </Typography>
-<Typography variant="body2" sx={{ flexGrow: 1, textAlign: 'right' ,  color: textColor  }}>
+<Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'right' ,  color: textColor  }}>
 {formik.values.name}
 </Typography>
 </Box>
 
 </Paper>
 
-              <Button variant="contained" color="primary" type="submit" fullWidth sx={{ p: 3 }}>
+              <Button variant="contained" color="primary" type="submit" fullWidth sx={{ p: 3 , fontSize:'1.1rem' }}>
               ویرایش کارت
               </Button>
             </Paper>
