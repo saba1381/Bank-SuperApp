@@ -17,8 +17,8 @@ import { addCard, fetchCards } from "../account/accountSlice";
 import { useNavigate } from "react-router-dom";
 
 const AddCard = () => {
+  const [cardNumberParts, setCardNumberParts] = useState(["", "", "", ""]);
   const [bankName, setBankName] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
   const yearInputRef = useRef(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -33,35 +33,35 @@ const AddCard = () => {
   const exDate = useRef(null);
 
   const banks = {
-    603799: { name: "ملی", icon: <img src="/BankIcons/meli.png" alt="ملی" /> },
-    589210: { name: "سپه", icon: <img src="/BankIcons/sepah.png" alt="سپه" /> },
+    603799: { name: "ملی", icon: <img src="/BankIcons/meli.png" alt="ملی" />, iconWidth: "55px",iconHeight: "55px",},
+    589210: { name: "سپه", icon: <img src="/BankIcons/sepah.png" alt="سپه" />, iconWidth: "48px",iconHeight: "48px", },
     621986: {
       name: "سامان",
-      icon: <img src="/BankIcons/saman.png" alt="سامان" />,
+      icon: <img src="/BankIcons/saman.png" alt="سامان" />, iconWidth: "40px",iconHeight: "40px",
     },
     622106: {
       name: "پارسیان",
-      icon: <img src="/BankIcons/parsian.png" alt="پارسیان" />,
+      icon: <img src="/BankIcons/parsian.png" alt="پارسیان" />, iconWidth: "70px",iconHeight: "70px",
     },
     589463: {
       name: "رفاه کارگران",
-      icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />,
+      icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />, iconWidth: "38px",iconHeight: "38px",
     },
     502229: {
       name: "پاسارگاد",
-      icon: <img src="/BankIcons/pasargad.png" alt="پاسارگاد" />,
+      icon: <img src="/BankIcons/pasargad.png" alt="پاسارگاد" />, iconWidth: "30px",iconHeight: "38px",
     },
-    610433: { name: "ملت", icon: <img src="/BankIcons/melat.png" alt="ملت" /> },
+    610433: { name: "ملت", icon: <img src="/BankIcons/melat.png" alt="ملت" />, iconWidth: "35px",iconHeight: "35px", },
   };
 
   const bankColors = {
-    603799: "#004d99",
-    589210: "#eead32 ",
+    603799: "#faf6fc",
+    589210: "#f8cf82",
     621986: "#8ae7f9 ",
-    622106: "#c83a08 ",
+    622106: "#f1b2a2",
     589463: "#9b14ee ",
     502229: "#080808",
-    610433: "#df117e",
+    610433: "#f54994",
   };
 
   const getTextColor = (backgroundColor) => {
@@ -136,11 +136,8 @@ const AddCard = () => {
         .matches(/^\d{4}-\d{4}-\d{4}-\d{4}$/, "شماره کارت خود را کامل وارد کنید.")
         .required("شماره کارت الزامی است"),
       name: Yup.string()
-        .matches(/^[\u0600-\u06FF\s]+$/, "نام و نام خانوادگی باید فارسی باشد")
-        .test("has-two-parts", "لطفا نام و نام خانوادگی خود را کامل وارد کنید", function (value) {
-          return value && value.trim().split(/\s+/).length >= 2;
-        })
-        .required("نام و نام خانوادگی الزامی است"),
+        .matches(/^[\u0600-\u06FF\s]+$/, "نام کارت باید فارسی باشد")
+        .required("نام کارت الزامی است"),
       cardMonth: Yup.string()
         .matches(/^\d{1,2}$/, "ماه باید یک یا دو رقمی باشد")
         .test("month", "ماه معتبر نیست", (val) => !val || (parseInt(val, 10) >= 1 && parseInt(val, 10) <= 12)),
@@ -443,53 +440,61 @@ const AddCard = () => {
               </motion.div>
             </Box>
             {bankName &&
-              formik.values.cardNumber.replace(/\D/g, "").length >= 6 &&
-              !isInvalidCard && (
-                <Paper
-                  sx={{
-                    paddingX: 7,
-                    paddingY: 2,
-                    backgroundColor: bankColor,
-                    color: "white",
-                    borderRadius: 6,
-                    boxShadow: 3,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: 1,
-                    mb: 2,
-                    position: "relative",
-                  }}
-                >
-                  <Typography variant="h6" sx={{ color: textColor }}>
-                    {formik.values.cardNumber
-                      ? toPersianDigits(formik.values.cardNumber)
-                      : "•••• •••• •••• ••••"}
-                  </Typography>
+  formik.values.cardNumber.replace(/\D/g, "").length >= 6 &&
+  !isInvalidCard && (
+    <Paper
+      sx={{
+        paddingX: 4,
+        paddingY: 2,
+        backgroundColor: bankColor,
+        color: "white",
+        borderRadius: 6,
+        boxShadow: 3,
+        display: "flex",
+        flexDirection: "row",
+        gap: 1,
+        mb: 2,
+        position: "relative",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "100%",
+          alignItems: "center",
+          gap: 6,
+        }}
+      >
+<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+  {banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)] && (
+    // استفاده از سایز اختصاصی برای هر آیکون
+    React.cloneElement(banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].icon, {
+      style: {
+        width: banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].iconWidth,
+        height: banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].iconHeight,
+      },
+    })
+  )}
+  <Typography
+    variant="h6"
+    sx={{ flexGrow: 1, textAlign: "left", color: textColor }}
+  >
+    {formik.values.name ? `کارت ${formik.values.name}` : ""}
+  </Typography>
+</Box>
 
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      width: "100%",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Typography
-                      variant="h6"
-                      sx={{ flexGrow: 1, color: textColor }}
-                    >
-                      {renderExpirationDate()}
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      sx={{ flexGrow: 1, textAlign: "right", color: textColor }}
-                    >
-                      {formik.values.name}
-                    </Typography>
-                  </Box>
-                </Paper>
-              )}
+        <Typography
+          variant="h5"
+          sx={{ color: textColor, textAlign: "right", justifyContent: "start" }}
+        >
+          {formik.values.cardNumber
+            ? toPersianDigits(formik.values.cardNumber)
+            : "•••• •••• •••• ••••"}
+        </Typography>
+      </Box>
+    </Paper>
+  )}
 
             <Button
               variant="contained"
