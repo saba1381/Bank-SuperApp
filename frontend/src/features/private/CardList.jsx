@@ -20,8 +20,10 @@ import EditNoteIcon from "@mui/icons-material/EditNote";
 import EditCard from "./EditCard";
 import { useNavigate } from "react-router-dom";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { toPersianNumbers } from './../../util/util';
+import { toPersianNumbers } from "./../../util/util";
 import { BiTransfer } from "react-icons/bi";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import CardActions from "./CardActions";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -36,25 +38,59 @@ const cardVariants = {
 };
 
 const banks = {
-  603799: { name: "ملی", icon: "/BankIcons/meli.png" },
-  589210: { name: "سپه", icon: "/BankIcons/sepah.png" },
-  621986: { name: "سامان", icon: "/BankIcons/saman.png" },
-  622106: { name: "پارسیان", icon: "/BankIcons/parsian.png" },
-  589463: { name: "رفاه کارگران", icon: "/BankIcons/refah.png" },
-  502229: { name: "پاسارگاد", icon: "/BankIcons/pasargad.png" },
-  610433: { name: "ملت", icon: "/BankIcons/melat.png" },
+  603799: {
+    name: "ملی",
+    icon: <img src="/BankIcons/meli.png" alt="ملی" />,
+    iconWidth: "55px",
+    iconHeight: "55px",
+  },
+  589210: {
+    name: "سپه",
+    icon: <img src="/BankIcons/sepah.png" alt="سپه" />,
+    iconWidth: "48px",
+    iconHeight: "48px",
+  },
+  621986: {
+    name: "سامان",
+    icon: <img src="/BankIcons/saman.png" alt="سامان" />,
+    iconWidth: "40px",
+    iconHeight: "40px",
+  },
+  622106: {
+    name: "پارسیان",
+    icon: <img src="/BankIcons/parsian.png" alt="پارسیان" />,
+    iconWidth: "70px",
+    iconHeight: "70px",
+  },
+  589463: {
+    name: "رفاه کارگران",
+    icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />,
+    iconWidth: "38px",
+    iconHeight: "38px",
+  },
+  502229: {
+    name: "پاسارگاد",
+    icon: <img src="/BankIcons/pasargad.png" alt="پاسارگاد" />,
+    iconWidth: "30px",
+    iconHeight: "38px",
+  },
+  610433: {
+    name: "ملت",
+    icon: <img src="/BankIcons/melat.png" alt="ملت" />,
+    iconWidth: "35px",
+    iconHeight: "35px",
+  },
 };
 
 const bankColors = {
-  603799: "#004d99",
-  589210: "#eead32",
-  621986: "#8ae7f9",
-  622106: "#c83a08",
-  589463: "#9b14ee",
+  603799: "#faf6fc",
+  589210: "#f8cf82",
+  621986: "#8ae7f9 ",
+  622106: "#f1b2a2",
+  589463: "#9b14ee ",
   502229: "#080808",
-  610433: "#df117e",
+  610433: "#f786b7",
 };
-
 const getTextColor = (backgroundColor) => {
   const color = backgroundColor.substring(1);
   const rgb = parseInt(color, 16);
@@ -81,6 +117,26 @@ const CardList = ({ onBack }) => {
   const [hoveredCardIndex, setHoveredCardIndex] = useState(null);
   const navigate = useNavigate();
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [showIconsIndex, setShowIconsIndex] = useState(null);
+
+  const handleMenuClick = (e, index) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowIconsIndex(index === showIconsIndex ? null : index);
+  };
+
+
+  const iconVariants = {
+    hidden: { opacity: 0, x: 20 },
+    visible: (index) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        delay: index * 0.1,
+        duration: 0.3,
+      },
+    }),
+  };
 
   useEffect(() => {
     dispatch(fetchCards());
@@ -107,19 +163,34 @@ const CardList = ({ onBack }) => {
 
   const handleCopyCardNumber = (cardNumber) => {
     navigator.clipboard.writeText(cardNumber);
-    setOpenSnackbar(true); 
+    setOpenSnackbar(true);
   };
 
   const handleCloseSnackbar = () => {
-    setOpenSnackbar(false); 
+    setOpenSnackbar(false);
   };
-
+  {
+    /** 
   function formatCardNumber(cardNumber) {
-    return cardNumber.replace(/(\d{4})(?=\d)/g, "$1-");
+    return cardNumber.replace(/(\d{4})(?=\d)/g, "$1 "); 
+ 
+*/
   }
 
+  function formatCardNumber(cardNumber) {
+    return cardNumber.replace(/(\d{4})(?=\d)/g, "$1 ");
+  }
   return (
-    <Box sx={{ paddingTop:{md:7 , xs:3},paddingBottom:12 ,paddingX: { xs: 1, md: 4 }, maxHeight:'auto',minHeight:'auto' ,overflowY: 'auto'  }}>
+    <Box
+      sx={{
+        paddingTop: { md: 7, xs: 3 },
+        paddingBottom: 12,
+        paddingX: { xs: 2, sm: 3, md: 7 },
+        maxHeight: "auto",
+        minHeight: "auto",
+        overflowY: "auto",
+      }}
+    >
       {editingCard ? (
         <EditCard
           cardNumber={editingCard.card_number}
@@ -169,15 +240,16 @@ const CardList = ({ onBack }) => {
                 >
                   <Paper
                     sx={{
-                      paddingX: { xs: 3, sm: 4 },
-                      paddingY: { xs: 2, sm: 2 },
+                      position: "relative",
+                      paddingX: { xs: 2, sm: 2 },
+                      paddingY: { xs: 1, sm: 2 },
                       mb: { xs: 2, md: 4 },
                       backgroundColor: color,
                       display: "flex",
-                      justifyContent: "space-between",
+                      flexDirection: { xs: "column", sm: "left" },
                       alignItems: "center",
                       boxShadow: 3,
-                      borderRadius: 5,
+                      borderRadius: 3,
                       cursor: "pointer",
                       transition: "0.3s",
                       width: "100%",
@@ -194,92 +266,199 @@ const CardList = ({ onBack }) => {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Box>
-                        <Typography
-                          variant="h6"
-                          sx={{ fontWeight: "12px", color: textColor }}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            flexDirection: "row",
+                          }}
                         >
-                          بانک {card.bank_name}
-                        </Typography>
-                        <Typography variant="body2" sx={{ mb: 1 }}>
-                          {card.full_name}
-                        </Typography>
-                        <Typography variant="caption">
-                          {toPersianNumbers(formatCardNumber(card.card_number))}
                           <IconButton
-                            onClick={(e) => {
-                              e.preventDefault(); 
-                              e.stopPropagation(); 
-                              handleCopyCardNumber(card.card_number);
-                            }}
                             sx={{
+                              display: "flex",
+                              position: "absolute",
+                              top: 8,
+                              right: 10,
+                              fontSize: "26px",
                               color: textColor,
-                              "&:hover": { color: "pink" },
+                            }}
+                            onClick={(e) => handleMenuClick(e, index)} 
+                          >
+                            <MoreVertIcon />
+                          </IconButton>
+                          {showIconsIndex === index && (
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                top: 5,
+                                right: 40, 
+                                display: "flex",
+                                flexDirection: "row", 
+                                color: textColor,
+                                gap: "5px",
+                              }}
+                            >
+                              {/* Animated Edit Icon */}
+                              <motion.div
+                                custom={0}
+                                initial="hidden"
+                                animate="visible"
+                                variants={iconVariants}
+                              >
+                                <Button
+                                 onClick={(e) => {
+                                  e.preventDefault(); 
+                                  e.stopPropagation();
+                                  handleEditCard(card);
+                                }}
+                              
+                                  sx={{
+                                    color: textColor,
+                                    paddingY: 0,
+                                    paddingX: 0,
+                                    minWidth: 0,
+                                    "&:hover": { color: "pink" },
+                                    fontSize: { xs: "27px", sm: "30px" },
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <EditNoteIcon sx={{ margin: 0 }} />
+                                </Button>
+                              </motion.div>
+
+                              {/* Animated Delete Icon */}
+                              <motion.div
+                                custom={1}
+                                initial="hidden"
+                                animate="visible"
+                                variants={iconVariants}
+                              >
+                                <DeleteCardButton
+                                  cardNumber={card.card_number}
+                                  onDelete={refreshCardList}
+                                />
+                              </motion.div>
+
+                              {/* Animated Transfer Icon */}
+                              <motion.div
+                                custom={2}
+                                initial="hidden"
+                                animate="visible"
+                                variants={iconVariants}
+                              >
+                                <Button
+                                  onClick={(e) => {
+                                    e.preventDefault(); 
+                                    e.stopPropagation();
+                                    navigate("/cp/transfer", { state: { from: "/cp/user-cards" } });
+                                  }}
+                                  sx={{
+                                    color: textColor,
+                                    paddingY: 0,
+                                    paddingX: 0,
+                                    "&:hover": { color: "pink" },
+                                    fontSize: { xs: "23px", sm: "30px" },
+                                    display: "flex",
+                                    alignItems: "center",
+                                    minWidth: 0,
+                                  }}
+                                >
+                                  <BiTransfer size={24} />
+                                </Button>
+                              </motion.div>
+
+                              <IconButton
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleCopyCardNumber(card.card_number);
+                                }}
+                                sx={{
+                                  color: textColor,
+                                  "&:hover": { color: "pink" },
+                                  marginRight: "3px",
+                                  fontSize: "18px",
+                                  minWidth: 0,
+                                }}
+                              >
+                                <ContentCopyIcon />
+                              </IconButton>
+                            </Box>
+                          )}
+                        </Box>
+
+                        <Box sx={{ display: "flex", flexDirection: "row" }}>
+                          {bank?.icon && (
+                            <Box
+                              component="div"
+                              sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                width: bank?.iconWidth,
+                                height: bank?.iconHeight,
+                              }}
+                            >
+                              {bank.icon}
+                            </Box>
+                          )}
+
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              fontWeight: "12px",
+                              color: textColor,
+                              mt: "9px",
+                              marginLeft: "4px",
                             }}
                           >
-                            <ContentCopyIcon />
-                          </IconButton>
+                            بانک {card.bank_name}
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            mt: 1,
+                            width: "100%",
+                            gap: 2,
+                          }}
+                        >
+                          <Typography
+                            variant="h4"
+                            sx={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              width: "100%",
+                              alignContent: "center",
+                              direction: "ltr",
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                whiteSpace: "nowrap",
+                                wordSpacing: "1.8rem",
+                                textAlign: "center",
+                                direction: "ltr",
+                                unicodeBidi: "plaintext",
+                              }}
+                            >
+                              {" "}
+                              {toPersianNumbers(
+                                formatCardNumber(card.card_number)
+                              )}
+                            </Box>
+                          </Typography>
+                        </Box>
+
+                        <Typography variant="h6" sx={{ mb: 1 }}>
+                          {card.full_name}
                         </Typography>
                       </Box>
                     </Link>
-
-                    <Box sx={{ display: "flex", flexDirection: "column"  }}>
-                      <Button
-                        onClick={() => handleEditCard(card)}
-                        sx={{
-                          color: textColor,
-                          height:'20px',
-                          paddingY: 0,
-                          paddingX: 1,
-                          "&:hover": {
-                            color: "pink",
-                          },
-                          fontSize: { xs: "23px", sm: "30px" },
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 0,
-                        }}
-                      >
-                        <EditNoteIcon sx={{ margin: 0 }} />
-                        <Typography
-                          variant="h6"
-                          component="span"
-                          sx={{ fontSize: { xs: "11px", sm: "15px" } }}
-                        >
-                          ویرایش
-                        </Typography>
-                      </Button>
-                      <DeleteCardButton
-                        cardNumber={card.card_number}
-                        onDelete={refreshCardList}
-                        onMouseEnter={() => setIsHoveringDeleteButton(true)}
-                        onMouseLeave={() => setIsHoveringDeleteButton(false)}
-                      />
-                       <Button
-                        onClick={() => navigate("/cp/transfer", { state: { from: "/cp/user-cards" } })} 
-                        sx={{
-                          color: textColor,
-                          height:'20px',
-                          paddingY: 0,
-                          paddingX: 1,
-                          "&:hover": {
-                            color: "pink",
-                          },
-                          fontSize: { xs: "23px", sm: "30px" },
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 0,
-                        }}
-                      >
-                        <BiTransfer size={24} />
-                        <Typography
-                          variant="h6"
-                          component="span"
-                          sx={{ fontSize: { xs: "11px", sm: "15px" } }}
-                        >
-                          کارت به کارت
-                        </Typography>
-                      </Button>
-                    </Box>
                   </Paper>
                 </motion.div>
               );

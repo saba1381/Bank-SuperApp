@@ -208,7 +208,7 @@ const AddCard = () => {
   return (
     <Box
       maxWidth="full"
-      sx={{ paddingY: 2, paddingX: { xs: 1, sm: 2, md: 4 } , height:{sm:'160vh' , xs:'105vh'} }}
+      sx={{ paddingY: 4, paddingX: { xs: 1, sm: 2, md: 4 } , height:{sm:'160vh' , xs:'105vh'} }}
     >
       <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
         <Button
@@ -232,7 +232,7 @@ const AddCard = () => {
         <form onSubmit={formik.handleSubmit}>
           <Paper
             elevation={3}
-            sx={{ p: { xs: 2, md: 4 }, borderRadius: 6, width: "100%" }}
+            sx={{ p: { xs: 1, md: 4 }, borderRadius: 6, width: "100%" }}
           >
             <Typography
               variant="h4"
@@ -444,7 +444,7 @@ const AddCard = () => {
   !isInvalidCard && (
     <Paper
       sx={{
-        paddingX: 4,
+        paddingX: 1,
         paddingY: 2,
         backgroundColor: bankColor,
         color: "white",
@@ -478,7 +478,7 @@ const AddCard = () => {
   )}
   <Typography
     variant="h6"
-    sx={{ flexGrow: 1, textAlign: "left", color: textColor }}
+    sx={{ flexGrow: 1, textAlign: "left", color: textColor , width:'40%'}}
   >
     {formik.values.name ? `کارت ${formik.values.name}` : ""}
   </Typography>
@@ -486,7 +486,7 @@ const AddCard = () => {
 
         <Typography
           variant="h5"
-          sx={{ color: textColor, textAlign: "right", justifyContent: "start" }}
+          sx={{ color: textColor, textAlign: "center", justifyContent: "center", width:'47%' }}
         >
           {formik.values.cardNumber
             ? toPersianDigits(formik.values.cardNumber)
