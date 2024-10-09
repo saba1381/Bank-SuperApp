@@ -39,6 +39,21 @@ const GradientText = styled("span")({
 });
 
 const validationSchema = Yup.object({
+  firstName: Yup.string()
+    .required("نام را وارد کنید")
+    .matches(/^[\u0600-\u06FF\s]+$/, "نام باید به زبان فارسی باشد"),
+  lastName: Yup.string()
+    .required("نام خانوادگی را وارد کنید")
+    .matches(/^[\u0600-\u06FF\s]+$/, "نام خانوادگی باید به زبان فارسی باشد"),
+  password: Yup.string()
+    .min(8, "رمز عبور باید حداقل 8 کاراکتر باشد")
+    .required("رمز عبور را وارد کنید"),
+  confirmPassword: Yup.string()
+    .oneOf(
+      [Yup.ref("password"), null],
+      "رمز عبور و تکرار آن باید مطابقت داشته باشند"
+    )
+    .required("تکرار رمز عبور را وارد کنید"),
   nationalId: Yup.string()
     .matches(/^[0-9]*$/, "کدملی باید شامل اعداد باشد")
     .length(10, "کدملی باید 10 رقم باشد")
@@ -67,6 +82,10 @@ export default function Register() {
 
   const formik = useFormik({
     initialValues: {
+      firstName: "",
+      lastName: "",
+      password: "",
+      confirmPassword: "",
       nationalId: "",
       mobile: "",
     },
@@ -79,6 +98,9 @@ export default function Register() {
           registerUser({
             phone_number: values.mobile,
             national_code: values.nationalId,
+            first_name: values.firstName,
+            last_name: values.lastName,
+            password: values.password,
           })
         );
 
@@ -122,8 +144,7 @@ export default function Register() {
         justifyContent: "center",
         alignItems: "center",
         paddingX: { sm: 3, md: 4 },
-        paddingY: {xs:18 ,  sm: 2, md: 3 },
-        height:'80vh'
+        paddingY: {xs:0 ,  sm: 2, md: 3 },
       }}
     >
       <Helmet>
@@ -142,7 +163,211 @@ export default function Register() {
           )}
 
           <form onSubmit={formik.handleSubmit}>
-          
+            <TextField
+              fullWidth
+              margin="normal"
+              label="نام"
+              name="firstName"
+              value={formik.values.firstName}
+              onChange={formik.handleChange}
+              onKeyDown={(e) => handleKeyDown(e, lastNameRef)}
+              inputRef={firstNameRef}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.firstName && Boolean(formik.errors.firstName)
+              }
+              helperText={formik.touched.firstName && formik.errors.firstName}
+              InputProps={{
+                style: { textAlign: "right" },
+                sx: {
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "lightgrey",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "pink",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "pink",
+                    },
+                    "&.Mui-error fieldset": {
+                      borderColor: "red",
+                    },
+                  },
+                },
+              }}
+              InputLabelProps={{
+                sx: {
+                  color: "lightgrey",
+                  "&.Mui-focused": {
+                    color: "lightgrey",
+                  },
+                  "&.Mui-error": {
+                    color: "pink",
+                  },
+                },
+              }}
+            />
+
+            <TextField
+              fullWidth
+              margin="normal"
+              label="نام خانوادگی"
+              name="lastName"
+              value={formik.values.lastName}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              onKeyDown={(e) => handleKeyDown(e, passwordRef)}
+              inputRef={lastNameRef}
+              error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+              helperText={formik.touched.lastName && formik.errors.lastName}
+              InputProps={{
+                style: { textAlign: "right" },
+                sx: {
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "lightgrey",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "pink",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "pink",
+                    },
+                    "&.Mui-error fieldset": {
+                      borderColor: "red",
+                    },
+                  },
+                },
+              }}
+              InputLabelProps={{
+                sx: {
+                  color: "lightgrey",
+                  "&.Mui-focused": {
+                    color: "lightgrey",
+                  },
+                  "&.Mui-error": {
+                    color: "pink",
+                  },
+                },
+              }}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="رمز عبور"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              onKeyDown={(e) => handleKeyDown(e, confirmPasswordRef)}
+              inputRef={passwordRef}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
+              InputProps={{
+                style: { textAlign: "right" },
+                sx: {
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "lightgrey",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "pink",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "pink",
+                    },
+                    "&.Mui-error fieldset": {
+                      borderColor: "pink",
+                    },
+                  },
+                },
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              InputLabelProps={{
+                sx: {
+                  color: "lightgrey",
+                  "&.Mui-focused": {
+                    color: "lightgrey",
+                  },
+                  "&.Mui-error": {
+                    color: "pink",
+                  },
+                },
+              }}
+            />
+
+            <TextField
+              fullWidth
+              margin="normal"
+              label="تکرار رمز عبور"
+              name="confirmPassword"
+              type={showConfirmPassword ? "text" : "password"}
+              value={formik.values.confirmPassword}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              onKeyDown={(e) => handleKeyDown(e, nationalIdRef)}
+              inputRef={confirmPasswordRef}
+              error={
+                formik.touched.confirmPassword &&
+                Boolean(formik.errors.confirmPassword)
+              }
+              helperText={
+                formik.touched.confirmPassword && formik.errors.confirmPassword
+              }
+              InputProps={{
+                style: { textAlign: "right" },
+                sx: {
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "lightgrey",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "pink",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "pink",
+                    },
+                    "&.Mui-error fieldset": {
+                      borderColor: "pink",
+                    },
+                  },
+                },
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle confirm password visibility"
+                      onClick={handleClickShowConfirmPassword}
+                      edge="end"
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              InputLabelProps={{
+                sx: {
+                  color: "lightgrey",
+                  "&.Mui-focused": {
+                    color: "lightgrey",
+                  },
+                  "&.Mui-error": {
+                    color: "pink",
+                  },
+                },
+              }}
+            />
 
             <TextField
               fullWidth

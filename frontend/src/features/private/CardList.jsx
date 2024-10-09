@@ -25,6 +25,9 @@ import { BiTransfer } from "react-icons/bi";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { AnimatePresence } from "framer-motion";
 import ShareIcon from "@mui/icons-material/Share";
+import { useSelector } from "react-redux";
+import { fetchUserProfile, fetchCurrentUser } from "../account/accountSlice";
+
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -120,14 +123,24 @@ const CardList = ({ onBack }) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [showIconsIndex, setShowIconsIndex] = useState(null);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const { user} = useSelector((state) => state.account);
+  const [hasFetchedOnce, setHasFetchedOnce] = useState(false); 
+
 
   const handleMenuClick = (e, index) => {
     e.preventDefault();
     e.stopPropagation();
     setShowIconsIndex(index === showIconsIndex ? null : index);
   };
-
-
+    
+  useEffect(() => {
+    
+    if (user && !isLoading && !hasFetchedOnce) {
+      dispatch(fetchUserProfile());
+      console.log(user)
+      setHasFetchedOnce(true);
+    }
+  }, [dispatch, user, isLoading, hasFetchedOnce]);
   const iconVariants = {
     hidden: { opacity: 0, x: 20 },
     visible: (index) => ({
@@ -190,24 +203,27 @@ const CardList = ({ onBack }) => {
     return cardNumber.replace(/(\d{4})(?=\d)/g, "$1 ");
   }
 
-  const handleShareCard = (card) => {
-    if (navigator.share) {
+  const handleShareCard = (card, user) => {
+    console.log(card, user); // برای بررسی مقادیر
+  if (!card || !user) {
+    console.error("card یا user تعریف نشده‌اند");
+    return;
+  }
+    if (navigator.share ) {
       navigator
         .share({
-          text: `شماره کارت: ${card.card_number}`, 
+          text: `شماره کارت: ${card.card_number} به نام: ${user.first_name} ${user.last_name}`,
         })
         .then(() => console.log("اشتراک‌گذاری با موفقیت انجام شد"))
         .catch((error) => {
           console.error("خطا در اشتراک‌گذاری", error);
-          setSnackbarMessage("خطا در اشتراک‌گذاری");
-          setOpenSnackbar(true);
         });
     } else {
       setSnackbarMessage("مرورگر شما از قابلیت اشتراک‌گذاری پشتیبانی نمی‌کند.");
       setOpenSnackbar(true);
     }
-  };
-  
+};
+
   
   return (
     <Box
@@ -412,7 +428,7 @@ const CardList = ({ onBack }) => {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleShareCard(card);
+            handleShareCard(card , user);
           }}
           sx={{
             color: textColor,

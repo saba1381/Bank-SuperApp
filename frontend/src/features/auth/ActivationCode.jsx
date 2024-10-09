@@ -13,8 +13,8 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 const validationSchema = Yup.object({
     code: Yup.string()
-        .length(4, 'کد فعالسازی باید ۴ رقم باشد')
-        .matches(/^\d{4}$/, 'لطفا فقط عدد وارد کنید.')
+        .length(5, 'کد فعالسازی باید ۴ رقم باشد')
+        .matches(/^\d{5}$/, 'لطفا فقط عدد وارد کنید.')
         .required('کد فعالسازی را وارد کنید'),
 });
 
@@ -100,9 +100,9 @@ export default function ActivationCode({ mobile }) {
             newCode[index] = value;
             formik.setFieldValue('code', newCode.join(''));
 
-            if (index < 3) {
+            if (index < 4) {
                 inputRefs.current[index + 1].focus();
-            }else if (newCode.join('').length === 4) {
+            }else if (newCode.join('').length === 5) {
                 setLoading(true); 
                 setTimeout(() => {
                     formik.handleSubmit();
@@ -135,11 +135,11 @@ export default function ActivationCode({ mobile }) {
     }
 
     return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh',width:{xs:'100%' , sm:'60%' , md:'55%'} }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh',paddingY:{xs:0},width:{xs:'100%' , sm:'60%' , md:'55%'} }}>
             <Helmet>
                 <title>کد فعالسازی</title>
             </Helmet>
-            <Box sx={{ maxWidth: '1000px',width:'100%' ,p: 6, bgcolor: 'white', borderRadius: '8px', boxShadow: 3 }}>
+            <Box sx={{ maxWidth: '1000px',width:'100%' ,p: 3, bgcolor: 'white', borderRadius: '8px', boxShadow: 3 }}>
                 <Typography variant="h4" align="center" gutterBottom>
                     <span style={{ background: 'linear-gradient(to right, #6B46C1, #6B46C1, #4299E1, #3182CE)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>کد فعالسازی</span>
                 </Typography>
@@ -150,7 +150,7 @@ export default function ActivationCode({ mobile }) {
                     </Typography>
 
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>
-                        {[0, 1, 2, 3].map((index) => (
+                        {[0, 1, 2, 3,4].map((index) => (
                             <TextField
                                 key={index}
                                 inputRef={(el) => (inputRefs.current[index] = el)}

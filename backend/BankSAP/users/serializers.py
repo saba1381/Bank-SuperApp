@@ -5,16 +5,16 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['phone_number', 'national_code', 'first_name', 'last_name','gender','email' ,'password' ,'profile_image']
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {'password': {'write_only': True , 'required': False}}
 
     def create(self, validated_data):
         user = User(
             phone_number=validated_data['phone_number'],
             national_code=validated_data['national_code'],
-            first_name=validated_data.get('first_name', None),
-            last_name=validated_data.get('last_name', None),
+            #first_name=validated_data.get('first_name', None),
+            #last_name=validated_data.get('last_name', None),
         )
-        user.set_password(validated_data['password'])  #hashing the password
+        #user.set_password(validated_data['password'])  #hashing the password
         user.save()
         return user
 

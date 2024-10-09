@@ -6,6 +6,7 @@ from django.core.cache import cache
 from .models import User
 from .serializers import UserSerializer
 import random
+import secrets
 from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -14,6 +15,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from .validators import CustomPasswordValidator  
 
+"""
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
@@ -68,6 +70,45 @@ class RegisterView(APIView):
 
 
 
+"""
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        national_code = request.data.get('national_code')
+        phone_number = request.data.get('phone_number')
+        errors = {}
+        if User.objects.filter(national_code=national_code).exists() and User.objects.filter(phone_number=phone_number).exists():
+            errors['nationalId'] = ["این کد ملی قبلاً ثبت شده است."]
+            errors['mobile'] = ["این شماره تلفن قبلاً ثبت شده است."]
+        elif User.objects.filter(phone_number=phone_number).exists():
+            errors['mobile'] = ["این شماره تلفن قبلاً ثبت شده است."]
+        elif User.objects.filter(national_code=national_code).exists():
+            errors['nationalId'] = ["این کد ملی قبلاً ثبت شده است."]
+
+        if errors:
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
+        otp = secrets.randbelow(90000) + 10000
+        print(f"Generated OTP for {phone_number}: {otp}")
+
+        cache.set(phone_number, otp, timeout=300)  
+        cache.set(f'user_data_{phone_number}', request.data, timeout=120)  
+
+        user_data = {
+            'phone_number': phone_number,
+            'national_code': national_code,
+        }
+
+        serializer = UserSerializer(data=user_data)
+        if not serializer.is_valid():
+            print(f"Serializer Errors: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"detail": f"Your OTP code is {otp}"}, status=status.HTTP_200_OK)
+
+
+
 class VerifyOTPView(APIView):
     def post(self, request):
         otp = request.data.get('otp')
@@ -101,7 +142,15 @@ class VerifyOTPView(APIView):
             return Response({"detail": "User data not found in cache."}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"detail": "Invalid OTP or OTP expired."}, status=status.HTTP_400_BAD_REQUEST)
 
+class DashboardView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        user = request.user
+        if not user.profile_completed:
+            return Response({"detail": "لطفاً اطلاعات کاربری خود را تکمیل کنید."}, status=403)
+
+        return Response({"detail": "به داشبورد خود خوش آمدید."}, status=200)
 
 class LoginView(APIView):
     def post(self, request):

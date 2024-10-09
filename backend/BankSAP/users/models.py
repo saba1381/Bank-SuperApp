@@ -28,13 +28,15 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=11, unique=True , null=False , blank=False)
     national_code = models.CharField(max_length=10, unique=True , null=False , blank=False)
-    first_name = models.CharField(max_length=30, blank=False, null=False)  
-    last_name = models.CharField(max_length=30, blank=False, null=False) 
+    first_name = models.CharField(max_length=30, blank=True, null=True)  
+    last_name = models.CharField(max_length=30, blank=True, null=True) 
     email = models.EmailField(max_length=255, unique=False, null=True, blank=True)  
     gender = models.CharField(max_length=10, choices=[('male', 'مرد'), ('female', 'زن')], blank=True, null=True)
     last_login = models.DateTimeField(null=True, blank=True)
     profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
+    
 
+    profile_completed = models.BooleanField(default=False)
     USERNAME_FIELD = 'national_code'
     REQUIRED_FIELDS = ['phone_number']
 

@@ -72,6 +72,7 @@ const Settings = () => {
     navigate("/cp/edit-profile", { state: { from: "/cp/setting" } });
   };
 
+
   return (
     <>
       {showChangePassword ? (
