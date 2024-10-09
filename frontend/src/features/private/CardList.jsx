@@ -23,7 +23,8 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { toPersianNumbers } from "./../../util/util";
 import { BiTransfer } from "react-icons/bi";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import CardActions from "./CardActions";
+import { AnimatePresence } from "framer-motion";
+import ShareIcon from "@mui/icons-material/Share";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -118,6 +119,7 @@ const CardList = ({ onBack }) => {
   const navigate = useNavigate();
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [showIconsIndex, setShowIconsIndex] = useState(null);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const handleMenuClick = (e, index) => {
     e.preventDefault();
@@ -136,6 +138,13 @@ const CardList = ({ onBack }) => {
         duration: 0.3,
       },
     }),
+    exit: {
+      opacity: 0,
+      x: 20,
+      transition: {
+        duration: 0.2,
+      },
+    },
   };
 
   useEffect(() => {
@@ -180,6 +189,26 @@ const CardList = ({ onBack }) => {
   function formatCardNumber(cardNumber) {
     return cardNumber.replace(/(\d{4})(?=\d)/g, "$1 ");
   }
+
+  const handleShareCard = (card) => {
+    if (navigator.share) {
+      navigator
+        .share({
+          text: `شماره کارت: ${card.card_number}`, 
+        })
+        .then(() => console.log("اشتراک‌گذاری با موفقیت انجام شد"))
+        .catch((error) => {
+          console.error("خطا در اشتراک‌گذاری", error);
+          setSnackbarMessage("خطا در اشتراک‌گذاری");
+          setOpenSnackbar(true);
+        });
+    } else {
+      setSnackbarMessage("مرورگر شما از قابلیت اشتراک‌گذاری پشتیبانی نمی‌کند.");
+      setOpenSnackbar(true);
+    }
+  };
+  
+  
   return (
     <Box
       sx={{
@@ -242,12 +271,12 @@ const CardList = ({ onBack }) => {
                     sx={{
                       position: "relative",
                       paddingX: { xs: 2, sm: 2 },
-                      paddingY: { xs: 1, sm: 2 },
+                      paddingY: { xs: 1.2, sm: 2 },
                       mb: { xs: 2, md: 4 },
                       backgroundColor: color,
                       display: "flex",
                       flexDirection: { xs: "column", sm: "left" },
-                      alignItems: "center",
+                      alignItems: "right",
                       boxShadow: 3,
                       borderRadius: 3,
                       cursor: "pointer",
@@ -278,7 +307,8 @@ const CardList = ({ onBack }) => {
                               display: "flex",
                               position: "absolute",
                               top: 8,
-                              right: 10,
+                              right: 0,
+                              
                               fontSize: "26px",
                               color: textColor,
                             }}
@@ -286,12 +316,13 @@ const CardList = ({ onBack }) => {
                           >
                             <MoreVertIcon />
                           </IconButton>
+                          <AnimatePresence>
                           {showIconsIndex === index && (
                             <Box
                               sx={{
                                 position: "absolute",
                                 top: 5,
-                                right: 40, 
+                                right: 25, 
                                 display: "flex",
                                 flexDirection: "row", 
                                 color: textColor,
@@ -303,6 +334,7 @@ const CardList = ({ onBack }) => {
                                 custom={0}
                                 initial="hidden"
                                 animate="visible"
+                                exit="exit"
                                 variants={iconVariants}
                               >
                                 <Button
@@ -318,7 +350,7 @@ const CardList = ({ onBack }) => {
                                     paddingX: 0,
                                     minWidth: 0,
                                     "&:hover": { color: "pink" },
-                                    fontSize: { xs: "27px", sm: "30px" },
+                                    fontSize: { xs: "30px", sm: "30px" },
                                     display: "flex",
                                     alignItems: "center",
                                   }}
@@ -332,6 +364,7 @@ const CardList = ({ onBack }) => {
                                 custom={1}
                                 initial="hidden"
                                 animate="visible"
+                                exit="exit"
                                 variants={iconVariants}
                               >
                                 <DeleteCardButton
@@ -345,6 +378,7 @@ const CardList = ({ onBack }) => {
                                 custom={2}
                                 initial="hidden"
                                 animate="visible"
+                                exit="exit"
                                 variants={iconVariants}
                               >
                                 <Button
@@ -367,6 +401,34 @@ const CardList = ({ onBack }) => {
                                   <BiTransfer size={24} />
                                 </Button>
                               </motion.div>
+                              <motion.div
+        custom={3} 
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        variants={iconVariants}
+      >
+        <Button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleShareCard(card);
+          }}
+          sx={{
+            color: textColor,
+            paddingY: 0,
+            paddingX: 0,
+            minWidth: 0,
+            "&:hover": { color: "pink" },
+            fontSize: { xs: "23px", sm: "30px" },
+            display: "flex",
+            alignItems: "center",
+            marginLeft:1
+          }}
+        >
+          <ShareIcon sx={{ fontSize: "24px" }} />
+        </Button>
+      </motion.div>
 
                               <IconButton
                                 onClick={(e) => {
@@ -386,9 +448,10 @@ const CardList = ({ onBack }) => {
                               </IconButton>
                             </Box>
                           )}
+                          </AnimatePresence>
                         </Box>
 
-                        <Box sx={{ display: "flex", flexDirection: "row" }}>
+                        <Box sx={{ display: "flex", flexDirection: "row" , left:0}}>
                           {bank?.icon && (
                             <Box
                               component="div"
@@ -454,7 +517,7 @@ const CardList = ({ onBack }) => {
                           </Typography>
                         </Box>
 
-                        <Typography variant="h6" sx={{ mb: 1 }}>
+                        <Typography variant="h6" sx={{ mb: 1 , marginLeft:5 }}>
                           {card.full_name}
                         </Typography>
                       </Box>

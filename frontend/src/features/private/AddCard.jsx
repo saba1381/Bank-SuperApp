@@ -15,9 +15,10 @@ import * as Yup from "yup";
 import { UseAppDispatch } from "../../store/configureStore";
 import { addCard, fetchCards } from "../account/accountSlice";
 import { useNavigate } from "react-router-dom";
+import InputAdornment from '@mui/material/InputAdornment';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
 
 const AddCard = () => {
-  const [cardNumberParts, setCardNumberParts] = useState(["", "", "", ""]);
   const [bankName, setBankName] = useState("");
   const yearInputRef = useRef(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -32,8 +33,9 @@ const AddCard = () => {
   const yourName = useRef(null);
   const exDate = useRef(null);
 
+
   const banks = {
-    603799: { name: "ملی", icon: <img src="/BankIcons/meli.png" alt="ملی" />, iconWidth: "55px",iconHeight: "55px",},
+    603799: { name: "ملی", icon: <img src="/BankIcons/meli.png" alt="ملی" />, iconWidth: "55px",iconHeight: "50px",},
     589210: { name: "سپه", icon: <img src="/BankIcons/sepah.png" alt="سپه" />, iconWidth: "48px",iconHeight: "48px", },
     621986: {
       name: "سامان",
@@ -78,7 +80,7 @@ const AddCard = () => {
     return number
       .replace(/\D/g, "")
       .replace(/(.{4})/g, "$1-")
-      .replace(/-$/, "");
+      .replace(/-$/, " ");
   };
 
   const toPersianDigits = (number) => {
@@ -86,17 +88,39 @@ const AddCard = () => {
     return number.replace(/\d/g, (d) => persianDigits[d]);
   };
 
+
+  const isValidCardNumber = (cardNumber) => {
+    const digits = cardNumber.replace(/\D/g, ''); // حذف همه کاراکترهای غیر عددی
+    let sum = 0;
+    let isSecond = false;
+  
+    for (let i = digits.length - 1; i >= 0; i--) {
+      let d = parseInt(digits[i], 10);
+  
+      if (isSecond) {
+        d = d * 2;
+        if (d > 9) {
+          d -= 9;
+        }
+      }
+  
+      sum += d;
+      isSecond = !isSecond;
+    }
+  
+    return sum % 10 === 0;
+  };
+
   const handleCardNumberChange = (e) => {
     const inputValue = e.target.value.replace(/\D/g, "");
     if (inputValue.length > 16) return;
-
+  
     const formattedNumber = formatCardNumber(inputValue);
-
     formik.setFieldValue("cardNumber", formattedNumber);
-
+  
     const firstSixDigits = inputValue.substring(0, 6);
     const bank = banks[firstSixDigits];
-
+  
     if (inputValue.length >= 6) {
       if (bank) {
         if (bankName !== bank.name) {
@@ -113,12 +137,26 @@ const AddCard = () => {
         }
       }
     } else {
-      if (bankName !== "") {
+      if (inputValue.length === 0) {
         setBankName("");
         setIsInvalidCard(false);
+      } else {
+        if (bankName !== "") {
+          setBankName("");
+          setIsInvalidCard(false);
+        }
+      }
+    }
+  
+    // چک کردن معتبر بودن کارت
+    if (inputValue.length === 16) {
+      if (!isValidCardNumber(inputValue)) {
+        
+        setIsInvalidCard(true);
       }
     }
   };
+  
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -270,7 +308,19 @@ const AddCard = () => {
                   onChange={handleCardNumberChange}
                   onKeyDown={(e) => handleKeyDown(e, yourName)}
                   inputRef={cardNum}
-                  inputProps={{maxLength: 19 }}
+                  slotProps={{input:{ startAdornment: (
+                    <InputAdornment position="start">
+                      {banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)] && (
+    React.cloneElement(banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].icon, {
+      style: {
+        width: banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].iconWidth,
+        height: banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].iconHeight,
+      },
+    })
+  )}
+                    </InputAdornment>
+                  ), }}}
+                  inputProps={{maxLength: 19, style:{direction:'rtl'}}}
                   error={
                     isInvalidCard ||
                     (formik.touched.cardNumber &&
@@ -286,7 +336,7 @@ const AddCard = () => {
                       '&.Mui-focused': {
                                     color: '#1C3AA9',
                                     fontSize: {xs: '1.3rem'},
-                                    transform: 'translate(-7px, -14px) scale(0.75)'
+                                    transform: 'translate(-3px, -18px) scale(0.75)'
                                 },
                                 '&.Mui-error': {
                                     color: 'pink',
@@ -304,6 +354,7 @@ const AddCard = () => {
                     justifyContent: "center",
                   }}
                 />
+              
               </motion.div>
               <motion.div {...animationProps}>
                 <TextField
@@ -468,7 +519,6 @@ const AddCard = () => {
       >
 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
   {banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)] && (
-    // استفاده از سایز اختصاصی برای هر آیکون
     React.cloneElement(banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].icon, {
       style: {
         width: banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].iconWidth,

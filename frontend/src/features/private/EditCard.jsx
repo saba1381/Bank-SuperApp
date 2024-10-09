@@ -29,24 +29,35 @@ const EditCard = () => {
   const { cardNumber } = location.state; 
 
   const banks = {
-    '603799': { name: 'ملی', icon: <img src="/BankIcons/meli.png" alt="ملی" /> },
-    '589210': { name: 'سپه', icon: <img src="/BankIcons/sepah.png" alt="سپه" /> },
-    '621986': { name: 'سامان', icon: <img src="/BankIcons/saman.png" alt="سامان" /> },
-    '622106': { name: 'پارسیان', icon: <img src="/BankIcons/parsian.png" alt="پارسیان" /> },
-    '589463': { name: 'رفاه کارگران', icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" /> },
-    '502229': { name: 'پاسارگاد', icon: <img src="/BankIcons/pasargad.png" alt="پاسارگاد" /> },
-    '610433': { name: 'ملت', icon: <img src="/BankIcons/melat.png" alt="ملت" /> },
+    603799: { name: "ملی", icon: <img src="/BankIcons/meli.png" alt="ملی" />, iconWidth: "55px",iconHeight: "55px",},
+    589210: { name: "سپه", icon: <img src="/BankIcons/sepah.png" alt="سپه" />, iconWidth: "48px",iconHeight: "48px", },
+    621986: {
+      name: "سامان",
+      icon: <img src="/BankIcons/saman.png" alt="سامان" />, iconWidth: "40px",iconHeight: "40px",
+    },
+    622106: {
+      name: "پارسیان",
+      icon: <img src="/BankIcons/parsian.png" alt="پارسیان" />, iconWidth: "70px",iconHeight: "70px",
+    },
+    589463: {
+      name: "رفاه کارگران",
+      icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />, iconWidth: "38px",iconHeight: "38px",
+    },
+    502229: {
+      name: "پاسارگاد",
+      icon: <img src="/BankIcons/pasargad.png" alt="پاسارگاد" />, iconWidth: "30px",iconHeight: "38px",
+    },
+    610433: { name: "ملت", icon: <img src="/BankIcons/melat.png" alt="ملت" />, iconWidth: "35px",iconHeight: "35px", },
   };
-  
 
   const bankColors = {
-    '603799': '#004d99',
-    '589210': '#eead32 ',
-    '621986': '#8ae7f9 ', 
-    '622106': '#c83a08 ',
-    '589463': '#9b14ee ', 
-    '502229': '#080808', 
-    '610433': '#df117e', 
+    603799: "#faf6fc",
+    589210: "#f8cf82",
+    621986: "#8ae7f9 ",
+    622106: "#f1b2a2",
+    589463: "#9b14ee ",
+    502229: "#080808",
+    610433: "#f54994",
   };
 
   const getTextColor = (backgroundColor) => {
@@ -124,21 +135,16 @@ const EditCard = () => {
     enableReinitialize: true, 
     validationSchema: Yup.object({
       cardNumber: Yup.string()
-        .matches(/^\d{4}-\d{4}-\d{4}-\d{4}$/, 'شماره کارت خود را کامل وارد کنید.')
-        .required('شماره کارت الزامی است'),
+        .matches(/^\d{4}-\d{4}-\d{4}-\d{4}$/, "شماره کارت خود را کامل وارد کنید.")
+        .required("شماره کارت الزامی است"),
       name: Yup.string()
-        .matches(/^[\u0600-\u06FF\s]+$/, 'نام و نام خانوادگی باید فارسی باشد')
-        .test('has-two-parts', 'لطفا نام و نام خانوادگی خود را کامل وارد کنید', function (value) {
-          return value && value.trim().split(/\s+/).length >= 2;
-        })
-        .required('نام و نام خانوادگی الزامی است'),
+        .matches(/^[\u0600-\u06FF\s]+$/, "نام کارت باید فارسی باشد")
+        .required("نام کارت الزامی است"),
       cardMonth: Yup.string()
-        .matches(/^\d{1,2}$/, 'ماه معتبر نیست')
-        .test('length', 'ماه معتبر نیست', (val) => !val || val.length === 2) 
-        .test('month', 'ماه معتبر نیست', (val) => !val || (parseInt(val, 10) >= 1 && parseInt(val, 10) <= 12)), 
+        .matches(/^\d{1,2}$/, "ماه باید یک یا دو رقمی باشد")
+        .test("month", "ماه معتبر نیست", (val) => !val || (parseInt(val, 10) >= 1 && parseInt(val, 10) <= 12)),
       cardYear: Yup.string()
-        .matches(/^\d{2}$/, 'سال معتبر نیست')
-        .nullable(), // اختیاری
+        .matches(/^\d{2}$/, "سال معتبر نیست")
     }),
     
       onSubmit: async (values) => {
@@ -146,15 +152,15 @@ const EditCard = () => {
             id: values.id, 
             card_number: values.cardNumber.replace(/-/g, ''),  
             full_name: values.name,
-            expiration_month: values.cardMonth,
-            expiration_year: values.cardYear,
+            expiration_month: values.cardMonth || null,
+            expiration_year: values.cardYear || null,
             bank_name: values.bankName
         };
 
         console.log("ID:", updatedValues.id); 
     console.log("Updated Values:", updatedValues);
     
-        // Ensure you have access to cardNumber
+
         const cardNumber = values.cardNumber.replace(/-/g, '');
     
         try {
@@ -431,8 +437,8 @@ useEffect(() => {
              
 <Paper
 sx={{
-paddingX: 6,
-paddingY:3 ,
+paddingX: {xs:1 , sm:4},
+paddingY:1 ,
 backgroundColor: bankColor,  
 color: 'white',
 borderRadius: 6,
@@ -445,21 +451,43 @@ mb: 2,
 position: 'relative', 
 }}
 >
-
-<Typography variant="h4" sx={{ color: textColor}}>
-{formik.values.cardNumber ? toPersianDigits(formik.values.cardNumber) : '•••• •••• •••• ••••'}
-</Typography>
-
-<Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-<Typography variant="h6" sx={{ flexGrow: 1 ,  color: textColor }}>
-{formik.values.cardYear && formik.values.cardMonth
-? toPersianDigits(`تاریخ انقضا: ${formik.values.cardYear}/${formik.values.cardMonth}`)
-: ''}
-</Typography>
-<Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'right' ,  color: textColor  }}>
-{formik.values.name}
-</Typography>
+<Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "100%",
+          alignItems: "center",
+          gap: 6,
+        }}
+      >
+<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+  {banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)] && (
+    
+    React.cloneElement(banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].icon, {
+      style: {
+        width: banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].iconWidth,
+        height: banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].iconHeight,
+      },
+    })
+  )}
+  <Typography
+    variant="h6"
+    sx={{ flexGrow: 1, textAlign: "left", color: textColor , width:'40%'}}
+  >
+    {formik.values.name ? `کارت ${formik.values.name}` : ""}
+  </Typography>
 </Box>
+
+        <Typography
+          variant="h5"
+          sx={{ color: textColor, textAlign: "center", justifyContent: "center", width:'50%' }}
+        >
+          {formik.values.cardNumber
+            ? toPersianDigits(formik.values.cardNumber)
+            : "•••• •••• •••• ••••"}
+        </Typography>
+    
+    </Box>
 
 </Paper>
 

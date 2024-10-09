@@ -54,7 +54,7 @@ const DeleteCardButton = ({ cardNumber, onDelete }) => {
           minWidth: 0,
         }}
       >
-        <DeleteIcon sx={{ fontSize: { xs: "18px", sm: "21px" } }} />
+        <DeleteIcon sx={{ fontSize: { xs: "20px", sm: "21px" } }} />
       </Button>
       <Dialog
         open={open}
@@ -85,7 +85,11 @@ const DeleteCardButton = ({ cardNumber, onDelete }) => {
           >
             بله
           </Button>
-          <Button onClick={handleClose} sx={{ color: "red" }}>
+          <Button onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleClose();
+            }} sx={{ color: "red" }}>
             خیر
           </Button>
         </DialogActions>
