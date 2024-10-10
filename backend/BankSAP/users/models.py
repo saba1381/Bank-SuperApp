@@ -36,7 +36,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
     
 
-    profile_completed = models.BooleanField(default=False)
     USERNAME_FIELD = 'national_code'
     REQUIRED_FIELDS = ['phone_number']
 

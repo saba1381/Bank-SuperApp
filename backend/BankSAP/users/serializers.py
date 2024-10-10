@@ -28,5 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
         instance.gender = validated_data.get('gender', instance.gender)
         if validated_data.get('profile_image'):
             instance.profile_image = validated_data.get('profile_image')
+
+
         instance.save()
         return instance

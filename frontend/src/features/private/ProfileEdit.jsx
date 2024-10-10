@@ -10,9 +10,6 @@ import { fetchUserProfile , updateUserProfile} from '../../features/account/acco
 import { useSelector } from 'react-redux';
 import { useNavigate ,useLocation  } from 'react-router-dom';
 
-
-
-
 const validationSchema = yup.object({
   first_name: yup
     .string('نام خود را وارد کنید')

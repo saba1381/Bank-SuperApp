@@ -13,7 +13,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 const validationSchema = Yup.object({
     code: Yup.string()
-        .length(5, 'کد فعالسازی باید ۴ رقم باشد')
+        .length(5, 'کد فعالسازی باید ۵ رقم باشد')
         .matches(/^\d{5}$/, 'لطفا فقط عدد وارد کنید.')
         .required('کد فعالسازی را وارد کنید'),
 });
@@ -73,9 +73,11 @@ export default function ActivationCode({ mobile }) {
                 }));
 
                 if (result.meta.requestStatus === 'fulfilled') {
-                
+                    localStorage.setItem('isNewUser', 'true')
                     localStorage.setItem('access_token', result.payload.access);
                     localStorage.setItem('refresh_token', result.payload.refresh);
+                    localStorage.removeItem('phone_number');
+                    localStorage.removeItem('national_code');
                     window.location.assign('/cp');
                 } else {
                     
@@ -156,7 +158,7 @@ export default function ActivationCode({ mobile }) {
                                 inputRef={(el) => (inputRefs.current[index] = el)}
                                 value={formik.values.code[index] || ''}
                                 onChange={(e) => handleCodeChange(e, index)}
-                                onKeyDown={(e) => handleBackspace(e, index)}
+                                //onKeyDown={(e) => handleBackspace(e, index)}
                                 inputProps={{ maxLength: 1, style: { textAlign: 'center' } }}
                                 variant="outlined"
                                 sx={{ width: '50px' }}

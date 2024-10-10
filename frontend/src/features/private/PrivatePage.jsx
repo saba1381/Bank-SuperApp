@@ -20,6 +20,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { motion } from "framer-motion";
 import ProfileEdit from "../private/ProfileEdit";
 import { useNavigate } from "react-router-dom";
+import Notification from "./Notification";
 
 
 const systems = [
@@ -41,6 +42,8 @@ const PrivatePage = () => {
   const isSm = useMediaQuery(theme.breakpoints.up("sm"));
 
   const navigate = useNavigate();
+  const [isNewUser, setIsNewUser] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
 
   useEffect(() => {
     const loadDataAsync = async () => {
@@ -48,6 +51,32 @@ const PrivatePage = () => {
     };
     loadDataAsync();
   }, [dispatch]);
+
+  useEffect(() => {
+    const newUser = localStorage.getItem("isNewUser") === "true";
+    setIsNewUser(newUser);
+    if (newUser) {
+      setNotificationOpen(true);
+    }
+  }, []);
+
+  const handleNotificationClose = () => {
+    setNotificationOpen(false);
+  };
+
+  const handleSystemClick = (title) => {
+    if (isNewUser) {
+      setNotificationOpen(true);
+    } else {
+      if (title === "لیست کارت ها") {
+        navigate("/cp/user-cards");
+      } else if (title === "ویرایش پروفایل") {
+        handleProfileEditClick();
+      } else if (title === "کارت به کارت") {
+        navigate("/cp/transfer", { state: { from: "/cp" } });
+      }
+    }
+  };
 
   const getIconSize = () => {
     if (isXs) return 30;
@@ -114,6 +143,7 @@ const PrivatePage = () => {
         overflowY: "auto",
       }}
     >
+      <Notification open={notificationOpen} onClose={handleNotificationClose} />
       
       <Box sx={{ width: "100%", px: 3 }}>
         {showCardList ? (
@@ -158,15 +188,8 @@ const PrivatePage = () => {
                       flexDirection: "column",
                       "&:hover": { transform: "scale(0.96)" },
                     }}
-                    onClick={() => {
-                      if (system.title === "لیست کارت ها") {
-                        navigate("/cp/user-cards");
-                      } else if (system.title === "ویرایش پروفایل") {
-                        handleProfileEditClick();
-                      }else if (system.title === "کارت به کارت") {
-                        navigate("/cp/transfer", { state: { from: "/cp" } });
-                      }
-                    }}
+                    onClick={
+                      () => handleSystemClick(system.title)}
                   >
                     <Box
                       display="flex"

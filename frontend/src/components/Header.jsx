@@ -49,6 +49,7 @@ const Header = () => {
   const handleConfirmLogout = () => {
     dispatch(signOut());
     setOpenDialog(false);
+    localStorage.removeItem('isNewUser');
   };
 
   useEffect(() => {

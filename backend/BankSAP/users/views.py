@@ -142,15 +142,7 @@ class VerifyOTPView(APIView):
             return Response({"detail": "User data not found in cache."}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"detail": "Invalid OTP or OTP expired."}, status=status.HTTP_400_BAD_REQUEST)
 
-class DashboardView(APIView):
-    permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        user = request.user
-        if not user.profile_completed:
-            return Response({"detail": "لطفاً اطلاعات کاربری خود را تکمیل کنید."}, status=403)
-
-        return Response({"detail": "به داشبورد خود خوش آمدید."}, status=200)
 
 class LoginView(APIView):
     def post(self, request):

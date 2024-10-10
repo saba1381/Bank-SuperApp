@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { MdEdit } from "react-icons/md";
+import Notification from "../Notification";
 
 const Settings = () => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -31,6 +32,8 @@ const Settings = () => {
   const isCPPage = window.location.pathname === "/cp/setting";
   const navigate = useNavigate();
   const [hasFetchedOnce, setHasFetchedOnce] = useState(false);  
+  const [isNewUser, setIsNewUser] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
 
   useEffect(() => {
     
@@ -39,6 +42,16 @@ const Settings = () => {
       setHasFetchedOnce(true);
     }
   }, [dispatch, user, isLoading, hasFetchedOnce]);
+
+  useEffect(() => {
+    const newUser = localStorage.getItem("isNewUser") === "true";
+    setIsNewUser(newUser);
+    if (newUser) {
+      setNotificationOpen(true);
+    }
+  }, []);
+
+
 
   const profileImageURL =
     user?.profile_image && user.profile_image.startsWith("/media/")
@@ -61,7 +74,10 @@ const Settings = () => {
   };
 
   const handleChangePasswordClick = () => {
-    navigate("/cp/setting/edit-password");
+    if (isNewUser) {
+      setNotificationOpen(true); 
+    }else{navigate("/cp/setting/edit-password");}
+    
   };
 
   const handleBackToSettings = () => {
@@ -69,7 +85,15 @@ const Settings = () => {
   };
 
   const handleEditProfileClick = () => {
-    navigate("/cp/edit-profile", { state: { from: "/cp/setting" } });
+    if (isNewUser) {
+      setNotificationOpen(true); // نمایش نوتیفیکیشن
+    } else {
+      navigate("/cp/edit-profile", { state: { from: "/cp/setting" } });
+    }
+  };
+
+  const handleNotificationClose = () => {
+    setNotificationOpen(false);
   };
 
 
@@ -106,7 +130,7 @@ const Settings = () => {
               boxShadow: "0 -2px 2px rgba(0,0,0,0.1)",
               overflowY: "auto",
               width: "100%",
-              paddingY: 9,
+              paddingY: 11,
               paddingX: { sm: 6, md: 35, xl: 40 },
             }}
           >
@@ -122,6 +146,7 @@ const Settings = () => {
                 </Button>
               </Box>
 
+
               {user && !isLoading && isCPPage && (
                 <Box
                   sx={{
@@ -134,6 +159,7 @@ const Settings = () => {
                     boxShadow: "0 -2px 5px rgba(0,0,0,0.1)",
                   }}
                 >
+                  <Notification open={notificationOpen} onClose={handleNotificationClose} />
                   <Box sx={{ display: "flex", alignItems: "center" }}>
                     <Avatar
                       src={profileImageURL || ""}

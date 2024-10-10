@@ -220,6 +220,7 @@ export const accountSlice = createSlice({
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('user');
+            localStorage.removeItem('isNewUser');
         
             
             localStorage.setItem('isManualSignOut', 'true');
