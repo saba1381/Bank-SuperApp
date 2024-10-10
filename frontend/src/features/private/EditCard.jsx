@@ -437,8 +437,8 @@ useEffect(() => {
              
 <Paper
 sx={{
-paddingX: {xs:1 , sm:4},
-paddingY:1 ,
+paddingX: {xs:1.2 , sm:4},
+paddingY:1.3 ,
 backgroundColor: bankColor,  
 color: 'white',
 borderRadius: 6,
@@ -472,7 +472,7 @@ position: 'relative',
   )}
   <Typography
     variant="h6"
-    sx={{ flexGrow: 1, textAlign: "left", color: textColor , width:'40%'}}
+    sx={{ flexGrow: 1, textAlign: "left", color: textColor , width:'40%' , fontSize:{xs:'17px' , sm:'21px'}}}
   >
     {formik.values.name ? `کارت ${formik.values.name}` : ""}
   </Typography>
@@ -480,7 +480,7 @@ position: 'relative',
 
         <Typography
           variant="h5"
-          sx={{ color: textColor, textAlign: "center", justifyContent: "center", width:'50%' }}
+          sx={{ color: textColor, textAlign: "center", justifyContent: "center", width:'50%' , fontSize:{xs:'17px' , sm:'21px'} }}
         >
           {formik.values.cardNumber
             ? toPersianDigits(formik.values.cardNumber)

@@ -1,7 +1,8 @@
-import React from 'react';
+import React , {useState , useEffect} from 'react';
 import { FaHome, FaBell, FaCreditCard, FaUserCircle, FaCog } from 'react-icons/fa';
 import { Box, Typography } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Notification from "../Notification";
 
 const BottomMenu = () => {
   const navigate = useNavigate();
@@ -10,6 +11,29 @@ const BottomMenu = () => {
   const isSettingsPage = location.pathname.startsWith('/cp/setting');
   const isCPPage = location.pathname==='/cp';
   const isListCardPage = location.pathname.startsWith('/cp/user-cards');
+  const [isNewUser, setIsNewUser] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  useEffect(() => {
+    const newUser = localStorage.getItem("isNewUser") === "true";
+    setIsNewUser(newUser);
+    if (newUser) {
+      setNotificationOpen(true);
+    }
+  }, []);
+
+
+  const handleCardListClick = () => {
+    if (isNewUser) {
+      setNotificationOpen(true);
+    } else {
+      navigate("/cp/user-cards", { state: { from: "/cp/" } });
+    }
+  };
+  const handleNotificationClose = () => {
+    setNotificationOpen(false);
+  };
+
+
   return (
     <Box sx={{
       position: 'fixed',
@@ -23,6 +47,7 @@ const BottomMenu = () => {
       padding: '10px 0',
       zIndex: 1000
     }}>
+      <Notification open={notificationOpen} onClose={handleNotificationClose} />
       {/* Menu Item: خانه */}
       <Box sx={{
         display: 'flex',
@@ -62,7 +87,7 @@ const BottomMenu = () => {
         '&:hover svg': { color: '#6b7280' },
         '&:hover': { '& *': { color: '#6b7280' } }
       }}
-      onClick={() => navigate('/cp/user-cards')}
+      onClick={handleCardListClick}
       >
         <FaCreditCard style={{ color: isListCardPage ? '#6b7280' : '#3b82f6',fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
         <Typography variant="caption" sx={{ color: isListCardPage ? '#6b7280' : '#3b82f6',fontSize: '12px' }}>کارت‌ها</Typography>

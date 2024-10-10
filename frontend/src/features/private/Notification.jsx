@@ -10,7 +10,7 @@ const Notification = ({ open, onClose }) => {
       };
   return (
     <Snackbar open={open} autoHideDuration={8000} onClose={onClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} style={{top:70 }}>
-      <Alert onClose={onClose} severity="info" sx={{ width: '100%' ,  borderRadius:'30px', boxShadow:3}}>
+      <Alert onClose={onClose} severity="info" sx={{ width: '100%' ,  borderRadius:'30px', boxShadow:1}}>
       <span>
           به موبایل بانک خود خوش آمدید، لطفا نسبت به تکمیل پروفایل خود اقدام کنید تا از خدمات بانکی ما بهره مند شوید.
         </span>

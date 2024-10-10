@@ -86,7 +86,7 @@ const Settings = () => {
 
   const handleEditProfileClick = () => {
     if (isNewUser) {
-      setNotificationOpen(true); // نمایش نوتیفیکیشن
+      setNotificationOpen(true);
     } else {
       navigate("/cp/edit-profile", { state: { from: "/cp/setting" } });
     }

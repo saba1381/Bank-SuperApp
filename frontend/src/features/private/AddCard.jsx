@@ -80,7 +80,7 @@ const AddCard = () => {
     return number
       .replace(/\D/g, "")
       .replace(/(.{4})/g, "$1-")
-      .replace(/-$/, " ");
+      .replace(/-$/, "");
   };
 
   const toPersianDigits = (number) => {
@@ -527,16 +527,15 @@ const AddCard = () => {
     })
   )}
   <Typography
-    variant="h6"
-    sx={{ flexGrow: 1, textAlign: "left", color: textColor , width:'40%'}}
+
+    sx={{ flexGrow: 1, textAlign: "left", color: textColor , width:'40%' , fontSize:{xs:'17px' , md:'20px'}}}
   >
     {formik.values.name ? `کارت ${formik.values.name}` : ""}
   </Typography>
 </Box>
 
         <Typography
-          variant="h5"
-          sx={{ color: textColor, textAlign: "center", justifyContent: "center", width:'47%' }}
+          sx={{ color: textColor, textAlign: "center", justifyContent: "center", width:'47%' , fontSize:{xs:'17px' , sm:'21px'} }}
         >
           {formik.values.cardNumber
             ? toPersianDigits(formik.values.cardNumber)
