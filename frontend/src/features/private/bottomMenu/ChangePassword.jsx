@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from "react";
+import React, { useState , useRef} from "react";
 import {
   Box,
   Typography,
@@ -34,6 +34,9 @@ const ChangePassword = ({ onBack }) => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const passwordRef = useRef(null);
+  const newpasswordRef = useRef(null)
+  const confirmPasswordRef = useRef(null);
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleClickShowNewPassword = () => setShowNewPassword(!showNewPassword);
@@ -41,6 +44,13 @@ const ChangePassword = ({ onBack }) => {
     setShowConfirmPassword(!showConfirmPassword);
 
   const dispatch = UseAppDispatch();
+
+  const handleKeyDown = (event, nextFieldRef) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      nextFieldRef.current.focus();
+    }
+  };
 
   const Overlay = styled("div")(({ theme }) => ({
     position: "fixed",
@@ -93,6 +103,9 @@ const ChangePassword = ({ onBack }) => {
         setSnackbarOpen(true);
 
         formik.resetForm();
+        setTimeout(() => {
+          navigate("/cp/setting");
+        }, 3000);
       } catch (error) {
  
         if (error && error.error) {
@@ -140,7 +153,7 @@ const ChangePassword = ({ onBack }) => {
         boxShadow: "0 -2px 2px rgba(0,0,0,0.1)",
         overflowY: "auto",
         width: "100%",
-        paddingX: { sm: 4, md: 35 },
+        paddingX: { sm: 20, md: 40 },
         paddingY: 4,
         height:'100%'
 
@@ -230,6 +243,8 @@ const ChangePassword = ({ onBack }) => {
               sx={{ mb: 2, "& label": { color: "#808080" } }}
               value={formik.values.currentPassword}
               onChange={formik.handleChange}
+              onKeyDown={(e) => handleKeyDown(e, newpasswordRef)}
+              inputRef={passwordRef}
               error={
                 formik.touched.currentPassword &&
                 Boolean(formik.errors.currentPassword)
@@ -290,6 +305,8 @@ const ChangePassword = ({ onBack }) => {
               type={showNewPassword ? "text" : "password"}
               variant="outlined"
               sx={{ mb: 2, "& label": { color: "#808080" } }}
+              onKeyDown={(e) => handleKeyDown(e, confirmPasswordRef)}
+              inputRef={newpasswordRef}
               value={formik.values.newPassword}
               onChange={formik.handleChange}
               error={
@@ -352,6 +369,7 @@ const ChangePassword = ({ onBack }) => {
               variant="outlined"
               sx={{ mb: 2, "& label": { color: "#808080" } }}
               value={formik.values.confirmPassword}
+              inputRef={confirmPasswordRef}
               onChange={formik.handleChange}
               error={
                 formik.touched.confirmPassword &&

@@ -4,7 +4,7 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['phone_number', 'national_code', 'first_name', 'last_name','gender','email' ,'password' ,'profile_image']
+        fields = ['username','phone_number', 'national_code', 'first_name', 'last_name','gender','email' ,'password' ,'profile_image']
         extra_kwargs = {'password': {'write_only': True , 'required': False}}
 
     def create(self, validated_data):
@@ -21,14 +21,18 @@ class UserSerializer(serializers.ModelSerializer):
 
 
     def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.email = validated_data.get('email', instance.email)
         instance.phone_number = validated_data.get('phone_number', instance.phone_number)
         instance.gender = validated_data.get('gender', instance.gender)
+        instance.username = validated_data.get('username' , instance.username)
         if validated_data.get('profile_image'):
             instance.profile_image = validated_data.get('profile_image')
-
+        
+        if password:
+            instance.set_password(password)
 
         instance.save()
         return instance

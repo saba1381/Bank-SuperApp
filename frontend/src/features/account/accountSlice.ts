@@ -69,6 +69,7 @@ export const refreshTokensAsync = createAsyncThunk(
             const isManualSignOut = localStorage.getItem('isManualSignOut');
             if (!isManualSignOut) {
                 thunkAPI.dispatch(signOut()); 
+                localStorage.removeItem('isNewUser');
             }
             return thunkAPI.rejectWithValue({ error: 'Failed to refresh token' });
         }
@@ -132,6 +133,18 @@ export const updateUserProfile = createAsyncThunk(
     }
 );
 
+
+export const completeUserProfile = createAsyncThunk(
+    'account/updateUserProfile',
+    async (profileData: object, thunkAPI) => {
+        try {
+            const response = await agent.UserProfile.completeInfo(profileData);
+            return response;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue({ error: error.data });
+        }
+    }
+);
 
 export const changePassword = createAsyncThunk(
     'account/changePassword',
@@ -332,6 +345,7 @@ export const accountSlice = createSlice({
     state.isLoading = false; 
     //toast.error('خطا در دریافت لیست کارت‌ها');
   });
+ 
   builder
   .addCase(fetchCardInfo.pending, (state) => {
       state.isLoading = true;

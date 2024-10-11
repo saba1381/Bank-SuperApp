@@ -21,8 +21,9 @@ import * as Yup from "yup";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import { FaLongArrowAltLeft } from "react-icons/fa";
 import { UseAppDispatch } from "../../store/configureStore";
-import { registerUser } from "../account/accountSlice";
+import { completeUserProfile } from "../account/accountSlice";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { toast } from "react-toastify";
 
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -77,10 +78,12 @@ export default function CompleteInfo() {
     setShowConfirmPassword(!showConfirmPassword);
   const firstNameRef = useRef(null);
   const lastNameRef = useRef(null);
+  const usernameRef = useRef(null);
   const passwordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
-  const nationalIdRef = useRef(null);
-  const usernameRef = useRef(null);
+  const emailRef = useRef(null);
+  const genderRef = useRef(null);
+
 
   const formik = useFormik({
     initialValues: {
@@ -89,8 +92,8 @@ export default function CompleteInfo() {
       password: "",
       confirmPassword: "",
       username: "",
-      gender :"",
-      email:""
+      gender: "",
+      email: "",
     },
     validationSchema: validationSchema,
     validateOnBlur: false,
@@ -98,35 +101,32 @@ export default function CompleteInfo() {
     onSubmit: async (values, { setSubmitting, setStatus, setErrors }) => {
       try {
         const response = await dispatch(
-          registerUser({
-            phone_number: values.mobile,
-            national_code: values.nationalId,
-            first_name: values.firstName,
+          completeUserProfile({
+            username: values.username,
+            gender: values.gender,
+            first_name: values.firstName,   
             last_name: values.lastName,
             password: values.password,
+            email: values.email,
           })
         );
-
+  
         if (response.meta.requestStatus === "fulfilled") {
-          setMobile(values.mobile);
-          localStorage.setItem("phone_number", values.mobile);
-          localStorage.setItem("national_code", values.nationalId);
-          setShowActivationCode(true);
+          localStorage.removeItem('isNewUser');
+          toast.success("پروفایل با موفقیت تکمیل شد!");
+          setTimeout(() => {
+            window.location.href = "/cp";  
+          }, 5000);
         } else {
           if (response.payload && response.payload.error) {
-            setErrors(response.payload.error);
+            setErrors(response.payload.error);  
           } else {
             setStatus("خطایی رخ داده است.");
           }
         }
       } catch (error) {
-        if (error.response) {
-          setStatus(
-            `خطای شبکه: ${error.response.status}, ${error.response.data}`
-          );
-        } else {
-          setStatus("خطایی در سرور رخ داده است.");
-        }
+        setStatus("خطایی در سرور رخ داده است.");
+        toast.error("خطایی در سمت سرور رخ داده است");  
       } finally {
         setSubmitting(false);
       }
@@ -224,7 +224,7 @@ export default function CompleteInfo() {
               value={formik.values.lastName}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              onKeyDown={(e) => handleKeyDown(e, passwordRef)}
+              onKeyDown={(e) => handleKeyDown(e, usernameRef)}
               inputRef={lastNameRef}
               error={formik.touched.lastName && Boolean(formik.errors.lastName)}
               helperText={formik.touched.lastName && formik.errors.lastName}
@@ -267,8 +267,8 @@ export default function CompleteInfo() {
   value={formik.values.username}
   onChange={formik.handleChange}
   onBlur={formik.handleBlur}
-  //onKeyDown={(e) => handleKeyDown(e, firstNameRef)} // تغییر به firstNameRef یا فیلد بعدی
-  //inputRef={usernameRef} // معرفی یک ریف جدید برای فیلد نام کاربری
+  onKeyDown={(e) => handleKeyDown(e, passwordRef)} 
+  inputRef={usernameRef} 
   error={formik.touched.username && Boolean(formik.errors.username)}
   helperText={formik.touched.username && formik.errors.username}
   InputProps={{
@@ -368,7 +368,7 @@ export default function CompleteInfo() {
               value={formik.values.confirmPassword}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              onKeyDown={(e) => handleKeyDown(e, nationalIdRef)}
+              onKeyDown={(e) => handleKeyDown(e, emailRef)}
               inputRef={confirmPasswordRef}
               error={
                 formik.touched.confirmPassword &&
@@ -429,6 +429,8 @@ export default function CompleteInfo() {
                   value={formik.values.email}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  onKeyDown={(e) => handleKeyDown(e, genderRef)}
+                  inputRef={emailRef}
                   error={formik.touched.email && Boolean(formik.errors.email)}
                   helperText={formik.touched.email && formik.errors.email}
                   InputProps={{
@@ -467,6 +469,7 @@ export default function CompleteInfo() {
 <Select
   id="gender"
   name="gender"
+  inputRef={genderRef}
   value={formik.values.gender || ""}
   onChange={formik.handleChange}
   onBlur={formik.handleBlur}

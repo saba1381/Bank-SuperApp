@@ -143,6 +143,29 @@ class VerifyOTPView(APIView):
         return Response({"detail": "Invalid OTP or OTP expired."}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserProfileCompleteView(APIView):
+    permission_classes = [IsAuthenticated]  
+
+    def put(self, request):
+        user = request.user
+        password = request.data.get('password')
+        validator = CustomPasswordValidator()
+        errors = {}
+        try:
+            validator.validate(password)
+        except ValidationError as e:
+            errors['password'] = e.messages  
+        
+        if errors:
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer = UserSerializer(user, data=request.data, partial=True) 
+
+        if serializer.is_valid():
+            serializer.save() 
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LoginView(APIView):
     def post(self, request):

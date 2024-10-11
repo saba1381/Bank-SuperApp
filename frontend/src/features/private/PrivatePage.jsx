@@ -55,9 +55,6 @@ const PrivatePage = () => {
   useEffect(() => {
     const newUser = localStorage.getItem("isNewUser") === "true";
     setIsNewUser(newUser);
-    if (newUser) {
-      setNotificationOpen(true);
-    }
   }, []);
 
   const handleNotificationClose = () => {
@@ -65,19 +62,20 @@ const PrivatePage = () => {
   };
 
   const handleSystemClick = (title) => {
-    if (isNewUser) {
-      setNotificationOpen(true);
-    } else {
-      if (title === "لیست کارت ها") {
-        navigate("/cp/user-cards");
-      } else if (title === "ویرایش پروفایل") {
+    if (title === "ویرایش پروفایل") {
+      if (isNewUser) {
+        setNotificationOpen(true);
+      } else {
         handleProfileEditClick();
-      } else if (title === "کارت به کارت") {
-        navigate("/cp/transfer", { state: { from: "/cp" } });
       }
+    } else if (title === "لیست کارت ها") {
+      setNotificationOpen(false)
+      navigate("/cp/user-cards" ,{ state :{from :'/cp'}});
+    } else if (title === "کارت به کارت") {
+      navigate("/cp/transfer", { state: { from: "/cp" } });
     }
   };
-
+  
   const getIconSize = () => {
     if (isXs) return 30;
     if (isSm) return 28;

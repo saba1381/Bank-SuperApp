@@ -16,9 +16,7 @@ const BottomMenu = () => {
   useEffect(() => {
     const newUser = localStorage.getItem("isNewUser") === "true";
     setIsNewUser(newUser);
-    if (newUser) {
-      setNotificationOpen(true);
-    }
+
   }, []);
 
 
@@ -47,7 +45,7 @@ const BottomMenu = () => {
       padding: '10px 0',
       zIndex: 1000
     }}>
-      <Notification open={notificationOpen} onClose={handleNotificationClose} />
+
       {/* Menu Item: خانه */}
       <Box sx={{
         display: 'flex',
@@ -87,7 +85,7 @@ const BottomMenu = () => {
         '&:hover svg': { color: '#6b7280' },
         '&:hover': { '& *': { color: '#6b7280' } }
       }}
-      onClick={handleCardListClick}
+      onClick={()=>navigate("/cp/user-cards", { state: { from: "/cp/" } })}
       >
         <FaCreditCard style={{ color: isListCardPage ? '#6b7280' : '#3b82f6',fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
         <Typography variant="caption" sx={{ color: isListCardPage ? '#6b7280' : '#3b82f6',fontSize: '12px' }}>کارت‌ها</Typography>

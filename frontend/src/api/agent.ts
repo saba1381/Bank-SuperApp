@@ -92,6 +92,7 @@ const UserProfile = {
   profileInfo: () => requests.get("users/profile/update/"),
   updateProfile: (values: object) => requests.put("users/profile/update/", values),
   passwordRecovery: (values: object) => requests.put("users/password/change/", values),
+  completeInfo : (values: object) => requests.put("users/complete-info/", values),
   currentUser: () => requests.get("account/currentUser"),
 };
 

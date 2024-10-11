@@ -46,9 +46,6 @@ const Settings = () => {
   useEffect(() => {
     const newUser = localStorage.getItem("isNewUser") === "true";
     setIsNewUser(newUser);
-    if (newUser) {
-      setNotificationOpen(true);
-    }
   }, []);
 
 
