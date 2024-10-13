@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Box,
   TextField,
@@ -7,11 +7,6 @@ import {
   Typography,
   Snackbar,
   Alert,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
-  FormHelperText,
   Autocomplete,
 } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -19,9 +14,9 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { motion } from "framer-motion";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { UseAppDispatch } from "../../store/configureStore";
 import { addCard, fetchCards } from "../account/accountSlice";
 import { useNavigate, useLocation } from "react-router-dom";
+import { UseAppDispatch, UseAppSelector } from "../../store/configureStore";
 
 const Transfer = () => {
   const [bankName, setBankName] = useState("");
@@ -40,11 +35,7 @@ const Transfer = () => {
   const exDate = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const [userCards, setUserCards] = useState([
-    "6037991234567890",
-    "5892109876543210",
-    "6219865123456789",
-  ]);
+  const [userCards, setUserCards] = useState([]);
 
   const banks = {
     603799: { name: "ملی", icon: <img src="/BankIcons/meli.png" alt="ملی" /> },
@@ -157,8 +148,6 @@ const Transfer = () => {
         }
       }
     }
-
-    // چک کردن معتبر بودن کارت
     if (inputValue.length === 16) {
       if (!isValidCardNumber(inputValue)) {
         setIsInvalidCard(true);
@@ -169,11 +158,11 @@ const Transfer = () => {
     }
   };
   const handleDesCardChange = (e) => {
-    const inputValue = e.target.value.replace(/\D/g, ""); // فقط اعداد را بپذیرید
+    const inputValue = e.target.value.replace(/\D/g, "");
     if (inputValue.length > 16) return;
 
-    const formattedNumber = formatCardNumber(inputValue); // فرمت کردن شماره کارت
-    formik.setFieldValue("desCard", formattedNumber); // مقدار جدید به صورت فرمت شده
+    const formattedNumber = formatCardNumber(inputValue);
+    formik.setFieldValue("desCard", formattedNumber);
 
     const firstSixDigits = inputValue.substring(0, 6);
     const bank = banks[firstSixDigits];
@@ -218,6 +207,26 @@ const Transfer = () => {
     setSnackbarOpen(false);
   };
 
+
+  useEffect(() => {
+    const fetchUserCards = async () => {
+      try {
+        const cards = await dispatch(fetchCards()).unwrap();
+        
+        // Ensure it's an array and set to the state
+        if (Array.isArray(cards)) {
+          setUserCards(cards);
+        } else {
+          setUserCards([]); // Set to empty array if the response is not an array
+        }
+      } catch (error) {
+        console.error("Error fetching cards:", error);
+        setUserCards([]); // In case of error, set to an empty array
+      }
+    };
+
+    fetchUserCards();
+  }, [dispatch]);
   const formik = useFormik({
     initialValues: {
       initialCard: "",
@@ -348,14 +357,19 @@ const Transfer = () => {
           >
             <Box sx={{ display: "grid", gap: 2, mb: 4 }}>
               <motion.div {...animationProps}>
+              {Array.isArray(userCards) && (
                 <Autocomplete
                   freeSolo
-                  options={userCards} // کارت‌های موجود
-                  inputValue={formik.values.initialCard} // مقدار ورودی به فرمت شده
+                  options={userCards.map((card) => ({
+                    label: `${card.card_number}`, 
+                    value: card.card_number, 
+                  }))}
+                  getOptionLabel={(option) => option.label}
+                  inputValue={formik.values.initialCard} 
                   onInputChange={(event, newValue) => {
-                    const formattedNumber = formatCardNumber(newValue); // فرمت کردن شماره کارت
-                    formik.setFieldValue("initialCard", formattedNumber); // مقدار جدید به صورت فرمت شده
-                    handleCardNumberChange({ target: { value: newValue } }); // ارسال مقدار به تابع handleCardNumberChange
+                    const formattedNumber = formatCardNumber(newValue); 
+                    formik.setFieldValue("initialCard", formattedNumber); 
+                    handleCardNumberChange({ target: { value: newValue } }); 
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -403,10 +417,11 @@ const Transfer = () => {
                         textAlign: "center",
                         justifyContent: "center",
                         marginBottom:2
-                      }}
+                    }}
                     />
-                  )}
+              )}
                 />
+            )}
               </motion.div>
               <motion.div {...animationProps}>
                 <TextField
