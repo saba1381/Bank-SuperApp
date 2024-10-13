@@ -342,7 +342,7 @@ const CardList = ({ onBack }) => {
                                 display: "flex",
                                 flexDirection: "row", 
                                 color: textColor,
-                                gap: "5px",
+                                gap: {xs:'0.1px' , sm:'2px'},
                               }}
                             >
                               {/* Animated Edit Icon */}

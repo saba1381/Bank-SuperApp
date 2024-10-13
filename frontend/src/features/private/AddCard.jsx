@@ -517,7 +517,7 @@ const AddCard = () => {
           gap: 6,
         }}
       >
-<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+<Box sx={{ display: "flex", alignItems: "center", gap: 1  }}>
   {banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)] && (
     React.cloneElement(banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].icon, {
       style: {
