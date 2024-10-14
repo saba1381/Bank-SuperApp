@@ -16,7 +16,7 @@ import ChangePassword from "../features/private/bottomMenu/ChangePassword";
 import Settings from "../features/private/bottomMenu/settings";
 import Transfer from "../features/private/Transfer";
 import ConditionalCompleteInfo from "./ConditionalCompleteInfo";
-
+import CardTransferForm from "../features/private/CardTransferInfo";
 
 export const router = createBrowserRouter([
     {
@@ -51,7 +51,7 @@ export const router = createBrowserRouter([
                     { path: "cp/setting", element: <Settings /> }, 
                     { path: "cp/setting/edit-password", element: <ChangePassword /> },   
                     { path: "cp/transfer", element: <Transfer /> },
-                    { path: "cp/complete-info", element: <ConditionalCompleteInfo /> },
+                    { path: "cp/cardTransfer-info", element: <CardTransferForm /> },
                        
                 ]
             },
