@@ -1,5 +1,5 @@
 import { User ,Card } from './../../models/UserModel';
-import { createAsyncThunk, createSlice, isAnyOf } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, isAnyOf , PayloadAction } from "@reduxjs/toolkit";
 import agent from "../../api/agent";
 import { toast } from "react-toastify";
 import { router } from "../../router/Routes";
@@ -224,6 +224,23 @@ export const fetchCardInfo = createAsyncThunk('card/fetchCardInfo', async (cardN
 
 
 
+export const transferCard = createAsyncThunk(
+    'account/transferCard',
+    async (data: object, thunkAPI) => {
+        try {
+            const response = await agent.Card.Transfer(data); 
+            return response; 
+        } catch (error: any) {
+            console.log(error.data.detail)
+            const errorMessage = error.data.detail;
+            toast.error(errorMessage, { autoClose: 3000 });
+            return thunkAPI.rejectWithValue({ error: errorMessage }); 
+        }
+    }
+);
+
+
+
 export const accountSlice = createSlice({
     name: 'account',
     initialState,
@@ -273,6 +290,7 @@ export const accountSlice = createSlice({
     builder.addCase(deleteCard.rejected, (state, action) => {
           toast.error('حذف کارت با مشکل روبه رو شده است');
     });
+    
         builder
             .addCase(updateUserProfile.pending, (state) => {
                 state.isLoading = true;
@@ -373,6 +391,18 @@ export const accountSlice = createSlice({
     .addCase(updateCard.rejected, (state, action) => {
         state.isLoading = false; // Loading complete
         //toast.error('خطا در به روز رسانی کارت'); // Show error message
+    });
+    builder
+    .addCase(transferCard.pending, (state) => {
+        state.isLoading = true; 
+    })
+    .addCase(transferCard.fulfilled, (state, action) => {
+        state.isLoading = false; 
+        toast.success('انتقال با موفقیت انجام شد'); 
+    })
+    .addCase(transferCard.rejected, (state, action) => {
+        state.isLoading = false; // بارگذاری تمام شده
+        
     });
 
 

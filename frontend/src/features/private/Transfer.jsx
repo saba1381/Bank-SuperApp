@@ -14,7 +14,7 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { motion } from "framer-motion";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { addCard, fetchCards } from "../account/accountSlice";
+import {transferCard,fetchCards } from "../account/accountSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UseAppDispatch, UseAppSelector } from "../../store/configureStore";
 import CardTransferForm from './CardTransferInfo';
@@ -242,6 +242,8 @@ const Transfer = () => {
 
     fetchUserCards();
   }, [dispatch]);
+
+
   const formik = useFormik({
     initialValues: {
       initialCard: "",
@@ -286,12 +288,18 @@ const Transfer = () => {
         .required("سال الزامی است"),
     }),
     onSubmit: async (values) => {
-      setCurrentComponent(true);
-      console.log(values.initialCard);
-      setInitialCard(values.initialCard);
-      setDesCard(values.desCard);
-      setAmount(values.amount);
-      
+      dispatch(transferCard(values))
+        .unwrap()
+        .then(() => {
+          setCurrentComponent(true);
+          console.log(values.initialCard);
+          setInitialCard(values.initialCard);
+          setDesCard(values.desCard);
+          setAmount(values.amount);
+        })
+        .catch((error) => {
+          console.error("خطا در انتقال:", error);
+        });
     },
   });
 
