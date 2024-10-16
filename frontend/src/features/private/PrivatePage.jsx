@@ -73,6 +73,8 @@ const PrivatePage = () => {
       navigate("/cp/user-cards" ,{ state :{from :'/cp'}});
     } else if (title === "کارت به کارت") {
       navigate("/cp/transfer", { state: { from: "/cp" } });
+    } else if (title === "سوابق تراکنش"){
+      navigate("/cp/transaction-list" , {state : {from : '/cp'}});
     }
   };
   

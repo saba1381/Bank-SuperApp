@@ -6,6 +6,7 @@ from .serializers import CardSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from .models import Card
+from decimal import Decimal
 
 
 class RegisterCardView(APIView):
@@ -93,3 +94,45 @@ class EditCardView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import Card
+from rest_framework.permissions import IsAuthenticated
+
+class CardToCardAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        source_card_number = request.data.get('source_card_number')
+        destination_card_number = request.data.get('destination_card_number')
+        amount = request.data.get('amount')
+        cvv2 = request.data.get('cvv2')
+        expiration_month = request.data.get('expiration_month')
+        expiration_year = request.data.get('expiration_year')
+
+        # بررسی کارت مبدأ
+        try:
+            source_card = Card.objects.get(card_number=source_card_number, user=request.user)
+        except Card.DoesNotExist:
+            return Response({"detail": "کارت مبدأ معتبر نیست"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # بررسی CVV2 و تاریخ انقضا کارت مبدأ
+        if source_card.cvv2 != cvv2 or source_card.expiration_month != expiration_month or source_card.expiration_year != expiration_year:
+            return Response({"detail": "اطلاعات کارت مبدأ اشتباه است"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # بررسی کارت مقصد
+        try:
+            destination_card = Card.objects.get(card_number=destination_card_number)
+        except Card.DoesNotExist:
+            return Response({"detail": "کارت مقصد معتبر نیست"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # بررسی موجودی کارت مبدأ
+        if source_card.balance < Decimal(amount):
+            return Response({"detail": "موجودی کارت مبدأ کافی نیست"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # اگر تمام شرایط درست بود، کاربر به مرحله درخواست رمز پویا هدایت شود
+        return Response({"detail": "اطلاعات کارت صحیح است. درخواست رمز پویا ارسال شود."}, status=status.HTTP_200_OK)

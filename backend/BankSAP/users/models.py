@@ -8,6 +8,9 @@ class UserManager(BaseUserManager):
             raise ValueError('Phone number is required')
         if not national_code:
             raise ValueError('National code is required')
+        
+        extra_fields.setdefault('is_customer', True)
+        extra_fields.setdefault('is_superuser', False)
 
         user = self.model(phone_number=phone_number, national_code=national_code, **extra_fields)
         user.set_password(password)
@@ -15,11 +18,11 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, phone_number, national_code, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_customer', False)
         extra_fields.setdefault('is_superuser', True)
 
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_customer') is not False:
+            raise ValueError('Superuser must have is_customer=False.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
@@ -35,6 +38,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     gender = models.CharField(max_length=10, choices=[('male', 'مرد'), ('female', 'زن')], blank=True, null=True)
     last_login = models.DateTimeField(null=True, blank=True)
     profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
+    is_customer = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
     
 
     USERNAME_FIELD = 'national_code'
