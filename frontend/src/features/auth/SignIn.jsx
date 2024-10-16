@@ -134,14 +134,15 @@ export default function SignIn() {
     };
 
     return (
+        <Container>
         <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: { xs: '80vh', md: '100vh' } ,paddingTop:{sm:5}}}>
             <Helmet>
                 <title>ورود به موبایل بانک</title>
             </Helmet>
 
-            <StyledPaper sx={{ p: { xs: 2, md: 6 } }}>
+            <StyledPaper sx={{ paddingY: { xs: 2,sm:3, md: 6 } , paddingX:{xs: 2,sm:6, md: 6 } }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Typography variant="h3" align="start" gutterBottom>
+                    <Typography variant="h4" align="start" gutterBottom>
                         <GradientText>ورود به موبایل بانک</GradientText>
                     </Typography>
                     <Button
@@ -335,5 +336,6 @@ export default function SignIn() {
                 </Alert>
             </Snackbar>
         </Box>
+        </Container>
     );
 }

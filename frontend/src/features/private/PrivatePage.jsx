@@ -134,7 +134,7 @@ const PrivatePage = () => {
     <Container
       maxWidth="xl"
       sx={{
-        paddingY:0,
+        paddingTop:0,
         paddingX: 0,
         display: "flex",
         justifyContent: "center",

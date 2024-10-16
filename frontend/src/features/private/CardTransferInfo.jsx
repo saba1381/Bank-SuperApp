@@ -7,11 +7,13 @@ import { TbCreditCardPay } from "react-icons/tb";
 import CloseIcon from '@mui/icons-material/Close';
 import Transfer from './Transfer';
 import { motion } from 'framer-motion'; 
+import {toPersianNumbers} from '../../util/util'
 
 const CardTransferForm = ({initailCard , desCard , amount}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [showTransfer, setShowTransfer] = useState(false);
+
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
@@ -41,16 +43,40 @@ const CardTransferForm = ({initailCard , desCard , amount}) => {
 const formatAmount = (amount) => {
     return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
+  const banks = {
+    603799: { name: "ملی", icon: <img src="/BankIcons/meli.png" alt="ملی" />, iconWidth: "50px",iconHeight: "44px",},
+    589210: { name: "سپه", icon: <img src="/BankIcons/sepah.png" alt="سپه" />, iconWidth: "42px",iconHeight: "42px", },
+    621986: {
+      name: "سامان",
+      icon: <img src="/BankIcons/saman.png" alt="سامان" />, iconWidth: "34px",iconHeight: "34px",
+    },
+    622106: {
+      name: "پارسیان",
+      icon: <img src="/BankIcons/parsian.png" alt="پارسیان" />, iconWidth: "66px",iconHeight: "66px",
+    },
+    589463: {
+      name: "رفاه کارگران",
+      icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />, iconWidth: "32px",iconHeight: "32px",
+    },
+    502229: {
+      name: "پاسارگاد",
+      icon: <img src="/BankIcons/pasargad.png" alt="پاسارگاد" />, iconWidth: "22px",iconHeight: "30px",
+    },
+    610433: { name: "ملت", icon: <img src="/BankIcons/melat.png" alt="ملت" />, iconWidth: "30px",iconHeight: "30px", },
+  };
+
+  const firstSixDigits = desCard?.replace(/\D/g, '').substring(0, 6);
+  const bankInfo = banks[firstSixDigits];
 
   return (
     
     <Box sx={{
-        overflowY: 'auto',  
+      paddingX: { xs: 1.5, sm: 8, md: 34 },
         height: 'auto', 
         paddingBottom:{sm:10}
 
       }}>
-    <Box sx={{ maxWidth: 400, mx: 'auto', paddingY: 3,paddingX:1.5, borderRadius: 2, boxShadow: 3, bgcolor: 'white' }}>
+    <Box sx={{ maxWidth: 400, mx: 'auto', paddingY: 3,paddingX:1, borderRadius: 2, boxShadow: 3, bgcolor: 'white' }}>
      <Box 
   sx={{ 
     display: 'flex', 
@@ -90,34 +116,46 @@ const formatAmount = (amount) => {
   </IconButton>
 </Box>
 
-      <Box sx={{ mb: 1 , display:'flex' , justifyContent:'space-between'  , borderBottom: '1px dashed gray',paddingY:1}}>
-        <Typography variant="body1">کارت مبدا:</Typography>
-        <Typography>{initailCard}</Typography>
+      <Box sx={{ mb: 1 , display:'flex' , justifyContent:'space-between'  , borderBottom: '1px dashed gray',paddingY:1, color:'#56575b'}}>
+        <Typography variant="body1">مبدا:</Typography>
+        <Typography>{toPersianNumbers(initailCard)}</Typography>
       </Box>
 
       {/* Destination Card */}
-      <Box sx={{ mb: 1 , display:'flex' , justifyContent:'space-between' , borderBottom: '1px dashed gray',paddingY:1}}>
-        <Typography variant="body1">کارت مقصد:</Typography>
-        <Typography>{desCard}</Typography>
+      <Box sx={{ mb: 1 , display:'flex' , justifyContent:'space-between' , borderBottom: '1px dashed gray',paddingY:1 , color:'#56575b'}}>
+        <Typography variant="body1">مقصد:</Typography>
+        <Typography>{toPersianNumbers(desCard)}</Typography>
       </Box>
 
       {/* Card Holder */}
-      <Box sx={{ mb: 1 , display:'flex' , justifyContent:'space-between' , borderBottom: '1px dashed gray',paddingY:1}}>
+      <Box sx={{ mb: 1 , display:'flex' , justifyContent:'space-between' , borderBottom: '1px dashed gray',paddingY:1 , color:'#56575b'}}>
         <Typography variant="body1">نام دارنده کارت:</Typography>
         <Typography>صبا بصیری</Typography>
       </Box>
 
       {/* Static Display for Amount */}
-      <Box variant="body1" sx={{ mb: 2 , display:'flex' , justifyContent:'space-between' , borderBottom: '1px dashed gray',paddingY:1}}>
+      <Box variant="body1" sx={{ mb: 2 , display:'flex' , justifyContent:'space-between' , borderBottom: '1px dashed gray',paddingY:1 , color:'#56575b'}}>
         مبلغ:
-        <Typography> {formatAmount(amount)} ریال </Typography>
+        <Typography> {toPersianNumbers(formatAmount(amount))} ریال </Typography>
             
       </Box>
 
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, justifyContent: 'space-between', paddingBottom:0.3 }}>
-        <Typography variant="body1">نام بانک:</Typography>
-        <Typography>بانک پاسارگاد</Typography>
-      </Box>
+      {bankInfo ? (
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, justifyContent: 'space-between', paddingBottom: 0.3, color: '#56575b' }}>
+            <Typography variant="body1">نام بانک:</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography sx={{ mr: 1 }}>{`بانک ${bankInfo.name}`}</Typography>
+              {bankInfo.icon && (
+                <img src={bankInfo.icon.props.src} alt={bankInfo.name} width={bankInfo.iconWidth} height={bankInfo.iconHeight} />
+              )}
+            </Box>
+          </Box>
+        ) : (
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, justifyContent: 'space-between', paddingBottom: 0.3, color: '#56575b' }}>
+            <Typography variant="body1">نام بانک:</Typography>
+            <Typography>نامشخص</Typography>
+          </Box>
+        )}
 
     
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 5, justifyContent:'space-between', maxHeight:'200px'}}>

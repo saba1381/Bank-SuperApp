@@ -60,7 +60,7 @@ const Header = () => {
     } else if (path.startsWith("/cp/setting/edit-password")) {
       setHeaderTitle("تغییر رمز عبور");
     }else if (path === "/cp/transfer"){
-        setHeaderTitle('کارت به کارت')
+        setHeaderTitle('انتقال وجه')
     }
      else {
       setHeaderTitle(" ");

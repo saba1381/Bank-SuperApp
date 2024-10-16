@@ -46,20 +46,6 @@ const BottomMenu = () => {
       zIndex: 1000
     }}>
 
-      {/* Menu Item: خانه */}
-      <Box sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        cursor: 'pointer',
-        '&:hover svg': { color: '#6b7280' },
-        '&:hover': { '& *': { color: '#6b7280' } }
-      }}
-      onClick={() => navigate('/cp')}
-      >
-        <FaHome style={{ color: isCPPage ? '#6b7280' : '#3b82f6',fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
-        <Typography variant="caption" sx={{ color: isCPPage ? '#6b7280' : '#3b82f6', fontSize: '12px' }}>خانه</Typography>
-      </Box>
 
     
       <Box sx={{
@@ -89,6 +75,21 @@ const BottomMenu = () => {
       >
         <FaCreditCard style={{ color: isListCardPage ? '#6b7280' : '#3b82f6',fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
         <Typography variant="caption" sx={{ color: isListCardPage ? '#6b7280' : '#3b82f6',fontSize: '12px' }}>کارت‌ها</Typography>
+      </Box>
+      
+      {/* Menu Item: خانه */}
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        cursor: 'pointer',
+        '&:hover svg': { color: '#6b7280' },
+        '&:hover': { '& *': { color: '#6b7280' } }
+      }}
+      onClick={() => navigate('/cp')}
+      >
+        <FaHome style={{ color: isCPPage ? '#6b7280' : '#3b82f6',fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: isCPPage ? '#6b7280' : '#3b82f6', fontSize: '12px' }}>خانه</Typography>
       </Box>
 
       {/* Menu Item: پروفایل */}

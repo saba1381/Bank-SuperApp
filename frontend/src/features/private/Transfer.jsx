@@ -8,6 +8,8 @@ import {
   Snackbar,
   Alert,
   Autocomplete,
+  IconButton,
+  Backdrop
 } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
@@ -18,7 +20,9 @@ import {transferCard,fetchCards } from "../account/accountSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UseAppDispatch, UseAppSelector } from "../../store/configureStore";
 import CardTransferForm from './CardTransferInfo';
-
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'; 
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Transfer = () => {
   const [bankName, setBankName] = useState("");
@@ -44,32 +48,49 @@ const Transfer = () => {
   const [initialCard, setInitialCard] = useState("");
   const [desCard, setDesCard] = useState("");
   const [amount, setAmount] = useState("");
+  const [overlayOpen, setOverlayOpen] = useState(false); 
+  const [helpSnackbarOpen, setHelpSnackbarOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleButtonClick = () => {
     setCurrentComponent("cardTransfer");
   };
 
+  const handleHelpSnackbarOpen = () => {
+    setHelpSnackbarOpen(true);
+    setOverlayOpen(true);
+};
+const handleTogglePassword = () => {
+  setShowPassword(!showPassword);
+};
+
+const handleSnackbarOpen = () => {
+  setSnackbarOpen(true);
+  setOverlayOpen(true);
+};
+
+
 
   const banks = {
-    603799: { name: "ملی", icon: <img src="/BankIcons/meli.png" alt="ملی" />, iconWidth: "51px",iconHeight: "46px",},
-    589210: { name: "سپه", icon: <img src="/BankIcons/sepah.png" alt="سپه" />, iconWidth: "44px",iconHeight: "44px", },
+    603799: { name: "ملی", icon: <img src="/BankIcons/meli.png" alt="ملی" />, iconWidth: "50px",iconHeight: "44px",},
+    589210: { name: "سپه", icon: <img src="/BankIcons/sepah.png" alt="سپه" />, iconWidth: "42px",iconHeight: "42px", },
     621986: {
       name: "سامان",
-      icon: <img src="/BankIcons/saman.png" alt="سامان" />, iconWidth: "36px",iconHeight: "36px",
+      icon: <img src="/BankIcons/saman.png" alt="سامان" />, iconWidth: "34px",iconHeight: "34px",
     },
     622106: {
       name: "پارسیان",
-      icon: <img src="/BankIcons/parsian.png" alt="پارسیان" />, iconWidth: "68px",iconHeight: "68px",
+      icon: <img src="/BankIcons/parsian.png" alt="پارسیان" />, iconWidth: "66px",iconHeight: "66px",
     },
     589463: {
       name: "رفاه کارگران",
-      icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />, iconWidth: "34px",iconHeight: "34px",
+      icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />, iconWidth: "32px",iconHeight: "32px",
     },
     502229: {
       name: "پاسارگاد",
-      icon: <img src="/BankIcons/pasargad.png" alt="پاسارگاد" />, iconWidth: "24px",iconHeight: "32px",
+      icon: <img src="/BankIcons/pasargad.png" alt="پاسارگاد" />, iconWidth: "22px",iconHeight: "30px",
     },
-    610433: { name: "ملت", icon: <img src="/BankIcons/melat.png" alt="ملت" />, iconWidth: "31px",iconHeight: "31px", },
+    610433: { name: "ملت", icon: <img src="/BankIcons/melat.png" alt="ملت" />, iconWidth: "30px",iconHeight: "30px", },
   };
 
 
@@ -223,6 +244,10 @@ const Transfer = () => {
     setSnackbarOpen(false);
   };
 
+  const handleHelpSnackbarClose = () => {
+    setHelpSnackbarOpen(false);
+  };
+
 
   useEffect(() => {
     const fetchUserCards = async () => {
@@ -255,44 +280,58 @@ const Transfer = () => {
     },
     validationSchema: Yup.object({
       initialCard: Yup.string()
-        .matches(
-          /^\d{4}-\d{4}-\d{4}-\d{4}$/,
-          "شماره کارت مبدا را کامل وارد کنید."
-        )
+        .matches(/^\d{4}-\d{4}-\d{4}-\d{4}$/, "شماره کارت مبدا را کامل وارد کنید.")
         .required("شماره کارت مبدا الزامی است"),
       desCard: Yup.string()
-        .matches(
-          /^\d{4}-\d{4}-\d{4}-\d{4}$/,
-          "شماره کارت مقصد را کامل وارد کنید."
-        )
+        .matches(/^\d{4}-\d{4}-\d{4}-\d{4}$/, "شماره کارت مقصد را کامل وارد کنید.")
         .required("شماره کارت مقصد الزامی است"),
       amount: Yup.string()
         .matches(/^\d{1,16}$/, "مبلغ را به درستی وارد کنید")
         .required("مبلغ را به ریال وارد کنید")
         .max(16, "مبلغ نمی‌تواند بیشتر از ۱۶ رقم باشد"),
-
       cvv2: Yup.string()
         .matches(/^\d{3}$/, "کد شما معتبر نیست")
         .required("cvv2 را وارد کنید"),
       cardMonth: Yup.string()
         .matches(/^\d{1,2}$/, "ماه معتبر نیست")
         .test("length", "ماه باید دو رقمی باشد", (val) => val.length === 2)
-        .test(
-          "month",
-          "ماه معتبر نیست",
-          (val) => parseInt(val, 10) >= 1 && parseInt(val, 10) <= 12
-        )
+        .test("month", "ماه معتبر نیست", (val) => parseInt(val, 10) >= 1 && parseInt(val, 10) <= 12)
         .required("ماه الزامی است"),
       cardYear: Yup.string()
         .matches(/^\d{2}$/, "سال معتبر نیست")
         .required("سال الزامی است"),
     }),
     onSubmit: async (values) => {
-      dispatch(transferCard(values))
+      if (isInvalidCard || isInvalidDesCard) {
+        formik.setTouched({
+          initialCard: true,
+          desCard: true,
+        });
+        return;
+      }
+  
+      const errors = await formik.validateForm();
+  
+      if (Object.keys(errors).length > 0) {
+        formik.setTouched({
+          initialCard: true,
+          desCard: true,
+          amount: true,
+          cvv2: true,
+          cardMonth: true,
+          cardYear: true,
+        });
+        return; 
+      }
+      const formattedValues = {
+        ...values,
+        initialCard: values.initialCard.replace(/-/g, ""), // حذف خط تیره از کارت مبدا
+        desCard: values.desCard.replace(/-/g, ""), // حذف خط تیره از کارت مقصد
+      };
+      dispatch(transferCard(formattedValues))
         .unwrap()
         .then(() => {
           setCurrentComponent(true);
-          console.log(values.initialCard);
           setInitialCard(values.initialCard);
           setDesCard(values.desCard);
           setAmount(values.amount);
@@ -302,7 +341,8 @@ const Transfer = () => {
         });
     },
   });
-
+  
+  
   const handleMonthChange = (e) => {
     formik.handleChange(e);
     if (e.target.value.length === 2) {
@@ -337,9 +377,9 @@ const Transfer = () => {
     <Box
       maxWidth="full"
       sx={{
-        paddingY: 0.1,
-        paddingX: { xs: 0.3, sm: 8, md: 34 },
-        height: { sm: "130vh", xs: "70vh" },
+        paddingY: 0,
+        paddingX: { xs: 1.5, sm: 8, md: 34 },
+        height: { sm: "125vh", xs: "70vh" },
         display: "flex",
         flexDirection: "column",
         gap: 3,
@@ -350,16 +390,30 @@ const Transfer = () => {
         sx={{
           width: "100%",
           mb: 2,
-          paddingY: { xs: 10, sm: 2 },
+          paddingTop: { xs: 0.3, sm: 2 },
+          paddingBottom:{xs:8 , sm:4}
           
         }}
       >
         <form onSubmit={formik.handleSubmit}>
           <Paper
             elevation={3}
-            sx={{ p: { xs: 5, md: 4 }, borderRadius: 6, width: "100%" }}
+            sx={{ paddingY: { xs: 4, md: 4 }, borderRadius: 3, width: "100%", paddingX:{xs:2.9 , sm:7} }}
           >
-            <Box sx={{ display: "grid", gap: 2, mb: 4 }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" sx={{marginBottom:2}}>
+                    <Typography variant="h5" align="start" gutterBottom>
+                      کارت به کارت
+                    </Typography>
+                    <Button
+                        variant="outlined"
+                        startIcon={<HelpOutlineIcon style={{fontSize:'13px'}} />}
+                        onClick={handleHelpSnackbarOpen}
+                        sx={{ ml: 2 , fontSize:'13px' , padding:(0,0,0,2) , display:'flex' , height:'5px'}}
+                    >
+                        راهنما
+                    </Button>
+                </Box>
+            <Box sx={{ display: "grid", gap: 0.6, mb: 4 }}>
             <motion.div 
   initial={{ opacity: 0, y: -20 }} 
   animate={{ opacity: 1, y: 0 }} 
@@ -373,6 +427,16 @@ const Transfer = () => {
         label: `${formatCardNumber(card.card_number)}`, 
         value: card.card_number, 
       }))}
+      PopperProps={{
+        modifiers: [
+          {
+            name: 'offset',
+            options: {
+              offset: [0, 0], 
+            },
+          },
+        ],
+      }}
       getOptionLabel={(option) => option.label}
       renderOption={(props, option) => {
         const firstSixDigits = option.value.substring(0, 6);
@@ -380,12 +444,12 @@ const Transfer = () => {
 
         return (
           <li {...props} style={{
-            backgroundColor: "#f7f7f7",
-            borderRadius: "8px",
-            padding: "10px",
-            margin: "5px 0",
-            boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
+            backgroundColor: "#f3f4f9",
+            paddingY: 0.1,
+            boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.01)",
             transition: "background-color 0.3s ease",
+            zIndex:-10,
+            fontSize:{xs:'0.7rem' , sm:'0.9rem'}
           }}
           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#ececec"}
           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#f7f7f7"}
@@ -398,7 +462,8 @@ const Transfer = () => {
                   style={{
                     width: bank.iconWidth, 
                     height: bank.iconHeight, 
-                    marginLeft: "12px", 
+                    marginLeft: "3px", 
+                    scale:'70%'
                   }}
                 />
                 {option.label}
@@ -452,8 +517,10 @@ const Transfer = () => {
               fontSize: "1rem",
             },
           }}
+
           sx={{
             "& .MuiOutlinedInput-root": {
+              borderRadius: '10px',
               "& fieldset": {
                 borderColor: isInvalidCard ? "red" : "",
               },
@@ -462,11 +529,15 @@ const Transfer = () => {
             justifyContent: "center",
             marginBottom:2,
             borderRadius: "8px",
+            position: 'relative' ,
+            zIndex:10
           }}
         />
       )}
     />
+    
   )}
+  
 </motion.div>
 
               <motion.div {...animationProps}>
@@ -510,6 +581,7 @@ const Transfer = () => {
                   }}
                   sx={{
                     "& .MuiOutlinedInput-root": {
+                      borderRadius: '10px',
                       "& fieldset": {
                         borderColor: isInvalidDesCard
                           ? "red"
@@ -520,7 +592,8 @@ const Transfer = () => {
                     },
                     textAlign: "center",
                     justifyContent: "center",
-                    marginBottom:2
+                    marginBottom:2 , 
+                    
                   }}
                 />
               </motion.div>
@@ -540,7 +613,7 @@ const Transfer = () => {
                   }}
                   onKeyDown={(e) => handleKeyDown(e, cvv2Ref)}
                   inputRef={amountRef}
-                  inputProps={{ maxLength: 16 , inputMode: 'numeric'}}
+                  inputProps={{ maxLength: 16 , inputMode: 'numeric' }}
                   error={formik.touched.amount && Boolean(formik.errors.amount)}
                   helperText={formik.touched.amount && formik.errors.amount}
                   InputLabelProps={{
@@ -566,7 +639,8 @@ const Transfer = () => {
           ریال
         </span>
                       </InputAdornment>
-                    ),
+
+                    ),sx: { borderRadius: '10px' }
                   }}
                   sx={{marginBottom:2}}
               
@@ -577,6 +651,8 @@ const Transfer = () => {
                   label={<>
                     CVV2 <span style={{ color: 'red' }}>*</span>
                  </>}
+                 type={showPassword ? 'text' : 'password'}
+                 {...formik.getFieldProps('cvv2')}
                   fullWidth
                   name="cvv2"
                   value={formik.values.cvv2}
@@ -604,6 +680,16 @@ const Transfer = () => {
                         color: "pink",
                       },
                     },
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={handleTogglePassword} style={{ fontSize: '1.2rem', color: 'navy' }}>
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                    sx: { borderRadius: '10px' }
                   }}
                 />
               </motion.div>
@@ -648,6 +734,7 @@ const Transfer = () => {
                       },
                         },
                       }}
+                      sx={{"& .MuiOutlinedInput-root": {borderRadius:'13px'}}}
                     />
                     <Typography sx={{ fontSize: { sm: "30px", xs: "25px" } }}>
                       /
@@ -685,6 +772,7 @@ const Transfer = () => {
                       },
                         },
                       }}
+                      sx={{"& .MuiOutlinedInput-root": {borderRadius:'13px'}}}
                     />
                   </Box>
                 </Box>
@@ -702,14 +790,16 @@ const Transfer = () => {
               }}
             >
               <Button
-                variant="contained"
                 color="primary"
                 type="submit"
                 fullWidth
                 sx={{
-                  width: "80%",
-                  bgcolor: "primary.main",
+                  width: "50%",
+                  bgcolor: "navy",
                   "&:hover": { bgcolor: "primary.dark" },
+                  whiteSpace:'nowrap',
+                  fontSize:'0.9rem',
+                  color:'white'
                 }}
                 onClick={formik.handleSubmit}
               >
@@ -722,7 +812,7 @@ const Transfer = () => {
                 endIcon={<KeyboardBackspaceIcon />}
                 sx={{
                   textAlign: "center",
-                  width: "100%",
+                  width: "50%",
                   py: 1,
                   borderRadius: 7,
                   border: 1,
@@ -731,7 +821,8 @@ const Transfer = () => {
                   display: "flex",
                   alignItems: "center",
                   gap: 1,
-                  ":hover": { color: "grey.600" },
+                  ":hover": { color: "grey.600" }, 
+                  fontSize:'0.9rem'
                 }}
               >
                 بازگشت
@@ -753,6 +844,31 @@ const Transfer = () => {
             {snackbarMessage}
           </Alert>
         </Snackbar>
+        <Backdrop
+                open={helpSnackbarOpen}
+                sx={{ zIndex: (theme) => theme.zIndex.modal - 1, bgcolor: 'rgba(0, 0, 0, 0.5)' }} // تیره کردن پس‌زمینه
+            />
+        <Snackbar
+                open={helpSnackbarOpen}
+                onClose={handleSnackbarClose}
+                autoHideDuration={8000}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                action={
+                    <IconButton
+                        aria-label="close"
+                        color="inherit"
+                        onClick={handleHelpSnackbarClose}
+                    >
+                        ×
+                    </IconButton>
+                }
+                sx={{top:250}}
+            >
+                <Alert onClose={handleHelpSnackbarClose} severity="info" sx={{ width: '100%' , borderRadius:'20px'}}>
+                    <Typography variant='h5'>سرویس انتقال کارت به کارت</Typography>
+                    <Typography> به منظور انتقال وجه کارت به کارت، پس از انتخاب کارت مبدا، شماره کارت مقصد را وارد کنید. درصورتی که اطلاعات کارت مقصد بیش از این در موبایل بانک ذخیره شده است، با لمس تصویر مرتبط میتوانید کارت مورد نظر را انتخاب کنید.</Typography>
+                </Alert>
+            </Snackbar>
       </Box>
       ) : (
         <CardTransferForm initailCard={initialCard} desCard={desCard} amount={amount}/>

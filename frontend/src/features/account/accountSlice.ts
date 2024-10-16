@@ -398,7 +398,7 @@ export const accountSlice = createSlice({
     })
     .addCase(transferCard.fulfilled, (state, action) => {
         state.isLoading = false; 
-        toast.success('انتقال با موفقیت انجام شد'); 
+        //toast.success('انتقال با موفقیت انجام شد'); 
     })
     .addCase(transferCard.rejected, (state, action) => {
         state.isLoading = false; // بارگذاری تمام شده

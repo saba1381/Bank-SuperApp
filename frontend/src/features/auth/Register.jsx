@@ -11,6 +11,7 @@ import {
   Link as MuiLink,
   IconButton,
   InputAdornment,
+  Container
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { useFormik } from "formik";
@@ -116,6 +117,7 @@ export default function Register() {
   };
 
   return (
+    <Container>
     <Box
       sx={{
         display: "flex",
@@ -304,5 +306,6 @@ export default function Register() {
         <ActivationCode mobile={mobile} />
       )}
     </Box>
+    </Container>
   );
 }
