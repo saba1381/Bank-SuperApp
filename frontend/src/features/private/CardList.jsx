@@ -401,7 +401,7 @@ const CardList = ({ onBack }) => {
                                   onClick={(e) => {
                                     e.preventDefault(); 
                                     e.stopPropagation();
-                                    navigate("/cp/transfer", { state: { from: "/cp/user-cards" } });
+                                    navigate("/cp/transfer", { state: { from: "/cp/user-cards" , cardNumberr: card.card_number} });
                                   }}
                                   sx={{
                                     color: textColor,

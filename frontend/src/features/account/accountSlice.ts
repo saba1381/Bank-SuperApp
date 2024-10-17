@@ -71,7 +71,7 @@ export const refreshTokensAsync = createAsyncThunk(
                 thunkAPI.dispatch(signOut()); 
                 localStorage.removeItem('isNewUser');
             }
-            return thunkAPI.rejectWithValue({ error: 'Failed to refresh token' });
+            return thunkAPI.rejectWithValue({ error: 'دسترسی شما منقضی شده است، دوباره وارد شوید.' });
         }
     },
     {
@@ -231,8 +231,8 @@ export const transferCard = createAsyncThunk(
             const response = await agent.Card.Transfer(data); 
             return response; 
         } catch (error: any) {
-            console.log(error.data.detail)
-            const errorMessage = error.data.detail;
+            //console.log(error.data)
+            const errorMessage = error.data;
             toast.error(errorMessage, { autoClose: 3000 });
             return thunkAPI.rejectWithValue({ error: errorMessage }); 
         }

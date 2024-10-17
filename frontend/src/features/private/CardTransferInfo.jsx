@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import { Button, Typography, Box, IconButton, InputAdornment, TextField } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useFormik } from 'formik';
@@ -13,7 +13,8 @@ const CardTransferForm = ({initailCard , desCard , amount}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [showTransfer, setShowTransfer] = useState(false);
-
+  const [timer, setTimer] = useState(120); // 2 minutes in seconds
+  const [isTimerActive, setIsTimerActive] = useState(false);
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
@@ -21,6 +22,28 @@ const CardTransferForm = ({initailCard , desCard , amount}) => {
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
+  };
+
+  useEffect(() => {
+    let interval;
+    if (isTimerActive && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      setIsTimerActive(false);
+    }
+
+    return () => clearInterval(interval);
+  }, [isTimerActive, timer]);
+  const handleDynamicPasswordClick = () => {
+    setTimer(120); // Reset the timer
+    setIsTimerActive(true); // Start the timer
+  };
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${remainingSeconds < 10 ? '0' : ''}${remainingSeconds} : ${minutes}`;
   };
 
   const formik = useFormik({
@@ -71,7 +94,7 @@ const formatAmount = (amount) => {
   return (
     
     <Box sx={{
-      paddingX: { xs: 1.5, sm: 8, md: 34 },
+
         height: 'auto', 
         paddingBottom:{sm:10}
 
@@ -158,7 +181,7 @@ const formatAmount = (amount) => {
         )}
 
     
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 5, justifyContent:'space-between', maxHeight:'200px'}}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 5, justifyContent:'space-between', maxHeight:'200px' , width:'100%'}}>
       <TextField
               label="رمز پویا"
               variant="outlined"
@@ -212,19 +235,26 @@ const formatAmount = (amount) => {
             '&:hover': {
               opacity: 0.5, 
             },
+            width:'30%',
+            display:'flex',
+            justifyContent:'center',
+            alignItems:'center'
           }}
         >
           <Button 
             sx={{ 
-              color: 'white',  
+              color: isTimerActive ? 'white' : 'white', 
               borderRadius: '10px', 
               paddingY: 2,
               whiteSpace: 'nowrap',
-              width: '100%',
-              bgcolor: 'transparent', 
+              bgcolor: isTimerActive ? 'navy' : 'transparent', 
+              transition: 'background-color 0.3s ease',
+              cursor: isTimerActive ? 'not-allowed' : 'pointer',
             }}
+            onClick={handleDynamicPasswordClick}
+            disabled={isTimerActive}
           >
-            دریافت رمز پویا
+            <span style={{color:'white' , fontSize: isTimerActive ? '1.2rem' : '0.9rem' }}>{isTimerActive ? toPersianNumbers(formatTime(timer)) : 'دریافت رمز پویا'}</span>
           </Button>
         </Box>
       </Box>

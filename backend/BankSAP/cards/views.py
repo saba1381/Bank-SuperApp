@@ -101,12 +101,18 @@ class CardToCardAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        source_card_number = request.data.get('source_card_number')
-        destination_card_number = request.data.get('destination_card_number')
+        initialCard = request.data.get('initialCard')
+        desCard = request.data.get('desCard')
         amount = request.data.get('amount')
         cvv2 = request.data.get('cvv2')
         expiration_month = request.data.get('expiration_month')
         expiration_year = request.data.get('expiration_year')
+
+        if initialCard== desCard:
+            return Response(
+                {"detail": "کارت مبدا و مقصد شما نمی‌تواند یکی باشد."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         return Response( status=status.HTTP_200_OK)
 

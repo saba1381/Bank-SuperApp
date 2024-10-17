@@ -23,6 +23,7 @@ import CardTransferForm from './CardTransferInfo';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'; 
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { toast } from "react-toastify";
 
 const Transfer = () => {
   const [bankName, setBankName] = useState("");
@@ -51,6 +52,8 @@ const Transfer = () => {
   const [overlayOpen, setOverlayOpen] = useState(false); 
   const [helpSnackbarOpen, setHelpSnackbarOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { cardNumberr } = location.state || {};
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const handleButtonClick = () => {
     setCurrentComponent("cardTransfer");
@@ -290,7 +293,7 @@ const handleSnackbarOpen = () => {
         .required("مبلغ را به ریال وارد کنید")
         .max(16, "مبلغ نمی‌تواند بیشتر از ۱۶ رقم باشد"),
       cvv2: Yup.string()
-        .matches(/^\d{3}$/, "کد شما معتبر نیست")
+        .matches(/^\d{3}$/, "کد CVV2 را کامل وارد کنید.")
         .required("cvv2 را وارد کنید"),
       cardMonth: Yup.string()
         .matches(/^\d{1,2}$/, "ماه معتبر نیست")
@@ -325,8 +328,8 @@ const handleSnackbarOpen = () => {
       }
       const formattedValues = {
         ...values,
-        initialCard: values.initialCard.replace(/-/g, ""), // حذف خط تیره از کارت مبدا
-        desCard: values.desCard.replace(/-/g, ""), // حذف خط تیره از کارت مقصد
+        initialCard: values.initialCard.replace(/-/g, ""), 
+        desCard: values.desCard.replace(/-/g, ""), 
       };
       dispatch(transferCard(formattedValues))
         .unwrap()
@@ -337,12 +340,25 @@ const handleSnackbarOpen = () => {
           setAmount(values.amount);
         })
         .catch((error) => {
-          console.error("خطا در انتقال:", error);
-        });
+      const errorMessage = error.error.detail;
+      if (errorMessage.includes("مبدا")) {
+        formik.setFieldError("initialCard" , " ");
+      }
+      if (errorMessage.includes("مقصد")) {
+        formik.setFieldError("desCard", " ");
+      }
+      toast.error(errorMessage, { autoClose: 3000 });
+    });
     },
   });
   
-  
+  useEffect(() => {
+    if (!isInitialized && cardNumberr && !formik.values.initialCard) {
+      formik.setFieldValue("initialCard", formatCardNumber(cardNumberr));
+      setIsInitialized(true);
+    }
+  }, [cardNumberr, formik, isInitialized]);
+
   const handleMonthChange = (e) => {
     formik.handleChange(e);
     if (e.target.value.length === 2) {
@@ -373,7 +389,8 @@ const handleSnackbarOpen = () => {
   };
 
   return (
-    
+    <>
+      {!currentComponent ? (
     <Box
       maxWidth="full"
       sx={{
@@ -385,7 +402,7 @@ const handleSnackbarOpen = () => {
         gap: 3,
       }}
     >
-      {!currentComponent ? (
+    
       <Box
         sx={{
           width: "100%",
@@ -501,11 +518,11 @@ const handleSnackbarOpen = () => {
           }
           helperText={
             (isInvalidCard && "شماره کارت اشتباه است") ||
-            (formik.touched.initialCard && formik.errors.initialCard)
+            (formik.touched.initialCard && formik.errors.initialCard && formik.errors.initialCard.trim() !== "" ? formik.errors.initialCard : null)
           }
           InputLabelProps={{
             sx: {
-              color: isInvalidCard ? "red" : "grey",
+              color: formik.touched.initialCard && (formik.errors.initialCard || isInvalidCard) ? "red" : "grey",
               "&.Mui-focused": {
                 color: "#1C3AA9",
                 fontSize: { xs: "1.3rem" },
@@ -522,7 +539,7 @@ const handleSnackbarOpen = () => {
             "& .MuiOutlinedInput-root": {
               borderRadius: '10px',
               "& fieldset": {
-                borderColor: isInvalidCard ? "red" : "",
+                borderColor:formik.touched.initialCard && Boolean(formik.errors.initialCard) && isInvalidCard ? "red" : "",
               },
             },
             textAlign: "center",
@@ -559,15 +576,11 @@ const handleSnackbarOpen = () => {
                   }
                   helperText={
                     (isInvalidDesCard && "شماره کارت اشتباه است") ||
-                    (formik.touched.desCard && formik.errors.desCard)
+                    (formik.touched.desCard && formik.errors.desCard && formik.errors.desCard.trim() !== "" ? formik.errors.desCard : null)
                   }
                   InputLabelProps={{
                     sx: {
-                      color: isInvalidDesCard
-                        ? "red"
-                        : formik.touched.desCard && formik.errors.desCard
-                        ? "red"
-                        : "grey",
+                      color: formik.touched.desCard && (formik.errors.desCard || isInvalidDesCard) ? "red" : "grey",
                       "&.Mui-focused": {
                         color: "#1C3AA9",
                         fontSize: { xs: "1.3rem" , sm:'1.4rem' },
@@ -862,7 +875,7 @@ const handleSnackbarOpen = () => {
                         ×
                     </IconButton>
                 }
-                sx={{top:250}}
+                sx={{top:250 , width:{sm:'500px' }}}
             >
                 <Alert onClose={handleHelpSnackbarClose} severity="info" sx={{ width: '100%' , borderRadius:'20px'}}>
                     <Typography variant='h5'>سرویس انتقال کارت به کارت</Typography>
@@ -870,10 +883,12 @@ const handleSnackbarOpen = () => {
                 </Alert>
             </Snackbar>
       </Box>
-      ) : (
-        <CardTransferForm initailCard={initialCard} desCard={desCard} amount={amount}/>
-      )}
+      
     </Box>
+  ) : (
+    <CardTransferForm initailCard={initialCard} desCard={desCard} amount={amount}/>
+  )}
+    </>
   );
 };
 
