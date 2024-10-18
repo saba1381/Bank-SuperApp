@@ -11,6 +11,7 @@ import {toPersianNumbers} from '../../util/util'
 import {sendOtp , verifyOtp} from '../account/accountSlice';
 import { UseAppDispatch } from "../../store/configureStore";
 import { toast } from 'react-toastify';
+import BankReceipt from './BankReceipt';
 
 const CardTransferForm = ({initailCard , desCard , amount}) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -19,6 +20,8 @@ const CardTransferForm = ({initailCard , desCard , amount}) => {
   const [timer, setTimer] = useState(120);
   const [isTimerActive, setIsTimerActive] = useState(false);
   const dispatch = UseAppDispatch();
+  const [showReceipt, setShowReceipt] = useState(false); 
+  const [transactionStatus, setTransactionStatus] = useState(null);
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
@@ -75,17 +78,26 @@ const CardTransferForm = ({initailCard , desCard , amount}) => {
       dispatch(verifyOtp(otpPayload))
         .unwrap()
         .then(() => {
+          setTransactionStatus('success'); 
+          setShowReceipt(true);
           setTimer(null);
           setIsTimerActive(false);
           formik.resetForm();
-          toast.success("رمز پویا با موفقیت تایید شد" , {autoClose : 3000});
+          //toast.success("رمز پویا با موفقیت تایید شد" , {autoClose : 3000});
         })
         .catch((error) => {
+          setTransactionStatus('failed');
+          setShowReceipt(true);
           const errorMessage = error.error.detail;
-          toast.error(errorMessage , {autoClose:3000});
+          //toast.error(errorMessage , {autoClose:3000});
         });
     },
   });
+
+  if (showReceipt) {
+    return <BankReceipt initailCard={initailCard} desCard={desCard} amount={amount} transactionStatus={transactionStatus} />;
+  }
+
   if (showTransfer) {
     return <Transfer />; 
 }
