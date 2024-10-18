@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils import timezone  
-
+import jdatetime
 class UserManager(BaseUserManager):
     def create_user(self, phone_number, national_code, password=None, **extra_fields):
         if not phone_number:
@@ -47,6 +47,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['phone_number']
 
     objects = UserManager()
+
+    def save(self, *args, **kwargs):
+        if not self.last_login:
+            self.last_login = jdatetime.datetime.now().replace(microsecond=0)  # زمان فعلی بدون میکروثانیه
+        super(User, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.phone_number

@@ -10,7 +10,7 @@ class UserAdmin(BaseUserAdmin):
     readonly_fields = ('last_login',)
 
     # فیلترهایی که در پنل ادمین نشان داده می‌شود
-    list_filter = ('is_customer', 'is_superuser', 'gender')
+    list_filter = ('is_customer', 'is_superuser', 'gender', 'last_login')
 
     # تنظیمات نمایش فیلدها در فرم کاربر
     fieldsets = (

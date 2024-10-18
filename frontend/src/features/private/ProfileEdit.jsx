@@ -9,6 +9,7 @@ import { UseAppDispatch } from '../../store/configureStore';
 import { fetchUserProfile , updateUserProfile} from '../../features/account/accountSlice';
 import { useSelector } from 'react-redux';
 import { useNavigate ,useLocation  } from 'react-router-dom';
+import { CgOverflow } from 'react-icons/cg';
 
 const validationSchema = yup.object({
   first_name: yup
@@ -140,13 +141,13 @@ console.log("Account state:", accountState);
 
 
   return (
-    <Container maxWidth="full" sx={{ height:{sm:'120vh' , xs:'110vh'}  , paddingY:1}} >
+    <Container maxWidth="full" sx={{ height:{sm:'120vh' , xs:'90vh'} ,maxHeight:'auto' , paddingTop:1  , paddingBottom:10, overflowY:'auto'} } >
       <Box sx={{  mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
         <Button variant="contained" color="primary" onClick={handleBackClick} endIcon={<KeyboardBackspaceIcon />}>
           بازگشت
         </Button>
       </Box>
-      <Paper elevation={4} sx={{ p: 4, borderRadius: 5, width: { md: '70%', sx: '100%' }, mx: 'auto'  }}>
+      <Paper elevation={4} sx={{ paddingY:4, borderRadius: 5, width: { md: '60%', sx: '100%' }, mx: 'auto' , paddingX:{sm:10 , xs:4}  }}>
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <Typography variant="h5" align="center" gutterBottom>
             ویرایش پروفایل
