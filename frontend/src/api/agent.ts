@@ -98,12 +98,13 @@ const UserProfile = {
 
 const Card = {
   Transfer: (values: object) => requests.post("card/card-to-card/", values),
+  TransferSendOtp: (values: object) => requests.post("card/send-otp/", values),
+  TransferVerifyOtp: (values: object) => requests.post("card/verify-otp/", values),
   AddCard: (values: object) => requests.post("card/add-card/", values),
   CardList: () => requests.get("card/my-cards/"),
   deleteCard: (values : any) => requests.del(`card/delete-card/${values.cardNumber}/`, values),
   cardInfo: (values : any) => requests.get(`card/info-card/${values.cardNumber}`),
   updateCard: (id: number, values: any) => requests.put(`card/edit-card/${id}/`, values),
-
 };
 
 const agent = {

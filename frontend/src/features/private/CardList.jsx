@@ -69,8 +69,8 @@ const banks = {
   589463: {
     name: "رفاه کارگران",
     icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />,
-    iconWidth: "38px",
-    iconHeight: "38px",
+    iconWidth: "28px",
+    iconHeight: "30px",
   },
   502229: {
     name: "پاسارگاد",
@@ -286,7 +286,7 @@ const CardList = ({ onBack }) => {
                   <Paper
                     sx={{
                       position: "relative",
-                      paddingX: { xs: 2, sm: 2 },
+                      paddingX: { xs: 1.5, sm: 2 },
                       paddingY: { xs: 1.2, sm: 2 },
                       mb: { xs: 2, md: 4 },
                       backgroundColor: color,
@@ -342,7 +342,7 @@ const CardList = ({ onBack }) => {
                                 display: "flex",
                                 flexDirection: "row", 
                                 color: textColor,
-                                gap: {xs:'0.1px' , sm:'2px'},
+                                gap: {xs:'0.08px' , sm:'1.8px'},
                               }}
                             >
                               {/* Animated Edit Icon */}

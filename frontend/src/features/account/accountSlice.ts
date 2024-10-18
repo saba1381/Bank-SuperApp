@@ -240,6 +240,32 @@ export const transferCard = createAsyncThunk(
 );
 
 
+export const sendOtp = createAsyncThunk(
+    'account/sendOtp',
+    async (data: object, thunkAPI) => {
+        try {
+            const response = await agent.Card.TransferSendOtp(data);
+            return response;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue({ error: error.data });
+        }
+    }
+);
+
+
+export const verifyOtp = createAsyncThunk(
+    'account/verifyOtp',
+    async (data: object, thunkAPI) => {
+        try {
+            const response = await agent.Card.TransferVerifyOtp(data);
+            return response;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue({ error: error.data });
+        }
+    }
+);
+
+
 
 export const accountSlice = createSlice({
     name: 'account',
@@ -403,9 +429,24 @@ export const accountSlice = createSlice({
     .addCase(transferCard.rejected, (state, action) => {
         state.isLoading = false; // بارگذاری تمام شده
         
-    });
+    })
 
 
+    builder
+          .addCase(sendOtp.pending, (state) => {
+            state.isLoading = true;  // حالت لودینگ فعال می‌شود
+          })
+          .addCase(sendOtp.fulfilled, (state) => {
+            state.isLoading = false; 
+            toast.success('رمز پویا با موفقیت ارسال شد', {
+                autoClose: 3000,  
+              }); 
+          })
+          .addCase(sendOtp.rejected, (state) => {
+            state.isLoading = false;
+            toast.error('خطا در ارسال رمز پویا');  
+          });
+          
         builder.addMatcher(isAnyOf(signInUser.rejected, verifyOTP.rejected), (state) => {
             state.isLoading = false;
         });

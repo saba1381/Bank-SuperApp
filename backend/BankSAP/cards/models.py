@@ -25,3 +25,18 @@ class Card(models.Model):
 
     def __str__(self):
         return f"{self.full_name} - {self.card_number}"
+
+
+
+class CardToCard(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    initialCard = models.CharField(max_length=16)
+    desCard = models.CharField(max_length=16)
+    amount = models.DecimalField(max_digits=20, decimal_places=0)
+    cvv2 = models.CharField(max_length=4)
+    cardMonth = models.CharField(max_length=2)
+    cardYear = models.CharField(max_length=4)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.initialCard} to {self.desCard}'

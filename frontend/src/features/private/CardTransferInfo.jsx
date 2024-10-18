@@ -8,13 +8,17 @@ import CloseIcon from '@mui/icons-material/Close';
 import Transfer from './Transfer';
 import { motion } from 'framer-motion'; 
 import {toPersianNumbers} from '../../util/util'
+import {sendOtp , verifyOtp} from '../account/accountSlice';
+import { UseAppDispatch } from "../../store/configureStore";
+import { toast } from 'react-toastify';
 
 const CardTransferForm = ({initailCard , desCard , amount}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [showTransfer, setShowTransfer] = useState(false);
-  const [timer, setTimer] = useState(120); // 2 minutes in seconds
+  const [timer, setTimer] = useState(120);
   const [isTimerActive, setIsTimerActive] = useState(false);
+  const dispatch = UseAppDispatch();
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
@@ -37,8 +41,15 @@ const CardTransferForm = ({initailCard , desCard , amount}) => {
     return () => clearInterval(interval);
   }, [isTimerActive, timer]);
   const handleDynamicPasswordClick = () => {
-    setTimer(120); // Reset the timer
-    setIsTimerActive(true); // Start the timer
+    dispatch(sendOtp())
+      .unwrap()
+      .then(() => {
+        setTimer(120); 
+        setIsTimerActive(true);
+      })
+      .catch(() => {
+        setShowTransfer(true);
+      });
   };
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -56,8 +67,23 @@ const CardTransferForm = ({initailCard , desCard , amount}) => {
         .required("لطفا رمز پویای خود را وارد کنید"),
     }),
     onSubmit: (values) => {
-      console.log(values);
-      // You can handle form submission here
+      if (!isTimerActive) {
+        toast.error("ابتدا لطفا در خواست ارسال رمز پویا دهید.", { autoClose: 3000 });
+        return; 
+      }
+      const otpPayload = { otp: values.dynamicPassword };
+      dispatch(verifyOtp(otpPayload))
+        .unwrap()
+        .then(() => {
+          setTimer(null);
+          setIsTimerActive(false);
+          formik.resetForm();
+          toast.success("رمز پویا با موفقیت تایید شد" , {autoClose : 3000});
+        })
+        .catch((error) => {
+          const errorMessage = error.error.detail;
+          toast.error(errorMessage , {autoClose:3000});
+        });
     },
   });
   if (showTransfer) {
@@ -185,6 +211,7 @@ const formatAmount = (amount) => {
       <TextField
               label="رمز پویا"
               variant="outlined"
+              value={formik.values.dynamicPassword}
               fullWidth
               type={showPassword ? 'text' : 'password'}
               {...formik.getFieldProps('dynamicPassword')}
@@ -249,7 +276,7 @@ const formatAmount = (amount) => {
               whiteSpace: 'nowrap',
               bgcolor: isTimerActive ? 'navy' : 'transparent', 
               transition: 'background-color 0.3s ease',
-              cursor: isTimerActive ? 'not-allowed' : 'pointer',
+              cursor: isTimerActive ? 'not-allowed' : 'pointer'
             }}
             onClick={handleDynamicPasswordClick}
             disabled={isTimerActive}
