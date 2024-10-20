@@ -43,15 +43,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     
 
-    USERNAME_FIELD = 'national_code'
+    USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['phone_number']
 
     objects = UserManager()
 
-    def save(self, *args, **kwargs):
-        if not self.last_login:
-            self.last_login = jdatetime.datetime.now().replace(microsecond=0)  # زمان فعلی بدون میکروثانیه
-        super(User, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.phone_number

@@ -22,6 +22,7 @@ const CardTransferForm = ({initailCard , desCard , amount}) => {
   const dispatch = UseAppDispatch();
   const [showReceipt, setShowReceipt] = useState(false); 
   const [transactionStatus, setTransactionStatus] = useState(null);
+  const [transactionDate, setTransactionDate] = useState(null);
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
@@ -77,17 +78,22 @@ const CardTransferForm = ({initailCard , desCard , amount}) => {
       const otpPayload = { otp: values.dynamicPassword };
       dispatch(verifyOtp(otpPayload))
         .unwrap()
-        .then(() => {
+        .then((response) => {
           setTransactionStatus('success'); 
           setShowReceipt(true);
           setTimer(null);
           setIsTimerActive(false);
           formik.resetForm();
+          const transactionDate = response.transaction_date; 
+          setTransactionDate(transactionDate);
+          console.log(response.transaction_date)
           //toast.success("رمز پویا با موفقیت تایید شد" , {autoClose : 3000});
         })
         .catch((error) => {
           setTransactionStatus('failed');
           setShowReceipt(true);
+          const transactionDate = error.error.transaction_date; 
+          setTransactionDate(transactionDate);
           const errorMessage = error.error.detail;
           //toast.error(errorMessage , {autoClose:3000});
         });
@@ -95,7 +101,7 @@ const CardTransferForm = ({initailCard , desCard , amount}) => {
   });
 
   if (showReceipt) {
-    return <BankReceipt initailCard={initailCard} desCard={desCard} amount={amount} transactionStatus={transactionStatus} />;
+    return <BankReceipt transactionDate={transactionDate} initailCard={initailCard} desCard={desCard} amount={amount} transactionStatus={transactionStatus} />;
   }
 
   if (showTransfer) {

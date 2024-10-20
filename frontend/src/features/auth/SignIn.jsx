@@ -42,10 +42,8 @@ const Overlay = styled('div')(({ theme }) => ({
 }));
 
 const validationSchema = Yup.object({
-    nationalId: Yup.string()
-        .matches(/^[0-9]*$/, 'کدملی باید شامل اعداد باشد')
-        .length(10, 'کدملی باید 10 رقم باشد')
-        .required('کد ملی را وارد کنید'),
+    userName: Yup.string()
+        .required('نام کاربری خود را وارد کنید'),
     password: Yup.string()
         .required('رمز عبور را وارد کنید'),
 });
@@ -60,7 +58,7 @@ export default function SignIn() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const handleClickShowPassword = () => setShowPassword(!showPassword);
     const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
-    const nationalIdRef = useRef(null);
+    const userNameRef = useRef(null);
     const passwordRef = useRef(null);
     const [loading, setLoading] = useState(false);
     
@@ -70,14 +68,14 @@ export default function SignIn() {
         if (accessToken) {
             formik.resetForm();
         } else {
-            formik.setFieldValue('nationalId', localStorage.getItem('nationalId') || '');
+            formik.setFieldValue('userName', localStorage.getItem('userName') || '');
             formik.setFieldValue('mobile', localStorage.getItem('mobile') || '');
         }
     }, []);
 
     const formik = useFormik({
         initialValues: {
-            nationalId: '',
+            userName: '',
             password: '',
             rememberMe: false,
         },
@@ -89,14 +87,14 @@ export default function SignIn() {
             localStorage.removeItem('access_token');
     
             if (values.rememberMe) {
-                localStorage.setItem('nationalId', values.nationalId);
+                localStorage.setItem('userName', values.userName);
             } else {
-                localStorage.removeItem('nationalId');
+                localStorage.removeItem('userName');
             }
     
             try {
                 const result = await dispatch(signInUser({
-                    national_code: values.nationalId,
+                    username: values.userName,
                     password: values.password
                 }));
     
@@ -166,15 +164,15 @@ export default function SignIn() {
                     <TextField
                         fullWidth
                         margin="normal"
-                        label="کد ملی"
-                        name="nationalId"
-                        value={formik.values.nationalId}
+                        label="نام کاربری"
+                        name="userName"
+                        value={formik.values.userName}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         onKeyDown={(e) => handleKeyDown(e, passwordRef)}
-                        inputRef={nationalIdRef}
-                        error={formik.touched.nationalId && Boolean(formik.errors.nationalId)}
-                        helperText={formik.touched.nationalId && formik.errors.nationalId}
+                        inputRef={userNameRef}
+                        error={formik.touched.userName && Boolean(formik.errors.userName)}
+                        helperText={formik.touched.userName && formik.errors.userName}
                         variant="outlined"
                         InputProps={{
                             style: { textAlign: 'right' },
@@ -202,7 +200,7 @@ export default function SignIn() {
                                 '&.Mui-focused': {
                                     color: '#1C3AA9',
                                     fontSize: {xs: '1.3rem'},
-                                    transform: 'translate(3px, -13px) scale(0.75)'
+                                    transform: 'translate(-6px, -18px) scale(0.75)'
                                 },
                                 '&.Mui-error': {
                                     color: 'pink',
@@ -262,7 +260,7 @@ export default function SignIn() {
             '&.Mui-focused': {
                 color: '#1C3AA9',
                 fontSize: {xs: '1.3rem'},
-                transform: 'translate(2px, -13px) scale(0.75)'
+                transform: 'translate(2px, -15px) scale(0.75)'
             },
             '&.Mui-error': {
                 color: 'pink',

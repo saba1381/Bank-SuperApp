@@ -44,7 +44,7 @@ class CardToCard(models.Model):
         return f'{self.user.username} - {self.initialCard} to {self.desCard}'
     
     def save(self, *args, **kwargs):
-        self.created_at = jdatetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+        self.created_at = jdatetime.datetime.now().strftime('%H:%M %Y/%m/%d')
         super(CardToCard, self).save(*args, **kwargs)
 
     def created_date(self):

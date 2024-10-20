@@ -4,7 +4,7 @@ import {toPersianNumbers} from '../../util/util';
 import Transfer from './Transfer';
 import { useNavigate } from 'react-router-dom';
 
-const BankReceipt = ({ initailCard, desCard, amount, transactionStatus }) => {
+const BankReceipt = ({transactionDate, initailCard, desCard, amount, transactionStatus }) => {
     const navigate = useNavigate();
     const [showTransfer, setShowTransfer] = useState(false); 
   const formatAmount = (amount) => {
@@ -53,6 +53,11 @@ const BankReceipt = ({ initailCard, desCard, amount, transactionStatus }) => {
         <Typography variant="h5" sx={{ fontWeight: 'bold', color: transactionStatus === 'success' ? 'green' : 'white' , bgcolor: transactionStatus === 'success' ? '#b6e9d2' : 'red' , p:2}}>
           {transactionStatus === 'success' ? 'تراکنش موفق' : 'تراکنش ناموفق'}
         </Typography>
+      </Box>
+
+      <Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed gray', paddingY: 1, color: '#56575b'  }}>
+        <Typography sx={{fontSize:'1.2rem'}}>تاریخ:</Typography>
+        <Typography sx={{fontSize:'1.1rem' , marginRight:2}}>{toPersianNumbers(transactionDate)}</Typography>
       </Box>
       <Box sx={{paddingY:2 , paddingX:1.5}}> 
       <Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed gray', paddingY: 1, color: '#56575b'  }}>

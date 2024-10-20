@@ -149,8 +149,11 @@ class UserProfileCompleteView(APIView):
     def put(self, request):
         user = request.user
         password = request.data.get('password')
+        username = request.data.get('username')
         validator = CustomPasswordValidator()
         errors = {}
+        if username and User.objects.filter(username=username).exclude(id=user.id).exists():
+            errors['username'] = "نام کاربری با این اسم قبلاً ثبت شده است."
         try:
             validator.validate(password)
         except ValidationError as e:
@@ -170,12 +173,18 @@ class UserProfileCompleteView(APIView):
 class LoginView(APIView):
     def post(self, request):
         password = request.data.get('password')
-        national_code = request.data.get('national_code')
+        username = request.data.get('username')
+
+
+        if not username:
+            return Response({"detail": "نام کاربری وارد نشده است."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            user = User.objects.get(national_code=national_code)
+            user = User.objects.get(username=username)
         except User.DoesNotExist:
-            return Response({"detail": "کدملی اشتباه است."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "نام کاربری اشتباه است."}, status=status.HTTP_400_BAD_REQUEST)
+        except User.MultipleObjectsReturned:
+            return Response({"detail": "چندین کاربر با این نام کاربری وجود دارد."}, status=status.HTTP_400_BAD_REQUEST)
 
         if not user.check_password(password):
             return Response({"detail": "  رمز عبور اشتباه است."}, status=status.HTTP_400_BAD_REQUEST)

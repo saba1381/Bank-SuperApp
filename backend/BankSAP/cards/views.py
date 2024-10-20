@@ -14,6 +14,8 @@ from django.utils import timezone
 import pyotp
 import base64
 import secrets
+import jdatetime
+
 
 class RegisterCardView(APIView):
     permission_classes = [IsAuthenticated]
@@ -181,28 +183,31 @@ class VerifyOTPAPIView(APIView):
         secret = cache.get(f'secret_{request.user.id}')
         otp_data = cache.get(f'otp_{request.user.id}')
 
+        transaction_date = jdatetime.datetime.now().strftime('%H:%M %Y/%m/%d')
+
+
         if not otp_data:
             return Response(
-                {"detail": "رمز پویای شما یافت نشده است"},
+                {"detail": "رمز پویای شما یافت نشده است" , "transaction_date": transaction_date},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         if timezone.now() > otp_data['expiry']:
             return Response(
-                {"detail": "رمز پویای شما منقضی شده است."},
+                {"detail": "رمز پویای شما منقضی شده است." , "transaction_date": transaction_date },
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         if otp_input != otp_data['otp']:
             print(f"Failed OTP: {otp_input}, Expected OTP: {otp_data['otp']}")
             return Response(
-                {"detail": "رمز پویا نادرست است."},
+                {"detail": "رمز پویا نادرست است." , "transaction_date": transaction_date },
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         if not card_info:
             return Response(
-                {"detail": "اطلاعات انتقال وجه یافت نشد."},
+                {"detail": "اطلاعات انتقال وجه یافت نشد." , "transaction_date": transaction_date},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -222,6 +227,9 @@ class VerifyOTPAPIView(APIView):
         cache.delete(f'secret_{request.user.id}')
 
         return Response(
-            {"detail": "تراکنش با موفقیت انجام شد."},
+            {
+                "detail": "تراکنش با موفقیت انجام شد.",
+                "transaction_date": card_transaction.created_at
+            },
             status=status.HTTP_200_OK
         )
