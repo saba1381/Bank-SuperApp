@@ -293,7 +293,7 @@ const handleSnackbarOpen = () => {
         .required("مبلغ را به ریال وارد کنید")
         .max(16, "مبلغ نمی‌تواند بیشتر از ۱۶ رقم باشد"),
       cvv2: Yup.string()
-        .matches(/^\d{3}$/, "کد CVV2 را کامل وارد کنید.")
+        .matches(/^\d{3,4}$/, "کد CVV2 را کامل وارد کنید.")
         .required("cvv2 را وارد کنید"),
       cardMonth: Yup.string()
         .matches(/^\d{1,2}$/, "ماه معتبر نیست")
@@ -677,7 +677,7 @@ const handleSnackbarOpen = () => {
                       e.preventDefault();
                     }}}
                   inputRef={cvv2Ref}
-                  inputProps={{ maxLength: 3 , inputMode: 'numeric', pattern: '[0-9]*'}}
+                  inputProps={{ maxLength: 4 , inputMode: 'numeric', pattern: '[0-9]*'}}
                   error={formik.touched.cvv2 && Boolean(formik.errors.cvv2)}
                   helperText={formik.touched.cvv2 && formik.errors.cvv2}
                   InputLabelProps={{

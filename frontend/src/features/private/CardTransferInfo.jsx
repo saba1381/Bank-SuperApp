@@ -23,6 +23,7 @@ const CardTransferForm = ({initailCard , desCard , amount}) => {
   const [showReceipt, setShowReceipt] = useState(false); 
   const [transactionStatus, setTransactionStatus] = useState(null);
   const [transactionDate, setTransactionDate] = useState(null);
+  const [dynamicPasswordError, setDynamicPasswordError] = useState('');
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
@@ -86,7 +87,6 @@ const CardTransferForm = ({initailCard , desCard , amount}) => {
           formik.resetForm();
           const transactionDate = response.transaction_date; 
           setTransactionDate(transactionDate);
-          console.log(response.transaction_date)
           //toast.success("رمز پویا با موفقیت تایید شد" , {autoClose : 3000});
         })
         .catch((error) => {
@@ -99,6 +99,7 @@ const CardTransferForm = ({initailCard , desCard , amount}) => {
         });
     },
   });
+
 
   if (showReceipt) {
     return <BankReceipt transactionDate={transactionDate} initailCard={initailCard} desCard={desCard} amount={amount} transactionStatus={transactionStatus} />;

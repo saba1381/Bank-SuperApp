@@ -3,6 +3,9 @@ import { Box, Container, Typography, Button } from '@mui/material';
 import {toPersianNumbers} from '../../util/util';
 import Transfer from './Transfer';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import ShareIcon from "@mui/icons-material/Share";
+import { toast } from 'react-toastify';
 
 const BankReceipt = ({transactionDate, initailCard, desCard, amount, transactionStatus }) => {
     const navigate = useNavigate();
@@ -44,22 +47,49 @@ const BankReceipt = ({transactionDate, initailCard, desCard, amount, transaction
   if (showTransfer){
     return <Transfer/>
   }
+  const maskCardNumber = (cardNumber) => {
+    return `\u200E${cardNumber.slice(0, 6)}${cardNumber.slice(6, -4).replace(/\d/g, '*')}${cardNumber.slice(-2)}`;
+  };
   
+  const shareInfo = `\u200Fتاریخ:  ${toPersianNumbers(transactionDate)} \nکارت مبدا: ${initailCard}\nکارت مقصد${maskCardNumber(desCard)} : \n مبلغ: ${toPersianNumbers(formatAmount(amount))} ریال`;
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'رسید تراکنش',
+        text: shareInfo,
+      })
+      .then(() => console.log('اشتراک‌گذاری موفق بود'))
+      .catch((error) => console.log('خطا در اشتراک‌گذاری:', error));
+    } else {
+      toast.error('مرورگر شما از قابلیت اشتراک‌گذاری پشتیبانی نمی‌کند.');
+    }
+  };  
 
   return (
-    <Container sx={{ height: '70vh',display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <motion.div
+    initial={{ y: 100, opacity: 0 }}
+    animate={{ y: 0, opacity: 1 }}
+    transition={{ duration: 0.5, ease: 'easeOut' }}
+  >
+    <Container sx={{ height: {xs:'70vh' , sm:'100vh'},display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom:{sm:10} }}>
+
     <Box sx={{ maxWidth: 500,width:{xs:500 , sm:400} ,mx: 'auto', paddingY: 0, paddingX: 0, borderRadius: 2, boxShadow: 3, bgcolor: 'white' }}>
       <Box sx={{ textAlign: 'center', mb: 1 }}>
         <Typography variant="h5" sx={{ fontWeight: 'bold', color: transactionStatus === 'success' ? 'green' : 'white' , bgcolor: transactionStatus === 'success' ? '#b6e9d2' : 'red' , p:2}}>
           {transactionStatus === 'success' ? 'تراکنش موفق' : 'تراکنش ناموفق'}
+          {transactionStatus === 'success' && (
+                <ShareIcon onClick={handleShare} style={{ marginRight: '10px', cursor: 'pointer' }} />
+              )}
         </Typography>
       </Box>
 
+      
+      <Box sx={{paddingY:2 , paddingX:1.2}}> 
       <Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed gray', paddingY: 1, color: '#56575b'  }}>
         <Typography sx={{fontSize:'1.2rem'}}>تاریخ:</Typography>
-        <Typography sx={{fontSize:'1.1rem' , marginRight:2}}>{toPersianNumbers(transactionDate)}</Typography>
+        <Typography sx={{fontSize:'1.1rem'}}>{toPersianNumbers(transactionDate)}</Typography>
       </Box>
-      <Box sx={{paddingY:2 , paddingX:1.5}}> 
       <Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed gray', paddingY: 1, color: '#56575b'  }}>
         <Typography sx={{fontSize:'1.2rem'}}>مبلغ:</Typography>
         <Typography sx={{fontSize:'1.1rem'}}>{toPersianNumbers(formatAmount(amount))} ریال</Typography>
@@ -114,7 +144,9 @@ const BankReceipt = ({transactionDate, initailCard, desCard, amount, transaction
         </Box>
       
     </Box>
+    
    </Container>
+   </motion.div>
   );
   
 };
