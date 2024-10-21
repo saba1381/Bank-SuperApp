@@ -9,8 +9,12 @@ import {
   Alert,
   Autocomplete,
   IconButton,
-  Backdrop
+  Backdrop,
+  FormControl,
+  FormControlLabel,
+  Checkbox
 } from "@mui/material";
+import { purple } from '@mui/material/colors';
 import InputAdornment from "@mui/material/InputAdornment";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { motion } from "framer-motion";
@@ -280,6 +284,7 @@ const handleSnackbarOpen = () => {
       cvv2: "",
       cardMonth: "",
       cardYear: "",
+      saveCard : "",
     },
     validationSchema: Yup.object({
       initialCard: Yup.string()
@@ -791,7 +796,23 @@ const handleSnackbarOpen = () => {
                 </Box>
               </motion.div>
             </Box>
-
+            <FormControlLabel
+      control={
+        <Checkbox
+          checked={formik.values.saveCard || false}
+          onChange={(event) => formik.setFieldValue('saveCard', event.target.checked)}
+          name="saveCard"
+          sx={{
+            color: purple[500],
+            '&.Mui-checked': {
+              color: purple[700],
+            },
+          }}
+        />
+      }
+      label="ذخیره‌ی کارت مقصد"
+      sx={{ mt:-4 }}
+    />
             <Box
               sx={{
                 display: "flex",
@@ -799,7 +820,7 @@ const handleSnackbarOpen = () => {
                 alignItems: "center",
                 width: "100%",
                 gap: 1.4,
-                mt: 4,
+                mt: 0.4,
               }}
             >
               <Button

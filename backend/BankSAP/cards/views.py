@@ -15,7 +15,7 @@ import pyotp
 import base64
 import secrets
 import jdatetime
-
+from .models import SavedCard
 
 class RegisterCardView(APIView):
     permission_classes = [IsAuthenticated]
@@ -233,3 +233,16 @@ class VerifyOTPAPIView(APIView):
             },
             status=status.HTTP_200_OK
         )
+    
+
+class SaveCardAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        des_card = request.data.get('des_card')
+
+        if SavedCard.objects.filter(user=request.user, des_card=des_card).exists():
+            return Response({"detail": "این کارت قبلاً ذخیره شده است."}, status=status.HTTP_400_BAD_REQUEST)
+
+        SavedCard.objects.create(user=request.user, des_card=des_card)
+        return Response({"detail": "کارت با موفقیت ذخیره شد."}, status=status.HTTP_201_CREATED)
