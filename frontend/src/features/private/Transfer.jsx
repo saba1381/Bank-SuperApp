@@ -20,7 +20,7 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { motion } from "framer-motion";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import {transferCard,fetchCards } from "../account/accountSlice";
+import {transferCard,fetchCards, saveDesCard } from "../account/accountSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UseAppDispatch, UseAppSelector } from "../../store/configureStore";
 import CardTransferForm from './CardTransferInfo';
@@ -284,7 +284,7 @@ const handleSnackbarOpen = () => {
       cvv2: "",
       cardMonth: "",
       cardYear: "",
-      saveCard : "",
+      saveCard : false,
     },
     validationSchema: Yup.object({
       initialCard: Yup.string()
@@ -343,6 +343,13 @@ const handleSnackbarOpen = () => {
           setInitialCard(values.initialCard);
           setDesCard(values.desCard);
           setAmount(values.amount);
+
+          if (values.saveCard) {
+            dispatch(saveDesCard({ des_card: values.desCard.replace(/-/g, "") })) 
+              .catch((error) => {
+                toast.error("Failed to save card", { autoClose: 3000 });
+              });
+          }
         })
         .catch((error) => {
       const errorMessage = error.error.detail;

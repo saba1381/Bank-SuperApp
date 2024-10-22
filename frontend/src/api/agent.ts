@@ -42,7 +42,7 @@ axios.interceptors.response.use(
             store.dispatch(signOut()); // فراخوانی اکشن signOut
           } else {
             store.dispatch(refreshTokensAsync());
-            toast.error(data.Title);
+            toast.error('زمان توکن شما به پایان رسیده است. لطفاً مجدداً وارد شوید.');
           }
           break;
 
@@ -100,6 +100,7 @@ const Card = {
   Transfer: (values: object) => requests.post("card/card-to-card/", values),
   TransferSendOtp: (values: object) => requests.post("card/send-otp/", values),
   TransferVerifyOtp: (values: object) => requests.post("card/verify-otp/", values),
+  SaveDesCard: (values: object) => requests.post("card/save_desCard/", values),
   AddCard: (values: object) => requests.post("card/add-card/", values),
   CardList: () => requests.get("card/my-cards/"),
   deleteCard: (values : any) => requests.del(`card/delete-card/${values.cardNumber}/`, values),

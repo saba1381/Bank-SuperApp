@@ -246,3 +246,8 @@ class SaveCardAPIView(APIView):
 
         SavedCard.objects.create(user=request.user, des_card=des_card)
         return Response({"detail": "کارت با موفقیت ذخیره شد."}, status=status.HTTP_201_CREATED)
+    
+    def get(self, request):
+        saved_cards = SavedCard.objects.filter(user=request.user)
+        serialized_cards = [{"des_card": card.des_card} for card in saved_cards]
+        return Response(serialized_cards, status=status.HTTP_200_OK)

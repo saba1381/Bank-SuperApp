@@ -53,8 +53,9 @@ class CardToCard(models.Model):
 
 class SavedCard(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    des_card = models.CharField(max_length=16 , null=False)
+    des_card = models.CharField(max_length=16 ,blank=False ,null=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Card {self.card_number} for {self.user.username}"
+    

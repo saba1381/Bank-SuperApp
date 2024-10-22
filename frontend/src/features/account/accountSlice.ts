@@ -265,6 +265,20 @@ export const verifyOtp = createAsyncThunk(
     }
 );
 
+export const saveDesCard = createAsyncThunk(
+    'account/saveDesCard',
+    async (data: object, thunkAPI) => {
+        try {
+            const response = await agent.Card.SaveDesCard(data);
+            return response;
+        } catch (error: any) {
+            const errorMessage = error.data.detail || 'خطا در ذخیره کارت مقصد';
+            return thunkAPI.rejectWithValue({ error: errorMessage });
+        }
+    }
+);
+
+
 
 
 export const accountSlice = createSlice({
@@ -393,16 +407,16 @@ export const accountSlice = createSlice({
   builder
   .addCase(fetchCardInfo.pending, (state) => {
       state.isLoading = true;
-      state.error = null;  // Reset error state
+      state.error = null;
   })
   .addCase(fetchCardInfo.fulfilled, (state, action) => {
       state.isLoading = false;
-      state.cardInfo = action.payload;  // Store the fetched card data
-      state.error = null;  // Reset error on successful fetch
+      state.cardInfo = action.payload;  
+      state.error = null; 
   })
   .addCase(fetchCardInfo.rejected, (state, action) => {
       state.isLoading = false;
-      state.error = action.error.message ?? null;  // Capture error message or set to null
+      state.error = action.error.message ?? null; 
   });
   builder
     .addCase(updateCard.pending, (state) => {
@@ -427,14 +441,14 @@ export const accountSlice = createSlice({
         //toast.success('انتقال با موفقیت انجام شد'); 
     })
     .addCase(transferCard.rejected, (state, action) => {
-        state.isLoading = false; // بارگذاری تمام شده
+        state.isLoading = false; 
         
     })
 
 
     builder
           .addCase(sendOtp.pending, (state) => {
-            state.isLoading = true;  // حالت لودینگ فعال می‌شود
+            state.isLoading = true;  
           })
           .addCase(sendOtp.fulfilled, (state) => {
             state.isLoading = false; 
@@ -446,6 +460,23 @@ export const accountSlice = createSlice({
             state.isLoading = false;
             toast.error('خطا در ارسال رمز پویا');  
           });
+          builder
+          .addCase(saveDesCard.pending, (state) => {
+            state.isLoading = true;
+          })
+          .addCase(saveDesCard.fulfilled, (state, action) => {
+            state.isLoading = false; 
+            const payload = action.payload as any; 
+            // toast.success('کارت مقصد با موفقیت ذخیره شد', {
+            //     autoClose: 3000,
+            // });
+          })
+          .addCase(saveDesCard.rejected, (state, action) => {
+            state.isLoading = false;
+            const error = (action.payload as { error: string }).error;  
+            toast.error(error || 'خطا در ذخیره کارت مقصد' , { autoClose: 3000 });
+          });
+        
           
         builder.addMatcher(isAnyOf(signInUser.rejected, verifyOTP.rejected), (state) => {
             state.isLoading = false;
