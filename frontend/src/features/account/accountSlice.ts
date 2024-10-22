@@ -11,6 +11,7 @@ interface AccountState {
     cards: Array<any> | [],
     cardInfo: Card | null,    
     error: string | null, 
+    
 }
 
 const initialState: AccountState = {
@@ -279,7 +280,17 @@ export const saveDesCard = createAsyncThunk(
 );
 
 
-
+export const fetchSavedDesCards = createAsyncThunk(
+    "account/fetchSavedDesCards",
+    async (_, thunkAPI) => {
+      try {
+        const response = await agent.Card.GetSaveDesCard();
+        return response.data; // Assuming the API returns the data in the 'data' field
+      } catch (error:any) {
+        return thunkAPI.rejectWithValue(error.response?.data || error.message);
+      }
+    }
+  );
 
 export const accountSlice = createSlice({
     name: 'account',
@@ -475,6 +486,19 @@ export const accountSlice = createSlice({
             state.isLoading = false;
             const error = (action.payload as { error: string }).error;  
             toast.error(error || 'خطا در ذخیره کارت مقصد' , { autoClose: 3000 });
+          });
+          builder
+          // Fetch saved destination cards
+          .addCase(fetchSavedDesCards.pending, (state) => {
+            state.isLoading = true;
+            state.error = null;
+          })
+          .addCase(fetchSavedDesCards.fulfilled, (state, action) => {
+            state.isLoading = false;
+          })
+          .addCase(fetchSavedDesCards.rejected, (state, action) => {
+            state.isLoading = false;
+   
           });
         
           

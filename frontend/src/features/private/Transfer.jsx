@@ -20,7 +20,7 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { motion } from "framer-motion";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import {transferCard,fetchCards, saveDesCard } from "../account/accountSlice";
+import {transferCard,fetchCards, saveDesCard , fetchSavedDesCards } from "../account/accountSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UseAppDispatch, UseAppSelector } from "../../store/configureStore";
 import CardTransferForm from './CardTransferInfo';
@@ -49,6 +49,7 @@ const Transfer = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [userCards, setUserCards] = useState([]);
+  const [userDesCards, setUserDesCards] = useState([]);
   const [currentComponent, setCurrentComponent] = useState(false);
   const [initialCard, setInitialCard] = useState("");
   const [desCard, setDesCard] = useState("");
@@ -275,6 +276,25 @@ const handleSnackbarOpen = () => {
     fetchUserCards();
   }, [dispatch]);
 
+
+  useEffect(() => {
+    const fetchUserDesCards = async () => {
+      try {
+        const cards = await dispatch(fetchSavedDesCards()).unwrap();
+      
+        if (Array.isArray(cards)) {
+          setUserDesCards(cards);
+        } else {
+          setUserDesCards([]); 
+        }
+      } catch (error) {
+        console.error("Error fetching cards:", error);
+        setUserDesCards([]); 
+      }
+    };
+
+    fetchUserDesCards();
+  }, [dispatch]);
 
   const formik = useFormik({
     initialValues: {
@@ -569,8 +589,75 @@ const handleSnackbarOpen = () => {
   
 </motion.div>
 
-              <motion.div {...animationProps}>
+<motion.div 
+  initial={{ opacity: 0, y: -20 }} 
+  animate={{ opacity: 1, y: 0 }} 
+  exit={{ opacity: 0, y: -20 }} 
+  transition={{ duration: 0.5 }}
+>
+              {Array.isArray(userDesCards) && (
+    <Autocomplete
+      freeSolo
+      options={userDesCards.map((card) => ({
+        label: `${formatCardNumber(card.des_card)}`, 
+        value: card.des_card, 
+      }))}
+      PopperProps={{
+        modifiers: [
+          {
+            name: 'offset',
+            options: {
+              offset: [0, 0], 
+            },
+          },
+        ],
+      }}
+      getOptionLabel={(option) => option.label}
+      renderOption={(props, option) => {
+        const firstSixDigits = option.value.substring(0, 6);
+        const bank = banks[firstSixDigits]; 
+
+        return (
+          <li {...props} style={{
+            backgroundColor: "#f3f4f9",
+            paddingY: 0.1,
+            boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.01)",
+            transition: "background-color 0.3s ease",
+            zIndex:-10,
+            fontSize:{xs:'0.7rem' , sm:'0.9rem'}
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#ececec"}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#f7f7f7"}
+          >
+            {bank ? (
+              <>
+                <img
+                  src={bank.icon.props.src} 
+                  alt={bank.icon.props.alt} 
+                  style={{
+                    width: bank.iconWidth, 
+                    height: bank.iconHeight, 
+                    marginLeft: "3px", 
+                    scale:'70%'
+                  }}
+                />
+                {option.label}
+              </>
+            ) : (
+              option.label
+            )}
+          </li>
+        );
+      }}
+      inputValue={formik.values.desCard} 
+      onInputChange={(event, newValue) => {
+        const formattedNumber = formatCardNumber(newValue); 
+        formik.setFieldValue("desCard", formattedNumber); 
+        handleCardNumberChange({ target: { value: newValue } }); 
+      }}
+      renderInput={(params) => (
                 <TextField
+                {...params}
                   label={<>
                      به کارت <span style={{ color: 'red' }}>*</span>
                   </>}
@@ -581,7 +668,7 @@ const handleSnackbarOpen = () => {
                   onChange={handleDesCardChange}
                   onKeyDown={(e) => handleKeyDown(e, amountRef)}
                   inputRef={DesCardNum}
-                  inputProps={{ maxLength: 19 }}
+                  inputProps={{ maxLength: 19 ,...params.inputProps}}
                   error={
                     isInvalidDesCard ||
                     (formik.touched.desCard && Boolean(formik.errors.desCard))
@@ -621,6 +708,10 @@ const handleSnackbarOpen = () => {
                     
                   }}
                 />
+              )}
+              />
+              
+            )}
               </motion.div>
               <motion.div {...animationProps}>
                 <TextField

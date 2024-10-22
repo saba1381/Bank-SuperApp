@@ -101,6 +101,7 @@ const Card = {
   TransferSendOtp: (values: object) => requests.post("card/send-otp/", values),
   TransferVerifyOtp: (values: object) => requests.post("card/verify-otp/", values),
   SaveDesCard: (values: object) => requests.post("card/save_desCard/", values),
+  GetSaveDesCard: () => requests.get("card/save_desCard/"),
   AddCard: (values: object) => requests.post("card/add-card/", values),
   CardList: () => requests.get("card/my-cards/"),
   deleteCard: (values : any) => requests.del(`card/delete-card/${values.cardNumber}/`, values),
