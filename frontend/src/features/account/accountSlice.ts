@@ -285,7 +285,7 @@ export const fetchSavedDesCards = createAsyncThunk(
     async (_, thunkAPI) => {
       try {
         const response = await agent.Card.GetSaveDesCard();
-        return response.data; // Assuming the API returns the data in the 'data' field
+        return response; // Assuming the API returns the data in the 'data' field
       } catch (error:any) {
         return thunkAPI.rejectWithValue(error.response?.data || error.message);
       }

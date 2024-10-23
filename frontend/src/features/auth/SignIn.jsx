@@ -199,8 +199,18 @@ export default function SignIn() {
                                 
                                 '&.Mui-focused': {
                                     color: '#1C3AA9',
-                                    fontSize: {xs: '1.3rem'},
-                                    transform: 'translate(-6px, -18px) scale(0.75)'
+                                    fontSize: {
+                                        xs: '1.1rem', // تغییر اندازه در کوچکترین صفحه
+                                        sm: '1.3rem', // برای صفحه کوچک
+                                        md: '1.4rem', // برای صفحه متوسط
+                                        lg: '1.5rem', // برای صفحه بزرگ
+                                    },
+                                    transform: {
+                                        xs: 'translate(-2px, -15px) scale(0.85)',
+                                        sm: 'translate(5px, -14px) scale(0.75)', 
+                                        md: 'translate(3px, -14px) scale(0.70)', // برای صفحه متوسط
+                                        lg: 'translate(2px, -22px) scale(0.65)', // برای صفحه بزرگ
+                                    },
                                 },
                                 '&.Mui-error': {
                                     color: 'pink',
@@ -259,8 +269,18 @@ export default function SignIn() {
             
             '&.Mui-focused': {
                 color: '#1C3AA9',
-                fontSize: {xs: '1.3rem'},
-                transform: 'translate(2px, -15px) scale(0.75)'
+                fontSize: {
+                    xs: '1.1rem', // تغییر اندازه در کوچکترین صفحه
+                    sm: '1.3rem', // برای صفحه کوچک
+                    md: '1.4rem', // برای صفحه متوسط
+                    lg: '1.5rem', // برای صفحه بزرگ
+                },
+                transform: {
+                    xs: 'translate(2px, -15px) scale(0.85)', // برای صفحه کوچک
+                    sm: 'translate(7px, -15px) scale(0.75)', // برای صفحه کوچک‌تر
+                    md: 'translate(3px, -14px) scale(0.70)', // برای صفحه متوسط
+                    lg: 'translate(2px, -22px) scale(0.65)', // برای صفحه بزرگ
+                },
             },
             '&.Mui-error': {
                 color: 'pink',

@@ -261,6 +261,7 @@ const handleSnackbarOpen = () => {
     const fetchUserCards = async () => {
       try {
         const cards = await dispatch(fetchCards()).unwrap();
+  
       
         if (Array.isArray(cards)) {
           setUserCards(cards);
@@ -280,10 +281,11 @@ const handleSnackbarOpen = () => {
   useEffect(() => {
     const fetchUserDesCards = async () => {
       try {
-        const cards = await dispatch(fetchSavedDesCards()).unwrap();
+        const Descards = await dispatch(fetchSavedDesCards()).unwrap();
+        console.log(Descards)
       
-        if (Array.isArray(cards)) {
-          setUserDesCards(cards);
+        if (Array.isArray(Descards)) {
+          setUserDesCards(Descards);
         } else {
           setUserDesCards([]); 
         }
@@ -557,8 +559,18 @@ const handleSnackbarOpen = () => {
               color: formik.touched.initialCard && (formik.errors.initialCard || isInvalidCard) ? "red" : "grey",
               "&.Mui-focused": {
                 color: "#1C3AA9",
-                fontSize: { xs: "1.3rem" },
-                transform: "translate(-3px, -18px) scale(0.75)",
+                fontSize: {
+                  xs: '1.01rem', // تغییر اندازه در کوچکترین صفحه
+                  sm: '1.3rem', // برای صفحه کوچک
+                  md: '1.4rem', // برای صفحه متوسط
+                  lg: '1.5rem', // برای صفحه بزرگ
+              },
+              transform: {
+                  xs: 'translate(10px, -15px) scale(0.85)',
+                  sm: 'translate(13px, -14px) scale(0.75)', 
+                  md: 'translate(12px, -14px) scale(0.70)', // برای صفحه متوسط
+                  lg: 'translate(10px, -22px) scale(0.65)', // برای صفحه بزرگ
+              },
               },
               "&.Mui-error": {
                 color: "pink",
@@ -653,7 +665,7 @@ const handleSnackbarOpen = () => {
       onInputChange={(event, newValue) => {
         const formattedNumber = formatCardNumber(newValue); 
         formik.setFieldValue("desCard", formattedNumber); 
-        handleCardNumberChange({ target: { value: newValue } }); 
+        handleDesCardChange({ target: { value: newValue } }); 
       }}
       renderInput={(params) => (
                 <TextField
@@ -682,8 +694,18 @@ const handleSnackbarOpen = () => {
                       color: formik.touched.desCard && (formik.errors.desCard || isInvalidDesCard) ? "red" : "grey",
                       "&.Mui-focused": {
                         color: "#1C3AA9",
-                        fontSize: { xs: "1.3rem" , sm:'1.4rem' },
-                        transform: "translate(-1px, -15px) scale(0.75)",
+                        fontSize: {
+                          xs: '1.01rem', // تغییر اندازه در کوچکترین صفحه
+                          sm: '1.3rem', // برای صفحه کوچک
+                          md: '1.4rem', // برای صفحه متوسط
+                          lg: '1.5rem', // برای صفحه بزرگ
+                      },
+                      transform: {
+                          xs: 'translate(10px, -15px) scale(0.85)',
+                          sm: 'translate(13px, -14px) scale(0.75)', 
+                          md: 'translate(12px, -14px) scale(0.70)', // برای صفحه متوسط
+                          lg: 'translate(10px, -22px) scale(0.65)', // برای صفحه بزرگ
+                      },
                       },
                       "&.Mui-error": {
                         color: "pink",
@@ -739,8 +761,18 @@ const handleSnackbarOpen = () => {
                       
                       "&.Mui-focused": {
                         color: "#1C3AA9",
-                        fontSize: { xs: "1.3rem" , sm:'1.4rem' },
-                        transform: "translate(6px, -16px) scale(0.75)",
+                        fontSize: {
+                          xs: '1.01rem', // تغییر اندازه در کوچکترین صفحه
+                          sm: '1.3rem', // برای صفحه کوچک
+                          md: '1.4rem', // برای صفحه متوسط
+                          lg: '1.5rem', // برای صفحه بزرگ
+                      },
+                      transform: {
+                          xs: 'translate(10px, -15px) scale(0.85)',
+                          sm: 'translate(13px, -14px) scale(0.75)', 
+                          md: 'translate(12px, -14px) scale(0.70)', // برای صفحه متوسط
+                          lg: 'translate(10px, -22px) scale(0.65)', // برای صفحه بزرگ
+                      },
                       },
                       fontSize:'1.1rem',
                       "&.Mui-error": {
@@ -788,8 +820,18 @@ const handleSnackbarOpen = () => {
                       color: "grey",
                       "&.Mui-focused": {
                         color: "#1C3AA9",
-                        fontSize: { xs: "1.3rem" , sm:'1.4rem' },
-                        transform: "translate(1px, -16px) scale(0.75)",
+                        fontSize: {
+                          xs: '1.01rem', // تغییر اندازه در کوچکترین صفحه
+                          sm: '1.3rem', // برای صفحه کوچک
+                          md: '1.4rem', // برای صفحه متوسط
+                          lg: '1.5rem', // برای صفحه بزرگ
+                      },
+                      transform: {
+                          xs: 'translate(10px, -15px) scale(0.85)',
+                          sm: 'translate(13px, -14px) scale(0.75)', 
+                          md: 'translate(12px, -14px) scale(0.70)', // برای صفحه متوسط
+                          lg: 'translate(10px, -22px) scale(0.65)', // برای صفحه بزرگ
+                      },
                       },
                       fontSize:'0.9rem',
                       "&.Mui-error": {
@@ -841,8 +883,18 @@ const handleSnackbarOpen = () => {
                           color: "grey",
                           "&.Mui-focused": {
                         color: "#1C3AA9",
-                        fontSize: { xs: "1.3rem" , sm:'1.4rem' },
-                        transform: "translate(6px, -16px) scale(0.75)",
+                        fontSize: {
+                          xs: '1.01rem', // تغییر اندازه در کوچکترین صفحه
+                          sm: '1.3rem', // برای صفحه کوچک
+                          md: '1.4rem', // برای صفحه متوسط
+                          lg: '1.5rem', // برای صفحه بزرگ
+                      },
+                      transform: {
+                          xs: 'translate(10px, -15px) scale(0.85)',
+                          sm: 'translate(13px, -14px) scale(0.75)', 
+                          md: 'translate(12px, -14px) scale(0.70)', // برای صفحه متوسط
+                          lg: 'translate(10px, -22px) scale(0.65)', // برای صفحه بزرگ
+                      },
                       },
                           fontSize:'0.9rem',
                       "&.Mui-error": {
@@ -879,8 +931,18 @@ const handleSnackbarOpen = () => {
                           color: "grey",
                           "&.Mui-focused": {
                         color: "#1C3AA9",
-                        fontSize: { xs: "1.3rem" , sm:'1.4rem' },
-                        transform: "translate(6px, -16px) scale(0.75)",
+                        fontSize: {
+                          xs: '1.01rem', // تغییر اندازه در کوچکترین صفحه
+                          sm: '1.3rem', // برای صفحه کوچک
+                          md: '1.4rem', // برای صفحه متوسط
+                          lg: '1.5rem', // برای صفحه بزرگ
+                      },
+                      transform: {
+                          xs: 'translate(10px, -15px) scale(0.85)',
+                          sm: 'translate(13px, -14px) scale(0.75)', 
+                          md: 'translate(12px, -14px) scale(0.70)', // برای صفحه متوسط
+                          lg: 'translate(10px, -22px) scale(0.65)', // برای صفحه بزرگ
+                      },
                       },
                           fontSize:'0.9rem',
                       "&.Mui-error": {

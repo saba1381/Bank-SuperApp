@@ -46,10 +46,6 @@ axios.interceptors.response.use(
           }
           break;
 
-        case 403: // در صورت منقضی شدن رفرش توکن
-          toast.error('زمان توکن شما به پایان رسیده است. لطفاً مجدداً وارد شوید.');
-          store.dispatch(signOut()); // خروج از حساب
-          break;
 
         case 406:
           toast.error("متاسفانه پاسخ شما قابل قبول نیست.");

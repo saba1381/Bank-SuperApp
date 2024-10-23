@@ -57,5 +57,5 @@ class SavedCard(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Card {self.card_number} for {self.user.username}"
+        return f"Card {self.des_card} for {self.user.username}"
     
