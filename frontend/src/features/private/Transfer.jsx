@@ -12,22 +12,28 @@ import {
   Backdrop,
   FormControl,
   FormControlLabel,
-  Checkbox
+  Checkbox,
 } from "@mui/material";
-import { purple } from '@mui/material/colors';
+import { purple } from "@mui/material/colors";
 import InputAdornment from "@mui/material/InputAdornment";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { motion } from "framer-motion";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import {transferCard,fetchCards, saveDesCard , fetchSavedDesCards } from "../account/accountSlice";
+import {
+  transferCard,
+  fetchCards,
+  saveDesCard,
+  fetchSavedDesCards,
+} from "../account/accountSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UseAppDispatch, UseAppSelector } from "../../store/configureStore";
-import CardTransferForm from './CardTransferInfo';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline'; 
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import CardTransferForm from "./CardTransferInfo";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { toast } from "react-toastify";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const Transfer = () => {
   const [bankName, setBankName] = useState("");
@@ -54,7 +60,7 @@ const Transfer = () => {
   const [initialCard, setInitialCard] = useState("");
   const [desCard, setDesCard] = useState("");
   const [amount, setAmount] = useState("");
-  const [overlayOpen, setOverlayOpen] = useState(false); 
+  const [overlayOpen, setOverlayOpen] = useState(false);
   const [helpSnackbarOpen, setHelpSnackbarOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { cardNumberr } = location.state || {};
@@ -67,40 +73,60 @@ const Transfer = () => {
   const handleHelpSnackbarOpen = () => {
     setHelpSnackbarOpen(true);
     setOverlayOpen(true);
-};
-const handleTogglePassword = () => {
-  setShowPassword(!showPassword);
-};
+  };
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
+  };
 
-const handleSnackbarOpen = () => {
-  setSnackbarOpen(true);
-  setOverlayOpen(true);
-};
-
-
+  const handleSnackbarOpen = () => {
+    setSnackbarOpen(true);
+    setOverlayOpen(true);
+  };
 
   const banks = {
-    603799: { name: "ملی", icon: <img src="/BankIcons/meli.png" alt="ملی" />, iconWidth: "50px",iconHeight: "44px",},
-    589210: { name: "سپه", icon: <img src="/BankIcons/sepah.png" alt="سپه" />, iconWidth: "42px",iconHeight: "42px", },
+    603799: {
+      name: "ملی",
+      icon: <img src="/BankIcons/meli.png" alt="ملی" />,
+      iconWidth: "50px",
+      iconHeight: "44px",
+    },
+    589210: {
+      name: "سپه",
+      icon: <img src="/BankIcons/sepah.png" alt="سپه" />,
+      iconWidth: "42px",
+      iconHeight: "42px",
+    },
     621986: {
       name: "سامان",
-      icon: <img src="/BankIcons/saman.png" alt="سامان" />, iconWidth: "34px",iconHeight: "34px",
+      icon: <img src="/BankIcons/saman.png" alt="سامان" />,
+      iconWidth: "34px",
+      iconHeight: "34px",
     },
     622106: {
       name: "پارسیان",
-      icon: <img src="/BankIcons/parsian.png" alt="پارسیان" />, iconWidth: "66px",iconHeight: "66px",
+      icon: <img src="/BankIcons/parsian.png" alt="پارسیان" />,
+      iconWidth: "66px",
+      iconHeight: "66px",
     },
     589463: {
       name: "رفاه کارگران",
-      icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />, iconWidth: "32px",iconHeight: "32px",
+      icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />,
+      iconWidth: "32px",
+      iconHeight: "32px",
     },
     502229: {
       name: "پاسارگاد",
-      icon: <img src="/BankIcons/pasargad.png" alt="پاسارگاد" />, iconWidth: "22px",iconHeight: "30px",
+      icon: <img src="/BankIcons/pasargad.png" alt="پاسارگاد" />,
+      iconWidth: "22px",
+      iconHeight: "30px",
     },
-    610433: { name: "ملت", icon: <img src="/BankIcons/melat.png" alt="ملت" />, iconWidth: "30px",iconHeight: "30px", },
+    610433: {
+      name: "ملت",
+      icon: <img src="/BankIcons/melat.png" alt="ملت" />,
+      iconWidth: "30px",
+      iconHeight: "30px",
+    },
   };
-
 
   const bankColors = {
     603799: "#004d99",
@@ -134,9 +160,8 @@ const handleSnackbarOpen = () => {
     return number.replace(/\d/g, (d) => persianDigits[d]);
   };
 
-  
   const isValidCardNumber = (cardNumber) => {
-    const digits = cardNumber.replace(/\D/g, ""); 
+    const digits = cardNumber.replace(/\D/g, "");
     let sum = 0;
     let isSecond = false;
 
@@ -161,7 +186,7 @@ const handleSnackbarOpen = () => {
     const inputValue = e.target.value.replace(/\D/g, "");
     if (inputValue.length > 16) return;
 
-    const formattedNumber = formatCardNumber(inputValue); 
+    const formattedNumber = formatCardNumber(inputValue);
     formik.setFieldValue("initialCard", formattedNumber);
 
     const firstSixDigits = inputValue.substring(0, 6);
@@ -196,10 +221,9 @@ const handleSnackbarOpen = () => {
     if (inputValue.length === 16) {
       if (!isValidCardNumber(inputValue)) {
         setIsInvalidCard(true);
+      } else {
+        setIsInvalidCard(false);
       }
-      else {
-        setIsInvalidCard(false); 
-    }
     }
   };
   const handleDesCardChange = (e) => {
@@ -242,9 +266,9 @@ const handleSnackbarOpen = () => {
     if (inputValue.length === 16) {
       if (!isValidCardNumber(inputValue)) {
         setIsInvalidDesCard(true);
-      }else {
-        setIsInvalidDesCard(false); 
-    }
+      } else {
+        setIsInvalidDesCard(false);
+      }
     }
   };
 
@@ -256,42 +280,39 @@ const handleSnackbarOpen = () => {
     setHelpSnackbarOpen(false);
   };
 
-
   useEffect(() => {
     const fetchUserCards = async () => {
       try {
         const cards = await dispatch(fetchCards()).unwrap();
-  
-      
+
         if (Array.isArray(cards)) {
           setUserCards(cards);
         } else {
-          setUserCards([]); 
+          setUserCards([]);
         }
       } catch (error) {
         console.error("Error fetching cards:", error);
-        setUserCards([]); 
+        setUserCards([]);
       }
     };
 
     fetchUserCards();
   }, [dispatch]);
 
-
   useEffect(() => {
     const fetchUserDesCards = async () => {
       try {
         const Descards = await dispatch(fetchSavedDesCards()).unwrap();
-        console.log(Descards)
-      
+        console.log(Descards);
+
         if (Array.isArray(Descards)) {
           setUserDesCards(Descards);
         } else {
-          setUserDesCards([]); 
+          setUserDesCards([]);
         }
       } catch (error) {
         console.error("Error fetching cards:", error);
-        setUserDesCards([]); 
+        setUserDesCards([]);
       }
     };
 
@@ -306,14 +327,20 @@ const handleSnackbarOpen = () => {
       cvv2: "",
       cardMonth: "",
       cardYear: "",
-      saveCard : false,
+      saveCard: false,
     },
     validationSchema: Yup.object({
       initialCard: Yup.string()
-        .matches(/^\d{4}-\d{4}-\d{4}-\d{4}$/, "شماره کارت مبدا را کامل وارد کنید.")
+        .matches(
+          /^\d{4}-\d{4}-\d{4}-\d{4}$/,
+          "شماره کارت مبدا را کامل وارد کنید."
+        )
         .required("شماره کارت مبدا الزامی است"),
       desCard: Yup.string()
-        .matches(/^\d{4}-\d{4}-\d{4}-\d{4}$/, "شماره کارت مقصد را کامل وارد کنید.")
+        .matches(
+          /^\d{4}-\d{4}-\d{4}-\d{4}$/,
+          "شماره کارت مقصد را کامل وارد کنید."
+        )
         .required("شماره کارت مقصد الزامی است"),
       amount: Yup.string()
         .matches(/^\d{1,16}$/, "مبلغ را به درستی وارد کنید")
@@ -325,7 +352,11 @@ const handleSnackbarOpen = () => {
       cardMonth: Yup.string()
         .matches(/^\d{1,2}$/, "ماه معتبر نیست")
         .test("length", "ماه باید دو رقمی باشد", (val) => val.length === 2)
-        .test("month", "ماه معتبر نیست", (val) => parseInt(val, 10) >= 1 && parseInt(val, 10) <= 12)
+        .test(
+          "month",
+          "ماه معتبر نیست",
+          (val) => parseInt(val, 10) >= 1 && parseInt(val, 10) <= 12
+        )
         .required("ماه الزامی است"),
       cardYear: Yup.string()
         .matches(/^\d{2}$/, "سال معتبر نیست")
@@ -339,9 +370,9 @@ const handleSnackbarOpen = () => {
         });
         return;
       }
-  
+
       const errors = await formik.validateForm();
-  
+
       if (Object.keys(errors).length > 0) {
         formik.setTouched({
           initialCard: true,
@@ -351,12 +382,12 @@ const handleSnackbarOpen = () => {
           cardMonth: true,
           cardYear: true,
         });
-        return; 
+        return;
       }
       const formattedValues = {
         ...values,
-        initialCard: values.initialCard.replace(/-/g, ""), 
-        desCard: values.desCard.replace(/-/g, ""), 
+        initialCard: values.initialCard.replace(/-/g, ""),
+        desCard: values.desCard.replace(/-/g, ""),
       };
       dispatch(transferCard(formattedValues))
         .unwrap()
@@ -367,25 +398,26 @@ const handleSnackbarOpen = () => {
           setAmount(values.amount);
 
           if (values.saveCard) {
-            dispatch(saveDesCard({ des_card: values.desCard.replace(/-/g, "") })) 
-              .catch((error) => {
-                toast.error("Failed to save card", { autoClose: 3000 });
-              });
+            dispatch(
+              saveDesCard({ des_card: values.desCard.replace(/-/g, "") })
+            ).catch((error) => {
+              toast.error("Failed to save card", { autoClose: 3000 });
+            });
           }
         })
         .catch((error) => {
-      const errorMessage = error.error.detail;
-      if (errorMessage.includes("مبدا")) {
-        formik.setFieldError("initialCard" , " ");
-      }
-      if (errorMessage.includes("مقصد")) {
-        formik.setFieldError("desCard", " ");
-      }
-      toast.error(errorMessage, { autoClose: 3000 });
-    });
+          const errorMessage = error.error.detail;
+          if (errorMessage.includes("مبدا")) {
+            formik.setFieldError("initialCard", " ");
+          }
+          if (errorMessage.includes("مقصد")) {
+            formik.setFieldError("desCard", " ");
+          }
+          toast.error(errorMessage, { autoClose: 3000 });
+        });
     },
   });
-  
+
   useEffect(() => {
     if (!isInitialized && cardNumberr && !formik.values.initialCard) {
       formik.setFieldValue("initialCard", formatCardNumber(cardNumberr));
@@ -418,657 +450,786 @@ const handleSnackbarOpen = () => {
   };
   const formatAmountNumber = (value) => {
     if (!value) return value;
-    const cleanedValue = value.replace(/\D/g, ""); 
+    const cleanedValue = value.replace(/\D/g, "");
     return cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
   return (
     <>
       {!currentComponent ? (
-    <Box
-      maxWidth="full"
-      sx={{
-        paddingY: 0,
-        paddingX: { xs: 1.5, sm: 8, md: 34 },
-        height: { sm: "125vh", xs: "70vh" },
-        display: "flex",
-        flexDirection: "column",
-        gap: 3,
-      }}
-    >
-    
-      <Box
-        sx={{
-          width: "100%",
-          mb: 2,
-          paddingTop: { xs: 0.3, sm: 2 },
-          paddingBottom:{xs:8 , sm:4}
-          
-        }}
-      >
-        <form onSubmit={formik.handleSubmit}>
-          <Paper
-            elevation={3}
-            sx={{ paddingY: { xs: 4, md: 4 }, borderRadius: 3, width: "100%", paddingX:{xs:2.9 , sm:7} }}
-          >
-            <Box display="flex" justifyContent="space-between" alignItems="center" sx={{marginBottom:2}}>
-                    <Typography variant="h5" align="start" gutterBottom>
-                      کارت به کارت
-                    </Typography>
-                    <Button
-                        variant="outlined"
-                        startIcon={<HelpOutlineIcon style={{fontSize:'13px'}} />}
-                        onClick={handleHelpSnackbarOpen}
-                        sx={{ ml: 2 , fontSize:'13px' , padding:(0,0,0,2) , display:'flex' , height:'5px'}}
-                    >
-                        راهنما
-                    </Button>
-                </Box>
-            <Box sx={{ display: "grid", gap: 0.6, mb: 4 }}>
-            <motion.div 
-  initial={{ opacity: 0, y: -20 }} 
-  animate={{ opacity: 1, y: 0 }} 
-  exit={{ opacity: 0, y: -20 }} 
-  transition={{ duration: 0.5 }}
->
-  {Array.isArray(userCards) && (
-    <Autocomplete
-      freeSolo
-      options={userCards.map((card) => ({
-        label: `${formatCardNumber(card.card_number)}`, 
-        value: card.card_number, 
-      }))}
-      PopperProps={{
-        modifiers: [
-          {
-            name: 'offset',
-            options: {
-              offset: [0, 0], 
-            },
-          },
-        ],
-      }}
-      getOptionLabel={(option) => option.label}
-      renderOption={(props, option) => {
-        const firstSixDigits = option.value.substring(0, 6);
-        const bank = banks[firstSixDigits]; 
-
-        return (
-          <li {...props} style={{
-            backgroundColor: "#f3f4f9",
-            paddingY: 0.1,
-            boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.01)",
-            transition: "background-color 0.3s ease",
-            zIndex:-10,
-            fontSize:{xs:'0.7rem' , sm:'0.9rem'}
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#ececec"}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#f7f7f7"}
-          >
-            {bank ? (
-              <>
-                <img
-                  src={bank.icon.props.src} 
-                  alt={bank.icon.props.alt} 
-                  style={{
-                    width: bank.iconWidth, 
-                    height: bank.iconHeight, 
-                    marginLeft: "3px", 
-                    scale:'70%'
-                  }}
-                />
-                {option.label}
-              </>
-            ) : (
-              option.label
-            )}
-          </li>
-        );
-      }}
-      inputValue={formik.values.initialCard} 
-      onInputChange={(event, newValue) => {
-        const formattedNumber = formatCardNumber(newValue); 
-        formik.setFieldValue("initialCard", formattedNumber); 
-        handleCardNumberChange({ target: { value: newValue } }); 
-      }}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label={
-            <>
-              کارت مبدا <span style={{ color: 'red' }}>*</span>
-            </>
-          }
-          fullWidth
-          name="initialCard"
-          value={formik.values.initialCard}
-          onChange={handleCardNumberChange}
-          onKeyDown={(e) => handleKeyDown(e, DesCardNum)}
-          inputRef={IncardNum}
-          inputProps={{ maxLength: 19, ...params.inputProps }}
-          error={
-            isInvalidCard ||
-            (formik.touched.initialCard && Boolean(formik.errors.initialCard))
-          }
-          helperText={
-            (isInvalidCard && "شماره کارت اشتباه است") ||
-            (formik.touched.initialCard && formik.errors.initialCard && formik.errors.initialCard.trim() !== "" ? formik.errors.initialCard : null)
-          }
-          InputLabelProps={{
-            sx: {
-              color: formik.touched.initialCard && (formik.errors.initialCard || isInvalidCard) ? "red" : "grey",
-              "&.Mui-focused": {
-                color: "#1C3AA9",
-                fontSize: {
-                  xs: '1.01rem', // تغییر اندازه در کوچکترین صفحه
-                  sm: '1.3rem', // برای صفحه کوچک
-                  md: '1.4rem', // برای صفحه متوسط
-                  lg: '1.5rem', // برای صفحه بزرگ
-              },
-              transform: {
-                  xs: 'translate(10px, -15px) scale(0.85)',
-                  sm: 'translate(13px, -14px) scale(0.75)', 
-                  md: 'translate(12px, -14px) scale(0.70)', // برای صفحه متوسط
-                  lg: 'translate(10px, -22px) scale(0.65)', // برای صفحه بزرگ
-              },
-              },
-              "&.Mui-error": {
-                color: "pink",
-              },
-              fontSize: "1rem",
-            },
-          }}
-
+        <Box
+          maxWidth="full"
           sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: '10px',
-              "& fieldset": {
-                borderColor:formik.touched.initialCard && Boolean(formik.errors.initialCard) && isInvalidCard ? "red" : "",
-              },
-            },
-            textAlign: "center",
-            justifyContent: "center",
-            marginBottom:2,
-            borderRadius: "8px",
-            position: 'relative' ,
-            zIndex:10
+            paddingY: 0,
+            paddingX: { xs: 1.5, sm: 8, md: 34 },
+            height: { sm: "125vh", xs: "70vh" },
+            display: "flex",
+            flexDirection: "column",
+            gap: 3,
           }}
+        >
+          <Box
+            sx={{
+              width: "100%",
+              mb: 2,
+              paddingTop: { xs: 0.3, sm: 2 },
+              paddingBottom: { xs: 8, sm: 4 },
+            }}
+          >
+            <form onSubmit={formik.handleSubmit}>
+              <Paper
+                elevation={3}
+                sx={{
+                  paddingY: { xs: 4, md: 4 },
+                  borderRadius: 3,
+                  width: "100%",
+                  paddingX: { xs: 2.9, sm: 7 },
+                }}
+              >
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ marginBottom: 2 }}
+                >
+                  <Typography variant="h5" align="start" gutterBottom>
+                    کارت به کارت
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    startIcon={<HelpOutlineIcon style={{ fontSize: "13px" }} />}
+                    onClick={handleHelpSnackbarOpen}
+                    sx={{
+                      ml: 2,
+                      fontSize: "13px",
+                      padding: (0, 0, 0, 2),
+                      display: "flex",
+                      height: "5px",
+                    }}
+                  >
+                    راهنما
+                  </Button>
+                </Box>
+                <Box sx={{ display: "grid", gap: 0.6, mb: 4 }}>
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {Array.isArray(userCards) && (
+                      <Autocomplete
+                        freeSolo
+                        options={userCards.map((card) => ({
+                          label: `${formatCardNumber(card.card_number)}`,
+                          value: card.card_number,
+                        }))}
+                        PopperProps={{
+                          modifiers: [
+                            {
+                              name: "offset",
+                              options: {
+                                offset: [0, 0],
+                              },
+                            },
+                          ],
+                        }}
+                        getOptionLabel={(option) => option.label}
+                        renderOption={(props, option) => {
+                          const firstSixDigits = option.value.substring(0, 6);
+                          const bank = banks[firstSixDigits];
+
+                          return (
+                            <li
+                              {...props}
+                              style={{
+                                backgroundColor: "#f3f4f9",
+                                paddingY: 0.1,
+                                boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.01)",
+                                transition: "background-color 0.3s ease",
+                                zIndex: -10,
+                                fontSize: { xs: "0.7rem", sm: "0.9rem" },
+                              }}
+                              onMouseEnter={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                  "#ececec")
+                              }
+                              onMouseLeave={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                  "#f7f7f7")
+                              }
+                            >
+                              {bank ? (
+                                <>
+                                  <img
+                                    src={bank.icon.props.src}
+                                    alt={bank.icon.props.alt}
+                                    style={{
+                                      width: bank.iconWidth,
+                                      height: bank.iconHeight,
+                                      marginLeft: "3px",
+                                      scale: "70%",
+                                    }}
+                                  />
+                                  {option.label}
+                                </>
+                              ) : (
+                                option.label
+                              )}
+                            </li>
+                          );
+                        }}
+                        inputValue={formik.values.initialCard}
+                        onInputChange={(event, newValue) => {
+                          const formattedNumber = formatCardNumber(newValue);
+                          formik.setFieldValue("initialCard", formattedNumber);
+                          handleCardNumberChange({
+                            target: { value: newValue },
+                          });
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label={
+                              <>
+                                کارت مبدا{" "}
+                                <span style={{ color: "red" }}>*</span>
+                              </>
+                            }
+                            fullWidth
+                            name="initialCard"
+                            value={formik.values.initialCard}
+                            onChange={handleCardNumberChange}
+                            onKeyDown={(e) => handleKeyDown(e, DesCardNum)}
+                            inputRef={IncardNum}
+                            inputProps={{ maxLength: 19, ...params.inputProps }}
+                            error={
+                              isInvalidCard ||
+                              (formik.touched.initialCard &&
+                                Boolean(formik.errors.initialCard))
+                            }
+                            helperText={
+                              (isInvalidCard && "شماره کارت اشتباه است") ||
+                              (formik.touched.initialCard &&
+                              formik.errors.initialCard &&
+                              formik.errors.initialCard.trim() !== ""
+                                ? formik.errors.initialCard
+                                : null)
+                            }
+                            InputLabelProps={{
+                              sx: {
+                                color:
+                                  formik.touched.initialCard &&
+                                  (formik.errors.initialCard || isInvalidCard)
+                                    ? "red"
+                                    : "grey",
+                                "&.Mui-focused": {
+                                  color: "#1C3AA9",
+                                  fontSize: {
+                                    xs: "1.01rem", // تغییر اندازه در کوچکترین صفحه
+                                    sm: "1.3rem", // برای صفحه کوچک
+                                    md: "1.4rem", // برای صفحه متوسط
+                                    lg: "1.5rem", // برای صفحه بزرگ
+                                  },
+                                  transform: {
+                                    xs: "translate(10px, -15px) scale(0.85)",
+                                    sm: "translate(13px, -14px) scale(0.75)",
+                                    md: "translate(12px, -14px) scale(0.70)", // برای صفحه متوسط
+                                    lg: "translate(10px, -22px) scale(0.65)", // برای صفحه بزرگ
+                                  },
+                                },
+                                "&.Mui-error": {
+                                  color: "pink",
+                                },
+                                fontSize: "1rem",
+                              },
+                            }}
+                            sx={{
+                              "& .MuiOutlinedInput-root": {
+                                borderRadius: "10px",
+                                "& fieldset": {
+                                  borderColor:
+                                    formik.touched.initialCard &&
+                                    Boolean(formik.errors.initialCard) &&
+                                    isInvalidCard
+                                      ? "red"
+                                      : "",
+                                },
+                              },
+                              textAlign: "center",
+                              justifyContent: "center",
+                              marginBottom: 2,
+                              borderRadius: "8px",
+                              position: "relative",
+                              zIndex: 10,
+                            }}
+                          />
+                        )}
+                      />
+                    )}
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {Array.isArray(userDesCards) && (
+                      <Autocomplete
+                        freeSolo
+                        options={userDesCards.map((card) => ({
+                          label: `${formatCardNumber(card.des_card)}`,
+                          value: card.des_card,
+                        }))}
+                        PopperProps={{
+                          modifiers: [
+                            {
+                              name: "offset",
+                              options: {
+                                offset: [0, 0],
+                              },
+                            },
+                          ],
+                        }}
+                        getOptionLabel={(option) => option.label}
+                        renderOption={(props, option) => {
+                          const firstSixDigits = option.value.substring(0, 6);
+                          const bank = banks[firstSixDigits];
+
+                          return (
+                            <li
+                              {...props}
+                              style={{
+                                backgroundColor: "#f3f4f9",
+                                paddingY: 0.1,
+                                boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.01)",
+                                transition: "background-color 0.3s ease",
+                                zIndex: -10,
+                                fontSize: { xs: "0.7rem", sm: "0.9rem" },
+                              }}
+                              onMouseEnter={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                  "#ececec")
+                              }
+                              onMouseLeave={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                  "#f7f7f7")
+                              }
+                            >
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  width: "100%",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <div style={{ display: "flex" }}>
+                                  {bank ? (
+                                    <>
+                                      <img
+                                        src={bank.icon.props.src}
+                                        alt={bank.icon.props.alt}
+                                        style={{
+                                          width: bank.iconWidth,
+                                          height: bank.iconHeight,
+                                          marginLeft: "3px",
+                                          scale: "70%",
+                                        }}
+                                      />
+                                      {option.label}
+                                    </>
+                                  ) : (
+                                    option.label
+                                  )}
+                                </div>
+                                <ClearIcon
+                                  //onClick={() => handleRemoveCard(option.value)}
+                                  style={{
+                                    cursor: "pointer",
+                                    color: "gray",
+                                    justifyContent: "end",
+                                    "&:hover": {
+                                      color: "red",
+                                    },
+                                  }}
+                                />
+                              </div>
+                            </li>
+                          );
+                        }}
+                        inputValue={formik.values.desCard}
+                        onInputChange={(event, newValue) => {
+                          const formattedNumber = formatCardNumber(newValue);
+                          formik.setFieldValue("desCard", formattedNumber);
+                          handleDesCardChange({ target: { value: newValue } });
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label={
+                              <>
+                                به کارت <span style={{ color: "red" }}>*</span>
+                              </>
+                            }
+                            fullWidth
+                            name="desCard"
+                            autoComplete="off"
+                            value={formik.values.desCard}
+                            onChange={handleDesCardChange}
+                            onKeyDown={(e) => handleKeyDown(e, amountRef)}
+                            inputRef={DesCardNum}
+                            inputProps={{ maxLength: 19, ...params.inputProps }}
+                            error={
+                              isInvalidDesCard ||
+                              (formik.touched.desCard &&
+                                Boolean(formik.errors.desCard))
+                            }
+                            helperText={
+                              (isInvalidDesCard && "شماره کارت اشتباه است") ||
+                              (formik.touched.desCard &&
+                              formik.errors.desCard &&
+                              formik.errors.desCard.trim() !== ""
+                                ? formik.errors.desCard
+                                : null)
+                            }
+                            InputLabelProps={{
+                              sx: {
+                                color:
+                                  formik.touched.desCard &&
+                                  (formik.errors.desCard || isInvalidDesCard)
+                                    ? "red"
+                                    : "grey",
+                                "&.Mui-focused": {
+                                  color: "#1C3AA9",
+                                  fontSize: {
+                                    xs: "1.01rem", // تغییر اندازه در کوچکترین صفحه
+                                    sm: "1.3rem", // برای صفحه کوچک
+                                    md: "1.4rem", // برای صفحه متوسط
+                                    lg: "1.5rem", // برای صفحه بزرگ
+                                  },
+                                  transform: {
+                                    xs: "translate(10px, -15px) scale(0.85)",
+                                    sm: "translate(13px, -14px) scale(0.75)",
+                                    md: "translate(12px, -14px) scale(0.70)", // برای صفحه متوسط
+                                    lg: "translate(10px, -22px) scale(0.65)", // برای صفحه بزرگ
+                                  },
+                                },
+                                "&.Mui-error": {
+                                  color: "pink",
+                                },
+                                fontSize: "1.1rem",
+                              },
+                            }}
+                            sx={{
+                              "& .MuiOutlinedInput-root": {
+                                borderRadius: "10px",
+                                "& fieldset": {
+                                  borderColor: isInvalidDesCard
+                                    ? "red"
+                                    : formik.touched.desCard &&
+                                      formik.errors.desCard
+                                    ? "red"
+                                    : "",
+                                },
+                              },
+                              textAlign: "center",
+                              justifyContent: "center",
+                              marginBottom: 2,
+                            }}
+                          />
+                        )}
+                      />
+                    )}
+                  </motion.div>
+                  <motion.div {...animationProps}>
+                    <TextField
+                      label={
+                        <>
+                          مبلغ <span style={{ color: "red" }}>*</span>
+                        </>
+                      }
+                      variant="outlined"
+                      fullWidth
+                      name="amount"
+                      autoComplete="off"
+                      value={formatAmountNumber(formik.values.amount)}
+                      onChange={(e) => {
+                        const rawValue = e.target.value.replace(/,/g, "");
+                        formik.setFieldValue("amount", rawValue);
+                      }}
+                      onKeyDown={(e) => handleKeyDown(e, cvv2Ref)}
+                      inputRef={amountRef}
+                      inputProps={{ maxLength: 16, inputMode: "numeric" }}
+                      error={
+                        formik.touched.amount && Boolean(formik.errors.amount)
+                      }
+                      helperText={formik.touched.amount && formik.errors.amount}
+                      InputLabelProps={{
+                        sx: {
+                          color: "grey",
+                          textAlign: "center",
+
+                          "&.Mui-focused": {
+                            color: "#1C3AA9",
+                            fontSize: {
+                              xs: "1.01rem", // تغییر اندازه در کوچکترین صفحه
+                              sm: "1.3rem", // برای صفحه کوچک
+                              md: "1.4rem", // برای صفحه متوسط
+                              lg: "1.5rem", // برای صفحه بزرگ
+                            },
+                            transform: {
+                              xs: "translate(10px, -15px) scale(0.85)",
+                              sm: "translate(13px, -14px) scale(0.75)",
+                              md: "translate(12px, -14px) scale(0.70)", // برای صفحه متوسط
+                              lg: "translate(10px, -22px) scale(0.65)", // برای صفحه بزرگ
+                            },
+                          },
+                          fontSize: "1.1rem",
+                          "&.Mui-error": {
+                            color: "pink",
+                          },
+                        },
+                      }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <span
+                              style={{
+                                color:
+                                  formik.touched.amount && formik.errors.amount
+                                    ? "red"
+                                    : "gray",
+                              }}
+                            >
+                              ریال
+                            </span>
+                          </InputAdornment>
+                        ),
+                        sx: { borderRadius: "10px" },
+                      }}
+                      sx={{ marginBottom: 2 }}
+                    />
+                  </motion.div>
+                  <motion.div {...animationProps}>
+                    <TextField
+                      label={
+                        <>
+                          CVV2 <span style={{ color: "red" }}>*</span>
+                        </>
+                      }
+                      type={showPassword ? "text" : "password"}
+                      {...formik.getFieldProps("cvv2")}
+                      fullWidth
+                      name="cvv2"
+                      value={formik.values.cvv2}
+                      onChange={formik.handleChange}
+                      onKeyDown={(e) => {
+                        handleKeyDown(e, exDate);
+                        if (e.key.length === 1 && !/[0-9]/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
+                      inputRef={cvv2Ref}
+                      inputProps={{
+                        maxLength: 4,
+                        inputMode: "numeric",
+                        pattern: "[0-9]*",
+                      }}
+                      error={formik.touched.cvv2 && Boolean(formik.errors.cvv2)}
+                      helperText={formik.touched.cvv2 && formik.errors.cvv2}
+                      InputLabelProps={{
+                        sx: {
+                          color: "grey",
+                          "&.Mui-focused": {
+                            color: "#1C3AA9",
+                            fontSize: {
+                              xs: "1.01rem", // تغییر اندازه در کوچکترین صفحه
+                              sm: "1.3rem", // برای صفحه کوچک
+                              md: "1.4rem", // برای صفحه متوسط
+                              lg: "1.5rem", // برای صفحه بزرگ
+                            },
+                            transform: {
+                              xs: "translate(10px, -15px) scale(0.85)",
+                              sm: "translate(13px, -14px) scale(0.75)",
+                              md: "translate(12px, -14px) scale(0.70)", // برای صفحه متوسط
+                              lg: "translate(10px, -22px) scale(0.65)", // برای صفحه بزرگ
+                            },
+                          },
+                          fontSize: "0.9rem",
+                          "&.Mui-error": {
+                            color: "pink",
+                          },
+                        },
+                      }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={handleTogglePassword}
+                              style={{ fontSize: "1.2rem", color: "navy" }}
+                            >
+                              {showPassword ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                        sx: { borderRadius: "10px" },
+                      }}
+                    />
+                  </motion.div>
+                  <motion.div {...animationProps}>
+                    <Box sx={{}}>
+                      <Typography
+                        sx={{ fontSize: "13px", mb: 1, ml: 2, color: "gray" }}
+                      >
+                        تاریخ انقضا: <span style={{ color: "red" }}>*</span>
+                      </Typography>
+                      <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
+                        <TextField
+                          label="ماه"
+                          fullWidth
+                          name="cardMonth"
+                          value={formik.values.cardMonth}
+                          onChange={handleMonthChange}
+                          inputProps={{ maxLength: 2 }}
+                          onKeyDown={(e) => {
+                            if (e.key.length === 1 && !/[0-9]/.test(e.key)) {
+                              e.preventDefault();
+                            }
+                          }}
+                          inputRef={exDate}
+                          error={
+                            formik.touched.cardMonth &&
+                            Boolean(formik.errors.cardMonth)
+                          }
+                          helperText={
+                            formik.touched.cardMonth && formik.errors.cardMonth
+                          }
+                          InputLabelProps={{
+                            sx: {
+                              color: "grey",
+                              "&.Mui-focused": {
+                                color: "#1C3AA9",
+                                fontSize: {
+                                  xs: "1.01rem", // تغییر اندازه در کوچکترین صفحه
+                                  sm: "1.3rem", // برای صفحه کوچک
+                                  md: "1.4rem", // برای صفحه متوسط
+                                  lg: "1.5rem", // برای صفحه بزرگ
+                                },
+                                transform: {
+                                  xs: "translate(10px, -15px) scale(0.85)",
+                                  sm: "translate(13px, -14px) scale(0.75)",
+                                  md: "translate(12px, -14px) scale(0.70)", // برای صفحه متوسط
+                                  lg: "translate(10px, -22px) scale(0.65)", // برای صفحه بزرگ
+                                },
+                              },
+                              fontSize: "0.9rem",
+                              "&.Mui-error": {
+                                color: "pink",
+                              },
+                            },
+                          }}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: "13px",
+                            },
+                          }}
+                        />
+                        <Typography
+                          sx={{ fontSize: { sm: "30px", xs: "25px" } }}
+                        >
+                          /
+                        </Typography>
+                        <TextField
+                          label="سال"
+                          fullWidth
+                          name="cardYear"
+                          value={formik.values.cardYear}
+                          onChange={formik.handleChange}
+                          inputProps={{ maxLength: 2 }}
+                          onKeyDown={(e) => {
+                            if (e.key.length === 1 && !/[0-9]/.test(e.key)) {
+                              e.preventDefault();
+                            }
+                          }}
+                          inputRef={yearInputRef}
+                          error={
+                            formik.touched.cardYear &&
+                            Boolean(formik.errors.cardYear)
+                          }
+                          helperText={
+                            formik.touched.cardYear && formik.errors.cardYear
+                          }
+                          InputLabelProps={{
+                            sx: {
+                              color: "grey",
+                              "&.Mui-focused": {
+                                color: "#1C3AA9",
+                                fontSize: {
+                                  xs: "1.01rem", // تغییر اندازه در کوچکترین صفحه
+                                  sm: "1.3rem", // برای صفحه کوچک
+                                  md: "1.4rem", // برای صفحه متوسط
+                                  lg: "1.5rem", // برای صفحه بزرگ
+                                },
+                                transform: {
+                                  xs: "translate(10px, -15px) scale(0.85)",
+                                  sm: "translate(13px, -14px) scale(0.75)",
+                                  md: "translate(12px, -14px) scale(0.70)", // برای صفحه متوسط
+                                  lg: "translate(10px, -22px) scale(0.65)", // برای صفحه بزرگ
+                                },
+                              },
+                              fontSize: "0.9rem",
+                              "&.Mui-error": {
+                                color: "pink",
+                              },
+                            },
+                          }}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: "13px",
+                            },
+                          }}
+                        />
+                      </Box>
+                    </Box>
+                  </motion.div>
+                </Box>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={formik.values.saveCard || false}
+                      onChange={(event) =>
+                        formik.setFieldValue("saveCard", event.target.checked)
+                      }
+                      name="saveCard"
+                      sx={{
+                        color: purple[500],
+                        "&.Mui-checked": {
+                          color: purple[700],
+                        },
+                      }}
+                    />
+                  }
+                  label="ذخیره‌ی کارت مقصد"
+                  sx={{ mt: -4 }}
+                />
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "100%",
+                    gap: 1.4,
+                    mt: 0.4,
+                  }}
+                >
+                  <Button
+                    color="primary"
+                    type="submit"
+                    fullWidth
+                    sx={{
+                      width: "50%",
+                      bgcolor: "navy",
+                      "&:hover": { bgcolor: "primary.dark" },
+                      whiteSpace: "nowrap",
+                      fontSize: "0.9rem",
+                      color: "white",
+                    }}
+                    onClick={formik.handleSubmit}
+                  >
+                    تایید و ادامه
+                  </Button>
+
+                  <Button
+                    color="primary"
+                    onClick={handleBackClick}
+                    endIcon={<KeyboardBackspaceIcon />}
+                    sx={{
+                      textAlign: "center",
+                      width: "50%",
+                      py: 1,
+                      borderRadius: 7,
+                      border: 1,
+                      borderColor: "grey.700",
+                      justifyContent: "center",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      ":hover": { color: "grey.600" },
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    بازگشت
+                  </Button>
+                </Box>
+              </Paper>
+            </form>
+            <Snackbar
+              open={snackbarOpen}
+              autoHideDuration={2000}
+              onClose={handleSnackbarClose}
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+              <Alert
+                onClose={handleSnackbarClose}
+                severity={snackbarSeverity}
+                sx={{ width: "100%" }}
+              >
+                {snackbarMessage}
+              </Alert>
+            </Snackbar>
+            <Backdrop
+              open={helpSnackbarOpen}
+              sx={{
+                zIndex: (theme) => theme.zIndex.modal - 1,
+                bgcolor: "rgba(0, 0, 0, 0.5)",
+              }} // تیره کردن پس‌زمینه
+            />
+            <Snackbar
+              open={helpSnackbarOpen}
+              onClose={handleSnackbarClose}
+              autoHideDuration={8000}
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  onClick={handleHelpSnackbarClose}
+                >
+                  ×
+                </IconButton>
+              }
+              sx={{ top: 250, width: { sm: "500px" } }}
+            >
+              <Alert
+                onClose={handleHelpSnackbarClose}
+                severity="info"
+                sx={{ width: "100%", borderRadius: "20px" }}
+              >
+                <Typography variant="h5">سرویس انتقال کارت به کارت</Typography>
+                <Typography>
+                  {" "}
+                  به منظور انتقال وجه کارت به کارت، پس از انتخاب کارت مبدا،
+                  شماره کارت مقصد را وارد کنید. درصورتی که اطلاعات کارت مقصد بیش
+                  از این در موبایل بانک ذخیره شده است، با لمس تصویر مرتبط
+                  میتوانید کارت مورد نظر را انتخاب کنید.
+                </Typography>
+              </Alert>
+            </Snackbar>
+          </Box>
+        </Box>
+      ) : (
+        <CardTransferForm
+          initailCard={initialCard}
+          desCard={desCard}
+          amount={amount}
         />
       )}
-    />
-    
-  )}
-  
-</motion.div>
-
-<motion.div 
-  initial={{ opacity: 0, y: -20 }} 
-  animate={{ opacity: 1, y: 0 }} 
-  exit={{ opacity: 0, y: -20 }} 
-  transition={{ duration: 0.5 }}
->
-              {Array.isArray(userDesCards) && (
-    <Autocomplete
-      freeSolo
-      options={userDesCards.map((card) => ({
-        label: `${formatCardNumber(card.des_card)}`, 
-        value: card.des_card, 
-      }))}
-      PopperProps={{
-        modifiers: [
-          {
-            name: 'offset',
-            options: {
-              offset: [0, 0], 
-            },
-          },
-        ],
-      }}
-      getOptionLabel={(option) => option.label}
-      renderOption={(props, option) => {
-        const firstSixDigits = option.value.substring(0, 6);
-        const bank = banks[firstSixDigits]; 
-
-        return (
-          <li {...props} style={{
-            backgroundColor: "#f3f4f9",
-            paddingY: 0.1,
-            boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.01)",
-            transition: "background-color 0.3s ease",
-            zIndex:-10,
-            fontSize:{xs:'0.7rem' , sm:'0.9rem'}
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#ececec"}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#f7f7f7"}
-          >
-            {bank ? (
-              <>
-                <img
-                  src={bank.icon.props.src} 
-                  alt={bank.icon.props.alt} 
-                  style={{
-                    width: bank.iconWidth, 
-                    height: bank.iconHeight, 
-                    marginLeft: "3px", 
-                    scale:'70%'
-                  }}
-                />
-                {option.label}
-              </>
-            ) : (
-              option.label
-            )}
-          </li>
-        );
-      }}
-      inputValue={formik.values.desCard} 
-      onInputChange={(event, newValue) => {
-        const formattedNumber = formatCardNumber(newValue); 
-        formik.setFieldValue("desCard", formattedNumber); 
-        handleDesCardChange({ target: { value: newValue } }); 
-      }}
-      renderInput={(params) => (
-                <TextField
-                {...params}
-                  label={<>
-                     به کارت <span style={{ color: 'red' }}>*</span>
-                  </>}
-                  fullWidth
-                  name="desCard"
-                  autoComplete="off"
-                  value={formik.values.desCard}
-                  onChange={handleDesCardChange}
-                  onKeyDown={(e) => handleKeyDown(e, amountRef)}
-                  inputRef={DesCardNum}
-                  inputProps={{ maxLength: 19 ,...params.inputProps}}
-                  error={
-                    isInvalidDesCard ||
-                    (formik.touched.desCard && Boolean(formik.errors.desCard))
-                  }
-                  helperText={
-                    (isInvalidDesCard && "شماره کارت اشتباه است") ||
-                    (formik.touched.desCard && formik.errors.desCard && formik.errors.desCard.trim() !== "" ? formik.errors.desCard : null)
-                  }
-                  InputLabelProps={{
-                    sx: {
-                      color: formik.touched.desCard && (formik.errors.desCard || isInvalidDesCard) ? "red" : "grey",
-                      "&.Mui-focused": {
-                        color: "#1C3AA9",
-                        fontSize: {
-                          xs: '1.01rem', // تغییر اندازه در کوچکترین صفحه
-                          sm: '1.3rem', // برای صفحه کوچک
-                          md: '1.4rem', // برای صفحه متوسط
-                          lg: '1.5rem', // برای صفحه بزرگ
-                      },
-                      transform: {
-                          xs: 'translate(10px, -15px) scale(0.85)',
-                          sm: 'translate(13px, -14px) scale(0.75)', 
-                          md: 'translate(12px, -14px) scale(0.70)', // برای صفحه متوسط
-                          lg: 'translate(10px, -22px) scale(0.65)', // برای صفحه بزرگ
-                      },
-                      },
-                      "&.Mui-error": {
-                        color: "pink",
-                      },
-                      fontSize:'1.1rem'
-                    },
-                  }}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: '10px',
-                      "& fieldset": {
-                        borderColor: isInvalidDesCard
-                          ? "red"
-                          : formik.touched.desCard && formik.errors.desCard
-                          ? "red"
-                          : "",
-                      },
-                    },
-                    textAlign: "center",
-                    justifyContent: "center",
-                    marginBottom:2 , 
-                    
-                  }}
-                />
-              )}
-              />
-              
-            )}
-              </motion.div>
-              <motion.div {...animationProps}>
-                <TextField
-                  label={<>
-                     مبلغ <span style={{ color: 'red' }}>*</span>
-                  </>}
-                  variant="outlined"
-                  fullWidth
-                  name="amount"
-                  autoComplete="off"
-                  value={formatAmountNumber(formik.values.amount)}
-                  onChange={(e) => {
-                    const rawValue = e.target.value.replace(/,/g, ''); 
-                    formik.setFieldValue("amount", rawValue); 
-                  }}
-                  onKeyDown={(e) => handleKeyDown(e, cvv2Ref)}
-                  inputRef={amountRef}
-                  inputProps={{ maxLength: 16 , inputMode: 'numeric' }}
-                  error={formik.touched.amount && Boolean(formik.errors.amount)}
-                  helperText={formik.touched.amount && formik.errors.amount}
-                  InputLabelProps={{
-                    sx: {
-                      color: "grey",
-                      textAlign: "center",
-                      
-                      "&.Mui-focused": {
-                        color: "#1C3AA9",
-                        fontSize: {
-                          xs: '1.01rem', // تغییر اندازه در کوچکترین صفحه
-                          sm: '1.3rem', // برای صفحه کوچک
-                          md: '1.4rem', // برای صفحه متوسط
-                          lg: '1.5rem', // برای صفحه بزرگ
-                      },
-                      transform: {
-                          xs: 'translate(10px, -15px) scale(0.85)',
-                          sm: 'translate(13px, -14px) scale(0.75)', 
-                          md: 'translate(12px, -14px) scale(0.70)', // برای صفحه متوسط
-                          lg: 'translate(10px, -22px) scale(0.65)', // برای صفحه بزرگ
-                      },
-                      },
-                      fontSize:'1.1rem',
-                      "&.Mui-error": {
-                        color: "pink",
-                      },
-                    },
-                  }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end" >
-                         <span style={{ color: formik.touched.amount && formik.errors.amount ? 'red' : 'gray' }}>
-          ریال
-        </span>
-                      </InputAdornment>
-
-                    ),sx: { borderRadius: '10px' }
-                  }}
-                  sx={{marginBottom:2}}
-              
-                />
-              </motion.div>
-              <motion.div {...animationProps}>
-                <TextField
-                  label={<>
-                    CVV2 <span style={{ color: 'red' }}>*</span>
-                 </>}
-                 type={showPassword ? 'text' : 'password'}
-                 {...formik.getFieldProps('cvv2')}
-                  fullWidth
-                  name="cvv2"
-                  value={formik.values.cvv2}
-                  onChange={formik.handleChange}
-                  onKeyDown={(e) => {
-                    handleKeyDown(e, exDate)
-                    if (e.key.length === 1 && !/[0-9]/.test(e.key)) {
-                      
-                      e.preventDefault();
-                    }}}
-                  inputRef={cvv2Ref}
-                  inputProps={{ maxLength: 4 , inputMode: 'numeric', pattern: '[0-9]*'}}
-                  error={formik.touched.cvv2 && Boolean(formik.errors.cvv2)}
-                  helperText={formik.touched.cvv2 && formik.errors.cvv2}
-                  InputLabelProps={{
-                    sx: {
-                      color: "grey",
-                      "&.Mui-focused": {
-                        color: "#1C3AA9",
-                        fontSize: {
-                          xs: '1.01rem', // تغییر اندازه در کوچکترین صفحه
-                          sm: '1.3rem', // برای صفحه کوچک
-                          md: '1.4rem', // برای صفحه متوسط
-                          lg: '1.5rem', // برای صفحه بزرگ
-                      },
-                      transform: {
-                          xs: 'translate(10px, -15px) scale(0.85)',
-                          sm: 'translate(13px, -14px) scale(0.75)', 
-                          md: 'translate(12px, -14px) scale(0.70)', // برای صفحه متوسط
-                          lg: 'translate(10px, -22px) scale(0.65)', // برای صفحه بزرگ
-                      },
-                      },
-                      fontSize:'0.9rem',
-                      "&.Mui-error": {
-                        color: "pink",
-                      },
-                    },
-                  }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={handleTogglePassword} style={{ fontSize: '1.2rem', color: 'navy' }}>
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                    sx: { borderRadius: '10px' }
-                  }}
-                />
-              </motion.div>
-              <motion.div {...animationProps}>
-                <Box sx={{}}>
-                  <Typography
-                    sx={{ fontSize: "13px", mb: 1, ml: 2, color: "gray" }}
-                  >
-                    تاریخ انقضا: <span style={{ color: 'red' }}>*</span>
-                  </Typography>
-                  <Box sx={{ display: "flex", gap: 1 , mt:2 }}>
-                    <TextField
-                      label="ماه"
-                      fullWidth
-                      name="cardMonth"
-                      value={formik.values.cardMonth}
-                      onChange={handleMonthChange}
-                      inputProps={{ maxLength: 2 }}
-                      onKeyDown={(e) => {
-                        if (e.key.length === 1 && !/[0-9]/.test(e.key)) {
-                          e.preventDefault();
-                        }}}
-                      inputRef={exDate}
-                      error={
-                        formik.touched.cardMonth &&
-                        Boolean(formik.errors.cardMonth)
-                      }
-                      helperText={
-                        formik.touched.cardMonth && formik.errors.cardMonth
-                      }
-                      InputLabelProps={{
-                        sx: {
-                          color: "grey",
-                          "&.Mui-focused": {
-                        color: "#1C3AA9",
-                        fontSize: {
-                          xs: '1.01rem', // تغییر اندازه در کوچکترین صفحه
-                          sm: '1.3rem', // برای صفحه کوچک
-                          md: '1.4rem', // برای صفحه متوسط
-                          lg: '1.5rem', // برای صفحه بزرگ
-                      },
-                      transform: {
-                          xs: 'translate(10px, -15px) scale(0.85)',
-                          sm: 'translate(13px, -14px) scale(0.75)', 
-                          md: 'translate(12px, -14px) scale(0.70)', // برای صفحه متوسط
-                          lg: 'translate(10px, -22px) scale(0.65)', // برای صفحه بزرگ
-                      },
-                      },
-                          fontSize:'0.9rem',
-                      "&.Mui-error": {
-                        color: "pink",
-                      },
-                        },
-                      }}
-                      sx={{"& .MuiOutlinedInput-root": {borderRadius:'13px'}}}
-                    />
-                    <Typography sx={{ fontSize: { sm: "30px", xs: "25px" } }}>
-                      /
-                    </Typography>
-                    <TextField
-                      label="سال"
-                      fullWidth
-                      name="cardYear"
-                      value={formik.values.cardYear}
-                      onChange={formik.handleChange}
-                      inputProps={{ maxLength: 2 }}
-                      onKeyDown={(e) => {
-                        if (e.key.length === 1 && !/[0-9]/.test(e.key)) {
-                          e.preventDefault();
-                        }}}
-                      inputRef={yearInputRef}
-                      error={
-                        formik.touched.cardYear &&
-                        Boolean(formik.errors.cardYear)
-                      }
-                      helperText={
-                        formik.touched.cardYear && formik.errors.cardYear
-                      }
-                      InputLabelProps={{
-                        sx: {
-                          color: "grey",
-                          "&.Mui-focused": {
-                        color: "#1C3AA9",
-                        fontSize: {
-                          xs: '1.01rem', // تغییر اندازه در کوچکترین صفحه
-                          sm: '1.3rem', // برای صفحه کوچک
-                          md: '1.4rem', // برای صفحه متوسط
-                          lg: '1.5rem', // برای صفحه بزرگ
-                      },
-                      transform: {
-                          xs: 'translate(10px, -15px) scale(0.85)',
-                          sm: 'translate(13px, -14px) scale(0.75)', 
-                          md: 'translate(12px, -14px) scale(0.70)', // برای صفحه متوسط
-                          lg: 'translate(10px, -22px) scale(0.65)', // برای صفحه بزرگ
-                      },
-                      },
-                          fontSize:'0.9rem',
-                      "&.Mui-error": {
-                        color: "pink",
-                      },
-                        },
-                      }}
-                      sx={{"& .MuiOutlinedInput-root": {borderRadius:'13px'}}}
-                    />
-                  </Box>
-                </Box>
-              </motion.div>
-            </Box>
-            <FormControlLabel
-      control={
-        <Checkbox
-          checked={formik.values.saveCard || false}
-          onChange={(event) => formik.setFieldValue('saveCard', event.target.checked)}
-          name="saveCard"
-          sx={{
-            color: purple[500],
-            '&.Mui-checked': {
-              color: purple[700],
-            },
-          }}
-        />
-      }
-      label="ذخیره‌ی کارت مقصد"
-      sx={{ mt:-4 }}
-    />
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "100%",
-                gap: 1.4,
-                mt: 0.4,
-              }}
-            >
-              <Button
-                color="primary"
-                type="submit"
-                fullWidth
-                sx={{
-                  width: "50%",
-                  bgcolor: "navy",
-                  "&:hover": { bgcolor: "primary.dark" },
-                  whiteSpace:'nowrap',
-                  fontSize:'0.9rem',
-                  color:'white'
-                }}
-                onClick={formik.handleSubmit}
-              >
-                تایید و ادامه
-              </Button>
-
-              <Button
-                color="primary"
-                onClick={handleBackClick}
-                endIcon={<KeyboardBackspaceIcon />}
-                sx={{
-                  textAlign: "center",
-                  width: "50%",
-                  py: 1,
-                  borderRadius: 7,
-                  border: 1,
-                  borderColor: "grey.700",
-                  justifyContent: "center",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                  ":hover": { color: "grey.600" }, 
-                  fontSize:'0.9rem'
-                }}
-              >
-                بازگشت
-              </Button>
-            </Box>
-          </Paper>
-        </form>
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={2000}
-          onClose={handleSnackbarClose}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        >
-          <Alert
-            onClose={handleSnackbarClose}
-            severity={snackbarSeverity}
-            sx={{ width: "100%" }}
-          >
-            {snackbarMessage}
-          </Alert>
-        </Snackbar>
-        <Backdrop
-                open={helpSnackbarOpen}
-                sx={{ zIndex: (theme) => theme.zIndex.modal - 1, bgcolor: 'rgba(0, 0, 0, 0.5)' }} // تیره کردن پس‌زمینه
-            />
-        <Snackbar
-                open={helpSnackbarOpen}
-                onClose={handleSnackbarClose}
-                autoHideDuration={8000}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                action={
-                    <IconButton
-                        aria-label="close"
-                        color="inherit"
-                        onClick={handleHelpSnackbarClose}
-                    >
-                        ×
-                    </IconButton>
-                }
-                sx={{top:250 , width:{sm:'500px' }}}
-            >
-                <Alert onClose={handleHelpSnackbarClose} severity="info" sx={{ width: '100%' , borderRadius:'20px'}}>
-                    <Typography variant='h5'>سرویس انتقال کارت به کارت</Typography>
-                    <Typography> به منظور انتقال وجه کارت به کارت، پس از انتخاب کارت مبدا، شماره کارت مقصد را وارد کنید. درصورتی که اطلاعات کارت مقصد بیش از این در موبایل بانک ذخیره شده است، با لمس تصویر مرتبط میتوانید کارت مورد نظر را انتخاب کنید.</Typography>
-                </Alert>
-            </Snackbar>
-      </Box>
-      
-    </Box>
-  ) : (
-    <CardTransferForm initailCard={initialCard} desCard={desCard} amount={amount}/>
-  )}
     </>
   );
 };

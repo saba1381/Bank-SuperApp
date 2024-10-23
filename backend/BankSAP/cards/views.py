@@ -251,3 +251,18 @@ class SaveCardAPIView(APIView):
         saved_cards = SavedCard.objects.filter(user=request.user)
         serialized_cards = [{"des_card": card.des_card} for card in saved_cards]
         return Response(serialized_cards, status=status.HTTP_200_OK)
+    
+class DeleteCardAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, des_card):
+        print(f"Request to delete card: {des_card} for user: {request.user.username}")
+        try:
+            saved_card = SavedCard.objects.get(user=request.user, des_card=des_card)
+            print(f"Card found: {saved_card.des_card} - Deleting...")
+            saved_card.delete()
+            print("Card deleted successfully.")
+            return Response({"detail": "کارت با موفقیت حذف شد."}, status=status.HTTP_200_OK)
+        except SavedCard.DoesNotExist:
+            print(f"Card not found for user: {request.user.username}")
+            return Response({"detail": "کارت مورد نظر یافت نشد."}, status=status.HTTP_404_NOT_FOUND)
