@@ -292,6 +292,21 @@ export const fetchSavedDesCards = createAsyncThunk(
     }
   );
 
+
+  export const deleteDesCard = createAsyncThunk(
+    'account/deleteCard',
+    async (desCard: string, thunkAPI) => {
+        try {
+            const response = await agent.Card.deleteDesCard({ desCard });
+            return response;
+        } catch (error: any) {
+            const errorMessage = error.data.detail || 'خطا در حذف کارت';
+            return thunkAPI.rejectWithValue({ error: errorMessage });
+        }
+    }
+);
+
+
 export const accountSlice = createSlice({
     name: 'account',
     initialState,

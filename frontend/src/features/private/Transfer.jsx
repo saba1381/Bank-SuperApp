@@ -25,6 +25,7 @@ import {
   fetchCards,
   saveDesCard,
   fetchSavedDesCards,
+  deleteDesCard
 } from "../account/accountSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UseAppDispatch, UseAppSelector } from "../../store/configureStore";
@@ -454,6 +455,22 @@ const Transfer = () => {
     return cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
+
+  const handleDelete = (cardToDelete) => {
+    const formattedCardNumber = cardToDelete.replace(/-/g, "");
+    dispatch(deleteDesCard(cardToDelete))
+      .then(() => {
+        console.log("کارت با موفقیت حذف شد");
+        setUserDesCards((prevCards) => prevCards.filter((card) => card.des_card !== cardToDelete));
+      })
+      .catch((error) => {
+        console.error("خطا در حذف کارت", error);
+      });
+  };
+
+  
+
+
   return (
     <>
       {!currentComponent ? (
@@ -579,7 +596,7 @@ const Transfer = () => {
                             </li>
                           );
                         }}
-                        inputValue={formik.values.initialCard}
+                        inputValue={formik.values.initialCard || ""} 
                         onInputChange={(event, newValue) => {
                           const formattedNumber = formatCardNumber(newValue);
                           formik.setFieldValue("initialCard", formattedNumber);
@@ -587,6 +604,7 @@ const Transfer = () => {
                             target: { value: newValue },
                           });
                         }}
+                        
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -626,10 +644,10 @@ const Transfer = () => {
                                 "&.Mui-focused": {
                                   color: "#1C3AA9",
                                   fontSize: {
-                                    xs: "1.01rem", // تغییر اندازه در کوچکترین صفحه
-                                    sm: "1.3rem", // برای صفحه کوچک
-                                    md: "1.4rem", // برای صفحه متوسط
-                                    lg: "1.5rem", // برای صفحه بزرگ
+                                    xs: "1.01rem", 
+                                    sm: "1.3rem",
+                                    md: "1.4rem", 
+                                    lg: "1.5rem", 
                                   },
                                   transform: {
                                     xs: "translate(10px, -15px) scale(0.85)",
@@ -745,7 +763,11 @@ const Transfer = () => {
                                   )}
                                 </div>
                                 <ClearIcon
-                                  //onClick={() => handleRemoveCard(option.value)}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleDelete(option.value);
+                                  }}
                                   style={{
                                     cursor: "pointer",
                                     color: "gray",

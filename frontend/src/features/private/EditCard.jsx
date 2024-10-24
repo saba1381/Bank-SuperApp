@@ -241,7 +241,7 @@ useEffect(() => {
       >
        
           <form onSubmit={formik.handleSubmit}>
-            <Paper elevation={3} sx={{ p: {xs:1 , md:4}, borderRadius: 6 ,width:'100%'}}>
+            <Paper elevation={3} sx={{ p: {xs:2 , md:4}, borderRadius: 6 ,width:'100%'}}>
               <Typography
                 variant="h4"
                 sx={{
@@ -437,8 +437,8 @@ useEffect(() => {
              
 <Paper
 sx={{
-paddingX:1,
-paddingY:2,
+paddingX:1.2,
+paddingY:3.2,
 backgroundColor: bankColor,  
 color: 'white',
 borderRadius: 6,
@@ -478,7 +478,7 @@ position: 'relative',
 </Box>
 
         <Typography
-          sx={{ color: textColor, textAlign: "center", justifyContent: "center", width:'47%' , fontSize:{xs:'17px' , sm:'21px'} }}
+          sx={{ color: textColor, textAlign: "center", justifyContent: "center", width:'50%' , fontSize:{xs:'17px' , sm:'21px'} }}
         >
           {formik.values.cardNumber
             ? toPersianDigits(formik.values.cardNumber)

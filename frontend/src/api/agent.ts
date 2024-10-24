@@ -37,9 +37,9 @@ axios.interceptors.response.use(
           break;
 
         case 401:
-          if (data.message === "Token is expired" || data.message === "Unauthorized") {
+          if (data.message === "Token is expired" || data.message === "Unauthorized" ) {
             toast.error('دسترسی شما قطع شد، لطفاً مجدد وارد شوید');
-            store.dispatch(signOut()); // فراخوانی اکشن signOut
+            store.dispatch(signOut()); 
           } else {
             store.dispatch(refreshTokensAsync());
             toast.error('زمان توکن شما به پایان رسیده است. لطفاً مجدداً وارد شوید.');
@@ -98,6 +98,7 @@ const Card = {
   TransferVerifyOtp: (values: object) => requests.post("card/verify-otp/", values),
   SaveDesCard: (values: object) => requests.post("card/save_desCard/", values),
   GetSaveDesCard: () => requests.get("card/save_desCard/"),
+  deleteDesCard: (values : any) => requests.del(`card/delete-des-card/${values.desCard}/`, values),
   AddCard: (values: object) => requests.post("card/add-card/", values),
   CardList: () => requests.get("card/my-cards/"),
   deleteCard: (values : any) => requests.del(`card/delete-card/${values.cardNumber}/`, values),

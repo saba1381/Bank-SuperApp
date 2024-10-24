@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ShareIcon from "@mui/icons-material/Share";
 import { toast } from 'react-toastify';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 const BankReceipt = ({transactionDate, initailCard, desCard, amount, transactionStatus }) => {
     const navigate = useNavigate();
@@ -77,7 +79,14 @@ const BankReceipt = ({transactionDate, initailCard, desCard, amount, transaction
     <Box sx={{ maxWidth: 500,width:{xs:500 , sm:400} ,mx: 'auto', paddingY: 0, paddingX: 0, borderRadius: 2, boxShadow: 3, bgcolor: 'white' }}>
       <Box sx={{ textAlign: 'center', mb: 1 }}>
         <Typography variant="h5" sx={{ fontWeight: 'bold', color: transactionStatus === 'success' ? 'green' : 'white' , bgcolor: transactionStatus === 'success' ? '#b6e9d2' : 'red' , p:2}}>
+        {transactionStatus === 'success' ? (
+                                <CheckCircleIcon sx={{ color: 'green', marginRight: '8px' }} />  
+                            ) : (
+                                <CancelIcon sx={{ color: 'white', marginRight: '8px' }} />  
+                            )}
           {transactionStatus === 'success' ? 'تراکنش موفق' : 'تراکنش ناموفق'}
+         
+
           {transactionStatus === 'success' && (
                 <ShareIcon onClick={handleShare} style={{ marginRight: '10px', cursor: 'pointer' }} />
               )}
