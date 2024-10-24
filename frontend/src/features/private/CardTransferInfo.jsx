@@ -13,7 +13,7 @@ import { UseAppDispatch } from "../../store/configureStore";
 import { toast } from 'react-toastify';
 import BankReceipt from './BankReceipt';
 
-const CardTransferForm = ({initailCard , desCard , amount}) => {
+const CardTransferForm = ({ownerName , initailCard , desCard , amount}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [showTransfer, setShowTransfer] = useState(false);
@@ -23,6 +23,7 @@ const CardTransferForm = ({initailCard , desCard , amount}) => {
   const [showReceipt, setShowReceipt] = useState(false); 
   const [transactionStatus, setTransactionStatus] = useState(null);
   const [transactionDate, setTransactionDate] = useState(null);
+  const [ownersName, setOwnersName] = useState(null);
   const [dynamicPasswordError, setDynamicPasswordError] = useState('');
 
   const handleTogglePassword = () => {
@@ -86,7 +87,9 @@ const CardTransferForm = ({initailCard , desCard , amount}) => {
           setIsTimerActive(false);
           formik.resetForm();
           const transactionDate = response.transaction_date; 
+          const cardsName = response.desCard_owner;
           setTransactionDate(transactionDate);
+          setOwnersName(cardsName);
           //toast.success("رمز پویا با موفقیت تایید شد" , {autoClose : 3000});
         })
         .catch((error) => {
@@ -102,7 +105,7 @@ const CardTransferForm = ({initailCard , desCard , amount}) => {
 
 
   if (showReceipt) {
-    return <BankReceipt transactionDate={transactionDate} initailCard={initailCard} desCard={desCard} amount={amount} transactionStatus={transactionStatus} />;
+    return <BankReceipt ownersName={ownersName} transactionDate={transactionDate} initailCard={initailCard} desCard={desCard} amount={amount} transactionStatus={transactionStatus} />;
   }
 
   if (showTransfer) {
@@ -198,7 +201,7 @@ const formatAmount = (amount) => {
       {/* Card Holder */}
       <Box sx={{ mb: 1 , display:'flex' , justifyContent:'space-between' , borderBottom: '1px dashed gray',paddingY:1 , color:'#56575b'}}>
         <Typography variant="body1">نام دارنده کارت:</Typography>
-        <Typography>صبا بصیری</Typography>
+        <Typography>{ownerName}</Typography>
       </Box>
 
       {/* Static Display for Amount */}

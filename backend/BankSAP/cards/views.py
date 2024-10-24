@@ -129,10 +129,24 @@ class CardToCardAPIView(APIView):
             'cardMonth': cardMonth,
             'cardYear': cardYear,
         }
+        def get_card_owner(card_number):
+            mock_owners = {
+                '603799': 'علی رضا زاده', 
+                '589210': 'مریم نوروزی',
+                '621986': 'محمد حسینی',
+                '502229' : 'صبا بصیری' ,
+                '622106' :'مریم امینی' ,
+                '589463' : 'محمد باقری',
+                '610433' : 'نقی جوادی'
+            }
+            card_prefix = card_number[:6] 
+            return mock_owners.get(card_prefix, 'نامشخص')  
+
+        des_card_owner = get_card_owner(card_info['desCard'])
 
         cache.set(f'card_info_{request.user.id}', card_info, timeout=600)
 
-        return Response( status=status.HTTP_200_OK)
+        return Response({"desCard_owner": des_card_owner}, status=status.HTTP_200_OK)
 
 
 
@@ -166,6 +180,7 @@ class GenerateOTPAPIView(APIView):
 
         phone_number = request.user.phone_number
         print(f"send code to this number {phone_number} is : {otp_five_digit}")
+        
 
         return Response(
             {"detail": "رمز پویا در ترمینال نمایش داده شد."},
@@ -210,6 +225,21 @@ class VerifyOTPAPIView(APIView):
                 {"detail": "اطلاعات انتقال وجه یافت نشد." , "transaction_date": transaction_date},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+        def get_card_owner(card_number):
+            mock_owners = {
+                '603799': 'علی رضا زاده', 
+                '589210': 'مریم نوروزی',
+                '621986': 'محمد حسینی',
+                '502229' : 'صبا بصیری' ,
+                '622106' :'مریم امینی' ,
+                '589463' : 'محمد باقری',
+                '610433' : 'نقی جوادی'
+            }
+            card_prefix = card_number[:6] 
+            return mock_owners.get(card_prefix, 'نامشخص')  
+
+        des_card_owner = get_card_owner(card_info['desCard'])
 
         card_transaction = CardToCard(
             user=request.user,
@@ -229,7 +259,8 @@ class VerifyOTPAPIView(APIView):
         return Response(
             {
                 "detail": "تراکنش با موفقیت انجام شد.",
-                "transaction_date": card_transaction.created_at
+                "transaction_date": card_transaction.created_at,
+                "desCard_owner": des_card_owner
             },
             status=status.HTTP_200_OK
         )

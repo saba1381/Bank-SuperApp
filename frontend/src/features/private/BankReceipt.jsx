@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-const BankReceipt = ({transactionDate, initailCard, desCard, amount, transactionStatus }) => {
+const BankReceipt = ({ownersName , transactionDate, initailCard, desCard, amount, transactionStatus }) => {
     const navigate = useNavigate();
     const [showTransfer, setShowTransfer] = useState(false); 
   const formatAmount = (amount) => {
@@ -116,6 +116,7 @@ const BankReceipt = ({transactionDate, initailCard, desCard, amount, transaction
           )}
         </Box>
       </Box>
+      
 
       <Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed gray', paddingY: 1, color: '#56575b' }}>
         <Typography sx={{fontSize:'1.2rem'}}>کارت مقصد:</Typography>
@@ -129,8 +130,13 @@ const BankReceipt = ({transactionDate, initailCard, desCard, amount, transaction
           )}
 
         </Box>
-       
         </Box>
+        {transactionStatus === 'success' ? (
+      <Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed gray', paddingY: 1, color: '#56575b'  }}>
+        <Typography sx={{fontSize:'1.2rem'}}>نام دارنده کارت:</Typography>
+        <Typography sx={{fontSize:'1.1rem'}}>{ownersName}</Typography>
+      </Box> ) :( '')}
+        
         <Typography sx={{color:'#ec5b54' , textAlign:'center' , fontWeight:'bold'}}>{transactionStatus === 'failed' ? 'خطا در انجام عملیات' :''}</Typography>
         <Button sx={{
             mt:3,

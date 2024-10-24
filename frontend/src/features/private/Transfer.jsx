@@ -66,6 +66,7 @@ const Transfer = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { cardNumberr } = location.state || {};
   const [isInitialized, setIsInitialized] = useState(false);
+  const [ownersName, setOwnersName] = useState(null);
 
   const handleButtonClick = () => {
     setCurrentComponent("cardTransfer");
@@ -392,11 +393,13 @@ const Transfer = () => {
       };
       dispatch(transferCard(formattedValues))
         .unwrap()
-        .then(() => {
+        .then((response) => {
           setCurrentComponent(true);
           setInitialCard(values.initialCard);
           setDesCard(values.desCard);
           setAmount(values.amount);
+          const cardsName = response.desCard_owner;
+          setOwnersName(cardsName);
 
           if (values.saveCard) {
             dispatch(
@@ -1247,6 +1250,7 @@ const Transfer = () => {
         </Box>
       ) : (
         <CardTransferForm
+        ownerName = {ownersName}
           initailCard={initialCard}
           desCard={desCard}
           amount={amount}
