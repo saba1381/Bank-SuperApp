@@ -14,6 +14,7 @@ from rest_framework.permissions import AllowAny
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from .validators import CustomPasswordValidator  
+import re
 
 """
 class RegisterView(APIView):
@@ -71,6 +72,37 @@ class RegisterView(APIView):
 
 
 """
+def is_valid_national_code(national_code):
+    if len(national_code) != 10 or not national_code.isdigit():
+        return False
+
+    check = int(national_code[9])
+    s = sum([int(national_code[x]) * (10 - x) for x in range(9)]) % 11
+    if s < 2:
+        return check == s
+    return check == 11 - s
+
+def is_valid_phone_number(phone_number):
+    return re.match(r'^091\d{8}$', phone_number)
+
+def mock_shahkar_service(national_code, phone_number):
+
+    if not is_valid_national_code(national_code):
+        return {
+            'status': 'error',
+            'message': 'کد ملی نامعتبر است'
+        }
+
+    if not is_valid_phone_number(phone_number):
+        return {
+            'status': 'error',
+            'message': 'شماره موبایل نامعتبر است'
+        }
+    return {
+        'status': 'success',
+        'message': 'اطلاعات معتبر است'
+    }
+
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
@@ -88,6 +120,13 @@ class RegisterView(APIView):
 
         if errors:
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        shahkar_response = mock_shahkar_service(national_code, phone_number)
+        if shahkar_response['status'] == 'error':
+            if "کد ملی" in shahkar_response['message']:
+                return Response({'nationalId': shahkar_response['message']}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'mobile': shahkar_response['message']}, status=status.HTTP_400_BAD_REQUEST)
 
         otp = secrets.randbelow(90000) + 10000
         print(f"Generated OTP for {phone_number}: {otp}")
