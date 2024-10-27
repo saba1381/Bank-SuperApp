@@ -17,7 +17,9 @@ import Settings from "../features/private/bottomMenu/settings";
 import Transfer from "../features/private/Transfer";
 import TransactionList from "../features/private/TransactionList";
 import CompleteInfo from "../features/private/CompleteInfo";
-import BankReceipt from "../features/private/BankReceipt";
+import Charging from "../features/private/Charging";
+
+
 export const router = createBrowserRouter([
     {
         path: "/",
@@ -53,7 +55,7 @@ export const router = createBrowserRouter([
                     { path: "cp/transfer", element: <Transfer /> },
                     { path: "cp/transaction-list", element: <TransactionList /> },
                     { path: "cp/complete-info", element: <CompleteInfo /> },
-                    //{ path: "cp/receipt", element: <BankReceipt /> },
+                    { path: "cp/charge", element: <Charging /> },
 
                 ]
             },

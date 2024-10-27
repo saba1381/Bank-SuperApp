@@ -62,6 +62,9 @@ const Header = () => {
     }else if (path === "/cp/transfer"){
         setHeaderTitle('انتقال وجه')
     }
+    else if (path === "/cp/charge"){
+      setHeaderTitle('خرید شارژ')
+  }
      else {
       setHeaderTitle(" ");
     }

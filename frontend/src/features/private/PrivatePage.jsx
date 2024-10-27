@@ -76,6 +76,9 @@ const PrivatePage = () => {
     } else if (title === "سوابق تراکنش"){
       navigate("/cp/transaction-list" , {state : {from : '/cp'}});
     }
+    else if (title === "خرید شارژ"){
+      navigate("/cp/charge" , {state : {from : '/cp'}});
+    }
   };
   
   const getIconSize = () => {
