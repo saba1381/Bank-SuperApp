@@ -60,27 +60,13 @@ const Charging = () => {
   const { cardNumberr } = location.state || {};
   const [isInitialized, setIsInitialized] = useState(false);
   const [ownersName, setOwnersName] = useState(null);
-  const [selectedOperator, setSelectedOperator] = useState("همراه اول");
+  const [selectedOperator, setSelectedOperator] = useState("");
   const amountOptions = ["10000", "50000", "100000", "200000", "500000", "1000000"];
 
   const handleButtonClick = () => {
     setCurrentComponent("cardTransfer");
   };
 
-  const getTextColor = (backgroundColor) => {
-    const color = backgroundColor.substring(1);
-    const rgb = parseInt(color, 16);
-    const r = (rgb >> 16) & 0xff;
-    const g = (rgb >> 8) & 0xff;
-    const b = (rgb >> 0) & 0xff;
-    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-    return brightness > 125 ? "black" : "white";
-  };
-
-  const toPersianDigits = (number) => {
-    const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
-    return number.replace(/\d/g, (d) => persianDigits[d]);
-  };
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -125,6 +111,21 @@ const Charging = () => {
     fetchUserDesCards();
   }, [dispatch]);
 
+  const detectOperator = (number) => {
+    const prefix = number.slice(0, 4);
+    if (/^0911|0912|0919|0910|0913|0914|0915|0916|0917|0918|0919|0991|0990|0992|0993/.test(prefix)) {
+      setSelectedOperator("همراه اول");
+    } else if (/^0935|0936|0937|0938|0939|0901|0902|0903|0904|0905/.test(prefix)) {
+      setSelectedOperator("ایرانسل");
+    } else if (/^0921|0920|0922|0923/.test(prefix)) {
+      setSelectedOperator("رایتل");
+    } else {
+      setSelectedOperator("");
+    }
+  };
+
+
+
   const formik = useFormik({
     initialValues: {
       mobile: "",
@@ -132,7 +133,10 @@ const Charging = () => {
     },
     validationSchema: Yup.object({
       mobile: Yup.string()
-        .matches(/^091\d{8}$/, "شماره موبایل معتبر وارد کنید ")
+      .matches(
+        /^(0911|0912|0919|0910|0913|0914|0915|0916|0917|0918|0991|0990|0992|0993|0935|0936|0937|0938|0939|0901|0902|0903|0904|0905|0921|0920|0922|0923)\d{7}$/,
+        "شماره موبایل معتبر وارد کنید"
+      )
         .required("شماره موبایل را وارد کنید"),
       amount: Yup.string()
         .matches(/^\d{1,16}$/, "مبلغ را به درستی وارد کنید")
@@ -230,6 +234,11 @@ const Charging = () => {
       });
   };
 
+  const handleMobileChange = (e) => {
+    formik.handleChange(e);
+    detectOperator(e.target.value);
+  };
+
   return (
     <>
       {!currentComponent ? (
@@ -237,7 +246,7 @@ const Charging = () => {
           maxWidth="full"
           sx={{
             paddingY: { xs: 8, sm: 0 },
-            paddingX: { xs: 1.5, sm: 18, md: 34 },
+            paddingX: { xs: 1.5, sm: 18, md:46},
             height: { sm: "125vh", xs: "70vh" },
             display: "flex",
             flexDirection: "column",
@@ -313,7 +322,7 @@ const Charging = () => {
                       value={formik.values.mobile}
                       onKeyDown={(e) => handleKeyDown(e, amountRef)}
                       inputRef={amountRef}
-                      onChange={formik.handleChange}
+                      onChange={handleMobileChange}
                       error={
                         formik.touched.mobile && Boolean(formik.errors.mobile)
                       }
@@ -354,6 +363,7 @@ const Charging = () => {
                                     ? "red"
                                     : "gray",
                                 fontSize: "1.2rem",
+                               
                               }}
                             >
                               <RiSimCard2Fill />
@@ -387,6 +397,10 @@ const Charging = () => {
               ...params.inputProps,
               maxLength: 16,
               inputMode: "numeric",
+              style: {
+                textAlign: "right", // تنظیم چپ‌چین شدن
+                direction: "rtl",  // تنظیم جهت به چپ‌به‌راست
+              },
             }}
             error={formik.touched.amount && Boolean(formik.errors.amount)}
             helperText={formik.touched.amount && formik.errors.amount}
