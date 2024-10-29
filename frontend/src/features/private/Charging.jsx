@@ -126,6 +126,8 @@ const Charging = () => {
       setCurrentComponent(true);
       const formattedAmount = values.amount.replace(/,/g, ""); 
       const formattedValues = { ...values, amount: formattedAmount };
+      setMobile(values.mobile);
+      setAmount(values.amount);
       console.log(formattedValues)
       //   if (isInvalidCard || isInvalidDesCard) {
       //     formik.setTouched({

@@ -37,8 +37,9 @@ import { toast } from "react-toastify";
 import ClearIcon from "@mui/icons-material/Clear";
 import { toPersianNumbers } from "../../util/util";
 import { sendOtp, verifyOtp } from "../account/accountSlice";
+import Charging from "./Charging";
 
-const CompleteCharging = ({mobile , chargeAmount}) => {
+const CompleteCharging = ({ mobile, chargeAmount }) => {
   const [bankName, setBankName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const yearInputRef = useRef(null);
@@ -60,32 +61,42 @@ const CompleteCharging = ({mobile , chargeAmount}) => {
   const [userDesCards, setUserDesCards] = useState([]);
   const [currentComponent, setCurrentComponent] = useState(false);
   const [initialCard, setInitialCard] = useState("");
-  const [desCard, setDesCard] = useState("");
   const [amount, setAmount] = useState("");
-  const [overlayOpen, setOverlayOpen] = useState(false);
   const [helpSnackbarOpen, setHelpSnackbarOpen] = useState(false);
+  const [showPasswordPooya, setShowPasswordPooya] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { cardNumberr } = location.state || {};
   const [isInitialized, setIsInitialized] = useState(false);
   const [ownersName, setOwnersName] = useState(null);
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [timer, setTimer] = useState(120);
+  const [showCharging, setShowCharging] = useState(false);
+
+  const getOperator = (mobile) => {
+    const prefix = mobile.substring(0, 4);
+    if (["0910", "0911", "0912"].includes(prefix)) {
+      return { name: "همراه اول", color: "#a0eaf5", textColor: "#3d4849" };
+    } else if (["0935", "0936", "0937"].includes(prefix)) {
+      return { name: "ایرانسل", color: "#ffcc00", textColor: "#445355" };
+    } else if (["0920", "0921"].includes(prefix)) {
+      return { name: "رایتل", color: "#800080", textColor: "#fff" };
+    } else {
+      return { name: "اپراتور ناشناخته", color: "#bdbdbd" };
+    }
+  };
+
+  const operatorInfo = getOperator(mobile);
 
   const handleButtonClick = () => {
     setCurrentComponent("cardTransfer");
   };
 
-  const handleHelpSnackbarOpen = () => {
-    setHelpSnackbarOpen(true);
-    setOverlayOpen(true);
-  };
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSnackbarOpen = () => {
-    setSnackbarOpen(true);
-    setOverlayOpen(true);
+  const handleTogglePasswordPooya = () => {
+    setShowPasswordPooya(!showPasswordPooya);
   };
 
   const banks = {
@@ -327,7 +338,7 @@ const CompleteCharging = ({mobile , chargeAmount}) => {
   const formik = useFormik({
     initialValues: {
       initialCard: "",
-      dynamicPassword:"",
+      dynamicPassword: "",
       cvv2: "",
       cardMonth: "",
       cardYear: "",
@@ -340,7 +351,7 @@ const CompleteCharging = ({mobile , chargeAmount}) => {
           "شماره کارت مبدا را کامل وارد کنید."
         )
         .required("شماره کارت مبدا الزامی است"),
-        dynamicPassword: Yup.string()
+      dynamicPassword: Yup.string()
         .matches(/^\d{1,5}$/, "رمز پویای معتبر وارد کنید")
         .required("لطفا رمز پویای خود را وارد کنید"),
       cvv2: Yup.string()
@@ -373,7 +384,7 @@ const CompleteCharging = ({mobile , chargeAmount}) => {
       if (Object.keys(errors).length > 0) {
         formik.setTouched({
           initialCard: true,
-          dynamicPassword:true,
+          dynamicPassword: true,
           amount: true,
           cvv2: true,
           cardMonth: true,
@@ -428,10 +439,7 @@ const CompleteCharging = ({mobile , chargeAmount}) => {
       nextFieldRef.current.focus();
     }
   };
-  const handleBackClick = () => {
-    const previousPage = location.state?.from || "/cp";
-    navigate(previousPage);
-  };
+
   const formatAmountNumber = (value) => {
     if (!value) return value;
     const cleanedValue = value.replace(/\D/g, "");
@@ -468,6 +476,9 @@ const CompleteCharging = ({mobile , chargeAmount}) => {
       remainingSeconds < 10 ? "0" : ""
     }${remainingSeconds} : ${minutes}`;
   };
+  if (showCharging) {
+    return <Charging />; 
+}
 
   return (
     <>
@@ -475,7 +486,8 @@ const CompleteCharging = ({mobile , chargeAmount}) => {
         <Box
           maxWidth="full"
           sx={{
-            paddingY: { xs: 8, sm: 0 },
+            paddingY: { xs: 5, sm: 0 },
+            paddingTop:{xs:2},
             paddingX: { xs: 1.5, sm: 18, md: 46 },
             height: { sm: "125vh", xs: "70vh" },
             display: "flex",
@@ -501,6 +513,50 @@ const CompleteCharging = ({mobile , chargeAmount}) => {
                   paddingX: { xs: 2.9, sm: 7 },
                 }}
               >
+                <Box
+                  sx={{
+                    backgroundColor: operatorInfo.color,
+                    color: operatorInfo.textColor,
+                    borderRadius: "8px",
+                    paddingY: 2.5,
+                    paddingX:4,
+                    textAlign: "center",
+                    mb: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    sx={{ alignSelf: "flex-start" }}
+                  >{`شارژ ${operatorInfo.name}`}</Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mt: 1,
+                      width: "100%",
+                    }}
+                  >
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ alignSelf: "flex-start" , fontSize:'1rem' }}
+                    >
+                      مبلغ:
+                    </Typography>
+                    <Typography
+                      sx={{ alignSelf: "flex-end", fontSize: "1rem" }}
+                    >
+                      {`${toPersianDigits(
+                        chargeAmount
+                          .toString()
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                      )} ریال`}
+                    </Typography>
+                  </Box>
+                </Box>
                 <Box
                   display="flex"
                   justifyContent="space-between"
@@ -624,10 +680,10 @@ const CompleteCharging = ({mobile , chargeAmount}) => {
                                     lg: "1.5rem",
                                   },
                                   transform: {
-                                    xs: "translate(10px, -15px) scale(0.85)",
+                                    xs: "translate(8px, -17px) scale(0.85)",
                                     sm: "translate(13px, -14px) scale(0.75)",
-                                    md: "translate(12px, -14px) scale(0.70)", // برای صفحه متوسط
-                                    lg: "translate(10px, -22px) scale(0.65)", // برای صفحه بزرگ
+                                    md: "translate(12px, -14px) scale(0.70)", 
+                                    lg: "translate(10px, -22px) scale(0.65)", 
                                   },
                                 },
                                 "&.Mui-error": {
@@ -677,7 +733,7 @@ const CompleteCharging = ({mobile , chargeAmount}) => {
                       value={formik.values.dynamicPassword}
                       onKeyDown={(e) => handleKeyDown(e, cvv2Ref)}
                       inputRef={pooyaRef}
-                      type={showPassword ? "text" : "password"}
+                      type={showPasswordPooya ? "text" : "password"}
                       {...formik.getFieldProps("dynamicPassword")}
                       error={
                         formik.touched.dynamicPassword &&
@@ -691,10 +747,10 @@ const CompleteCharging = ({mobile , chargeAmount}) => {
                         endAdornment: (
                           <InputAdornment position="end">
                             <IconButton
-                              onClick={handleTogglePassword}
+                              onClick={handleTogglePasswordPooya}
                               style={{ fontSize: "1.2rem", color: "navy" }}
                             >
-                              {showPassword ? (
+                              {showPasswordPooya ? (
                                 <VisibilityOff />
                               ) : (
                                 <Visibility />
@@ -716,11 +772,11 @@ const CompleteCharging = ({mobile , chargeAmount}) => {
                               lg: "1.5rem",
                             },
                             transform: {
-                                xs: "translate(10px, -15px) scale(0.85)",
-                                sm: "translate(13px, -14px) scale(0.75)",
-                                md: "translate(12px, -14px) scale(0.70)",
-                                lg: "translate(10px, -22px) scale(0.65)", 
-                              },
+                              xs: "translate(10px, -15px) scale(0.85)",
+                              sm: "translate(13px, -14px) scale(0.75)",
+                              md: "translate(12px, -14px) scale(0.70)",
+                              lg: "translate(10px, -22px) scale(0.65)",
+                            },
                             "&.Mui-error": {
                               color: "pink",
                             },
@@ -758,7 +814,7 @@ const CompleteCharging = ({mobile , chargeAmount}) => {
                         "&:hover": {
                           opacity: 0.5,
                         },
-                        width: "30%",
+                        width: {sm:"30%" , xs:"38%"},
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
@@ -1002,7 +1058,7 @@ const CompleteCharging = ({mobile , chargeAmount}) => {
 
                   <Button
                     color="primary"
-                    onClick={handleBackClick}
+                    onClick={()=>setShowCharging(true)}
                     endIcon={<KeyboardBackspaceIcon />}
                     sx={{
                       textAlign: "center",
@@ -1043,39 +1099,9 @@ const CompleteCharging = ({mobile , chargeAmount}) => {
               sx={{
                 zIndex: (theme) => theme.zIndex.modal - 1,
                 bgcolor: "rgba(0, 0, 0, 0.5)",
-              }} // تیره کردن پس‌زمینه
+              }}
             />
-            <Snackbar
-              open={helpSnackbarOpen}
-              onClose={handleSnackbarClose}
-              autoHideDuration={8000}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  onClick={handleHelpSnackbarClose}
-                >
-                  ×
-                </IconButton>
-              }
-              sx={{ top: 250, width: { sm: "500px" } }}
-            >
-              <Alert
-                onClose={handleHelpSnackbarClose}
-                severity="info"
-                sx={{ width: "100%", borderRadius: "20px" }}
-              >
-                <Typography variant="h5">سرویس انتقال کارت به کارت</Typography>
-                <Typography>
-                  {" "}
-                  به منظور انتقال وجه کارت به کارت، پس از انتخاب کارت مبدا،
-                  شماره کارت مقصد را وارد کنید. درصورتی که اطلاعات کارت مقصد بیش
-                  از این در موبایل بانک ذخیره شده است، با لمس تصویر مرتبط
-                  میتوانید کارت مورد نظر را انتخاب کنید.
-                </Typography>
-              </Alert>
-            </Snackbar>
+           
           </Box>
         </Box>
       ) : (
