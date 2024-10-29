@@ -56,7 +56,6 @@ export const router = createBrowserRouter([
                     { path: "cp/transaction-list", element: <TransactionList /> },
                     { path: "cp/complete-info", element: <CompleteInfo /> },
                     { path: "cp/charge", element: <Charging /> },
-
                 ]
             },
 

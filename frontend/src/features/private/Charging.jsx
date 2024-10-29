@@ -27,15 +27,15 @@ import {
 } from "../account/accountSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UseAppDispatch, UseAppSelector } from "../../store/configureStore";
-import CardTransferForm from "./CardTransferInfo";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import { toast } from "react-toastify";
 import ClearIcon from "@mui/icons-material/Clear";
 import { RiSimCard2Fill } from "react-icons/ri";
 import {toPersianNumbers} from '../../util/util'
+import CompleteCharging from "./CompleteCharging";
 
 const Charging = () => {
-  const [bankName, setBankName] = useState("");
+  const [userCards, setUserCards] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
@@ -48,12 +48,9 @@ const Charging = () => {
   const mobileRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const [userCards, setUserCards] = useState([]);
-  const [userDesCards, setUserDesCards] = useState([]);
   const [currentComponent, setCurrentComponent] = useState(false);
-  const [initialCard, setInitialCard] = useState("");
-  const [desCard, setDesCard] = useState("");
   const [amount, setAmount] = useState("");
+  const [mobile, setMobile] = useState("");
   const [overlayOpen, setOverlayOpen] = useState(false);
   const [helpSnackbarOpen, setHelpSnackbarOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -64,7 +61,7 @@ const Charging = () => {
   const amountOptions = ["10000", "50000", "100000", "200000", "500000", "1000000"];
 
   const handleButtonClick = () => {
-    setCurrentComponent("cardTransfer");
+    setCurrentComponent("charging");
   };
 
 
@@ -91,25 +88,7 @@ const Charging = () => {
     fetchUserCards();
   }, [dispatch]);
 
-  useEffect(() => {
-    const fetchUserDesCards = async () => {
-      try {
-        const Descards = await dispatch(fetchSavedDesCards()).unwrap();
-        console.log(Descards);
 
-        if (Array.isArray(Descards)) {
-          setUserDesCards(Descards);
-        } else {
-          setUserDesCards([]);
-        }
-      } catch (error) {
-        console.error("Error fetching cards:", error);
-        setUserDesCards([]);
-      }
-    };
-
-    fetchUserDesCards();
-  }, [dispatch]);
 
   const detectOperator = (number) => {
     const prefix = number.slice(0, 4);
@@ -139,16 +118,18 @@ const Charging = () => {
       )
         .required("شماره موبایل را وارد کنید"),
       amount: Yup.string()
-        .matches(/^\d{1,16}$/, "مبلغ را به درستی وارد کنید")
+        .matches(/^\d{1,30}$/, "مبلغ را به درستی وارد کنید")
         .required("مبلغ را به ریال وارد کنید")
         .max(16, "مبلغ نمی‌تواند بیشتر از ۱۶ رقم باشد"),
     }),
     onSubmit: async (values) => {
       setCurrentComponent(true);
+      const formattedAmount = values.amount.replace(/,/g, ""); 
+      const formattedValues = { ...values, amount: formattedAmount };
+      console.log(formattedValues)
       //   if (isInvalidCard || isInvalidDesCard) {
       //     formik.setTouched({
       //       initialCard: true,
-      //       desCard: true,
       //     });
       //     return;
       //   }
@@ -170,11 +151,7 @@ const Charging = () => {
       //     .unwrap()
       //     .then((response) => {
       //       setCurrentComponent(true);
-      //     //   setInitialCard(values.initialCard);
-      //     //   setDesCard(values.desCard);
-      //     //   setAmount(values.amount);
-      //     //   const cardsName = response.desCard_owner;
-      //     //   setOwnersName(cardsName);
+      //       setMobile(values.mobile);
 
       //       if (values.saveCard) {
       //         dispatch(
@@ -213,26 +190,22 @@ const Charging = () => {
     const previousPage = location.state?.from || "/cp";
     navigate(previousPage);
   };
+
   const formatAmountNumber = (value) => {
     if (!value) return value;
-    const cleanedValue = value.replace(/\D/g, "");
-    const formattedValue = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    return toPersianNumbers(formattedValue);
+    const cleanedValue = value.replace(/\D/g, ""); // حذف تمام غیر اعداد
+    const formattedValue = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // اضافه کردن کاما به اعداد
+    return formattedValue;
   };
 
-  const handleDelete = (cardToDelete) => {
-    const formattedCardNumber = cardToDelete.replace(/-/g, "");
-    dispatch(deleteDesCard(cardToDelete))
-      .then(() => {
-        console.log("کارت با موفقیت حذف شد");
-        setUserDesCards((prevCards) =>
-          prevCards.filter((card) => card.des_card !== cardToDelete)
-        );
-      })
-      .catch((error) => {
-        console.error("خطا در حذف کارت", error);
-      });
+  const handleAmountChange = (event) => {
+    const value = event.target.value.replace(/,/g, ""); // حذف کاما
+    const formattedValue = formatAmountNumber(value); // افزودن کاما
+    setAmount(formattedValue); // به‌روزرسانی مقدار نمایش داده شده
+    formik.setFieldValue("amount", value); // ذخیره بدون کاما در formik
   };
+
+
 
   const handleMobileChange = (e) => {
     formik.handleChange(e);
@@ -392,14 +365,16 @@ const Charging = () => {
             fullWidth
             name="amount"
             autoComplete="off"
+            value={amount}
+            onChange={handleAmountChange}
             inputRef={amountRef}
             inputProps={{
               ...params.inputProps,
               maxLength: 16,
               inputMode: "numeric",
               style: {
-                textAlign: "right", // تنظیم چپ‌چین شدن
-                direction: "rtl",  // تنظیم جهت به چپ‌به‌راست
+                textAlign: "right", 
+                direction: "rtl",  
               },
             }}
             error={formik.touched.amount && Boolean(formik.errors.amount)}
@@ -525,11 +500,9 @@ const Charging = () => {
           </Box>
         </Box>
       ) : (
-        <CardTransferForm
-          ownerName={ownersName}
-          initailCard={initialCard}
-          desCard={desCard}
-          amount={amount}
+        <CompleteCharging
+        chargeAmount={amount}
+          mobile={mobile}
         />
       )}
     </>
