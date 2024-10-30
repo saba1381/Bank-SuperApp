@@ -22,8 +22,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
   fetchCards,
-  fetchSavedDesCards,
-  deleteDesCard,
+  chargeUser
 } from "../account/accountSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UseAppDispatch, UseAppSelector } from "../../store/configureStore";
@@ -59,10 +58,6 @@ const Charging = () => {
   const [ownersName, setOwnersName] = useState(null);
   const [selectedOperator, setSelectedOperator] = useState("");
   const amountOptions = ["10000", "50000", "100000", "200000", "500000", "1000000"];
-
-  const handleButtonClick = () => {
-    setCurrentComponent("charging");
-  };
 
 
   const handleSnackbarClose = () => {
@@ -118,61 +113,26 @@ const Charging = () => {
       )
         .required("شماره موبایل را وارد کنید"),
       amount: Yup.string()
-        .matches(/^\d{1,30}$/, "مبلغ را به درستی وارد کنید")
+        .matches(/^\d{1,16}$/, "مبلغ را به درستی وارد کنید")
         .required("مبلغ را به ریال وارد کنید")
         .max(16, "مبلغ نمی‌تواند بیشتر از ۱۶ رقم باشد"),
     }),
     onSubmit: async (values) => {
-      setCurrentComponent(true);
       const formattedAmount = values.amount.replace(/,/g, ""); 
-      const formattedValues = { ...values, amount: formattedAmount };
+      const formattedValues = {
+        mobile_number: values.mobile,
+        amount: formattedAmount
+      };
       setMobile(values.mobile);
       setAmount(values.amount);
-      console.log(formattedValues)
-      //   if (isInvalidCard || isInvalidDesCard) {
-      //     formik.setTouched({
-      //       initialCard: true,
-      //     });
-      //     return;
-      //   }
-
-      //   const errors = await formik.validateForm();
-
-      //   if (Object.keys(errors).length > 0) {
-      //     formik.setTouched({
-      //       amount: true,
-      //     });
-      //     return;
-      //   }
-      //   const formattedValues = {
-      //     ...values,
-      //     initialCard: values.initialCard.replace(/-/g, ""),
-      //     desCard: values.desCard.replace(/-/g, ""),
-      //   };
-      //   dispatch(transferCard(formattedValues))
-      //     .unwrap()
-      //     .then((response) => {
-      //       setCurrentComponent(true);
-      //       setMobile(values.mobile);
-
-      //       if (values.saveCard) {
-      //         dispatch(
-      //           saveDesCard({ des_card: values.desCard.replace(/-/g, "") })
-      //         ).catch((error) => {
-      //           toast.error("Failed to save card", { autoClose: 3000 });
-      //         });
-      //       }
-      //     })
-      //     .catch((error) => {
-      //       const errorMessage = error.error.detail;
-      //       if (errorMessage.includes("مبدا")) {
-      //         formik.setFieldError("initialCard", " ");
-      //       }
-      //       if (errorMessage.includes("مقصد")) {
-      //         formik.setFieldError("desCard", " ");
-      //       }
-      //       toast.error(errorMessage, { autoClose: 3000 });
-      //     });
+      
+      try {
+        await dispatch(chargeUser(formattedValues)).unwrap(); 
+        setCurrentComponent(true) 
+    } catch (error) {
+        setCurrentComponent(false); 
+    }
+      
     },
   });
 
@@ -195,16 +155,16 @@ const Charging = () => {
 
   const formatAmountNumber = (value) => {
     if (!value) return value;
-    const cleanedValue = value.replace(/\D/g, ""); // حذف تمام غیر اعداد
-    const formattedValue = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // اضافه کردن کاما به اعداد
+    const cleanedValue = value.replace(/\D/g, ""); 
+    const formattedValue = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ","); 
     return formattedValue;
   };
 
   const handleAmountChange = (event) => {
-    const value = event.target.value.replace(/,/g, ""); // حذف کاما
-    const formattedValue = formatAmountNumber(value); // افزودن کاما
-    setAmount(formattedValue); // به‌روزرسانی مقدار نمایش داده شده
-    formik.setFieldValue("amount", value); // ذخیره بدون کاما در formik
+    const value = event.target.value.replace(/,/g, "");
+    const formattedValue = formatAmountNumber(value); 
+    setAmount(formattedValue); 
+    formik.setFieldValue("amount", value); 
   };
 
 

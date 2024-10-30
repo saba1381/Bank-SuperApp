@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'users',
     'corsheaders',
-    'cards'
+    'cards',
+    'charge'
 ]
 
 REST_FRAMEWORK = {

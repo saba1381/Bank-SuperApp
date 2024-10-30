@@ -106,9 +106,15 @@ const Card = {
   updateCard: (id: number, values: any) => requests.put(`card/edit-card/${id}/`, values),
 };
 
+
+const Charge ={
+  Charging: (values: object) => requests.post("charge/recharge/", values),
+};
+
 const agent = {
   UserProfile,
-  Card
+  Card,
+  Charge
 };
 
 export default agent;

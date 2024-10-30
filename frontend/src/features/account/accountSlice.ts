@@ -306,6 +306,23 @@ export const fetchSavedDesCards = createAsyncThunk(
     }
 );
 
+export const chargeUser = createAsyncThunk(
+    'account/chargeUser',
+    async (data: object, thunkAPI) => {
+        try {
+            const response = await agent.Charge.Charging(data);
+            //toast.success('شارژ با موفقیت انجام شد');
+            return response;
+        } catch (error : any) {
+            const errorMessage = error.data.detail || 'خطا در اطلاعات شارژ';
+            //console.log(error.data.detail)
+            toast.error(errorMessage , { autoClose: 3000 });
+            return thunkAPI.rejectWithValue({ error: errorMessage });
+        }
+    }
+);
+
+
 
 export const accountSlice = createSlice({
     name: 'account',
@@ -515,6 +532,20 @@ export const accountSlice = createSlice({
             state.isLoading = false;
    
           });
+
+          builder
+    .addCase(chargeUser.pending, (state) => {
+        state.isLoading = true;
+    })
+    .addCase(chargeUser.fulfilled, (state) => {
+        state.isLoading = false;
+        // در صورت نیاز می‌توانید اطلاعات مربوط به شارژ را به state اضافه کنید
+    })
+    .addCase(chargeUser.rejected, (state, action) => {
+        state.isLoading = false;
+        //state.error = action.payload?.error || 'خطا در انجام شارژ';
+    });
+
         
           
         builder.addMatcher(isAnyOf(signInUser.rejected, verifyOTP.rejected), (state) => {

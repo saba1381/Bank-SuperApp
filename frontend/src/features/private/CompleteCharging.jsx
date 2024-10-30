@@ -74,12 +74,12 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
 
   const getOperator = (mobile) => {
     const prefix = mobile.substring(0, 4);
-    if (["0910", "0911", "0912"].includes(prefix)) {
-      return { name: "همراه اول", color: "#a0eaf5", textColor: "#3d4849" };
-    } else if (["0935", "0936", "0937"].includes(prefix)) {
-      return { name: "ایرانسل", color: "#ffcc00", textColor: "#445355" };
-    } else if (["0920", "0921"].includes(prefix)) {
-      return { name: "رایتل", color: "#800080", textColor: "#fff" };
+    if (["0910", "0911", "0912" , "0919" , "0913" , "0914" , "0915" , "0916" , "0917" , "0918" , "0991" , "0992" , "0993"].includes(prefix)) {
+      return { name: "همراه اول", color: "#a0eaf5", textColor: "#3d4849" , logo: "/OPIcons/hamrah.png"};
+    } else if (["0935", "0936", "0937" , "0938" , "0939" , "0901" , "0902" , "0903" , "0904" , "0905"].includes(prefix)) {
+      return { name: "ایرانسل", color: "#f4c403", textColor: "#445355" , logo: "/OPIcons/irancell.png"};
+    } else if (["0920", "0921" , "0922" , "0923"].includes(prefix)) {
+      return { name: "رایتل", color: "#800080", textColor: "#fff" , logo: "/OPIcons/rightel.png"};
     } else {
       return { name: "اپراتور ناشناخته", color: "#bdbdbd" };
     }
@@ -315,25 +315,7 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
     fetchUserCards();
   }, [dispatch]);
 
-  useEffect(() => {
-    const fetchUserDesCards = async () => {
-      try {
-        const Descards = await dispatch(fetchSavedDesCards()).unwrap();
-        console.log(Descards);
-
-        if (Array.isArray(Descards)) {
-          setUserDesCards(Descards);
-        } else {
-          setUserDesCards([]);
-        }
-      } catch (error) {
-        console.error("Error fetching cards:", error);
-        setUserDesCards([]);
-      }
-    };
-
-    fetchUserDesCards();
-  }, [dispatch]);
+ 
 
   const formik = useFormik({
     initialValues: {
@@ -525,8 +507,20 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "flex-end",
+                    position:'relative'
                   }}
                 >
+                  <img src={operatorInfo.logo}
+                  alt={`${operatorInfo.name} logo`}
+                  style={{
+                    width:'50px',
+                    height:'45px',
+                    position:'absolute',
+                    top:'13px',
+                    left:'24px',
+                    borderRadius:'10px'
+                  }}
+                  />
                   <Typography
                     variant="h6"
                     sx={{ alignSelf: "flex-start" }}
@@ -536,7 +530,7 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
-                      mt: 1,
+                      mt: 1.7,
                       width: "100%",
                     }}
                   >
