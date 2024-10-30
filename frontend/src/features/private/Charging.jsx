@@ -26,9 +26,7 @@ import {
 } from "../account/accountSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UseAppDispatch, UseAppSelector } from "../../store/configureStore";
-import CreditCardIcon from "@mui/icons-material/CreditCard";
-import { toast } from "react-toastify";
-import ClearIcon from "@mui/icons-material/Clear";
+import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { RiSimCard2Fill } from "react-icons/ri";
 import {toPersianNumbers} from '../../util/util'
 import CompleteCharging from "./CompleteCharging";
@@ -57,7 +55,7 @@ const Charging = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [ownersName, setOwnersName] = useState(null);
   const [selectedOperator, setSelectedOperator] = useState("");
-  const amountOptions = ["10000", "50000", "100000", "200000", "500000", "1000000"];
+  const amountOptions = ["50000", "100000", "200000", "500000", "1000000"];
 
 
   const handleSnackbarClose = () => {
@@ -113,8 +111,8 @@ const Charging = () => {
       )
         .required("شماره موبایل را وارد کنید"),
       amount: Yup.string()
-        .matches(/^\d{1,16}$/, "مبلغ را به درستی وارد کنید")
-        .required("مبلغ را به ریال وارد کنید")
+        .matches(/^(?!0)\d{1,16}$/, "مبلغ را به درستی وارد کنید")
+        .required("مبلغ را وارد کنید")
         .max(16, "مبلغ نمی‌تواند بیشتر از ۱۶ رقم باشد"),
     }),
     onSubmit: async (values) => {
@@ -181,7 +179,7 @@ const Charging = () => {
           maxWidth="full"
           sx={{
             paddingY: { xs: 8, sm: 0 },
-            paddingX: { xs: 1.5, sm: 18, md:46},
+            paddingX: { xs: 1.5, sm: 18, md:36},
             height: { sm: "125vh", xs: "70vh" },
             display: "flex",
             flexDirection: "column",
@@ -203,7 +201,7 @@ const Charging = () => {
                   paddingY: { xs: 4, md: 4 },
                   borderRadius: 3,
                   width: "100%",
-                  paddingX: { xs: 2.9, sm: 4 , md:6 },
+                  paddingX: { xs: 2.9, sm: 4 , md:10 },
                 }}
               >
                 <Box sx={{ display: "grid", gap: 0.6, mb: 4 }}>
@@ -294,7 +292,7 @@ const Charging = () => {
                             <span
                               style={{
                                 color:
-                                  formik.touched.amount && formik.errors.amount
+                                  formik.touched.mobile && formik.errors.mobile
                                     ? "red"
                                     : "gray",
                                 fontSize: "1.2rem",
@@ -338,6 +336,7 @@ const Charging = () => {
                 textAlign: "right", 
                 direction: "rtl",  
               },
+              readOnly: true,
             }}
             error={formik.touched.amount && Boolean(formik.errors.amount)}
             helperText={formik.touched.amount && formik.errors.amount}
@@ -377,6 +376,7 @@ const Charging = () => {
                   >
                     ریال
                   </span>
+                  <MdOutlineKeyboardArrowDown style={{ marginLeft: -30,marginRight:15 ,color: "gray" , fontSize:'1.7rem'}} />
                 </InputAdornment>
               ),
               sx: { borderRadius: "10px" },

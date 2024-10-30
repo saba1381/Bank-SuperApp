@@ -24,8 +24,7 @@ import {
   transferCard,
   fetchCards,
   sendPooyaCharge,
-  verifyChargeInfo
-
+  verifyChargeInfo,
 } from "../account/accountSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UseAppDispatch, UseAppSelector } from "../../store/configureStore";
@@ -64,18 +63,62 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [timer, setTimer] = useState(120);
   const [showCharging, setShowCharging] = useState(false);
-  const [showReceipt, setShowReceipt] = useState(false); 
+  const [showReceipt, setShowReceipt] = useState(false);
   const [transactionStatus, setTransactionStatus] = useState(null);
   const [transactionDate, setTransactionDate] = useState(null);
 
   const getOperator = (mobile) => {
     const prefix = mobile.substring(0, 4);
-    if (["0910", "0911", "0912" , "0919" , "0913" , "0914" , "0915" , "0916" , "0917" , "0918" , "0991" , "0992" , "0993"].includes(prefix)) {
-      return { name: "همراه اول", color: "#a0eaf5", textColor: "#3d4849" , logo: "/OPIcons/hamrah.png"};
-    } else if (["0935", "0936", "0937" , "0938" , "0939" , "0901" , "0902" , "0903" , "0904" , "0905"].includes(prefix)) {
-      return { name: "ایرانسل", color: "#f4c403", textColor: "#445355" , logo: "/OPIcons/irancell.png"};
-    } else if (["0920", "0921" , "0922" , "0923"].includes(prefix)) {
-      return { name: "رایتل", color: "#800080", textColor: "#fff" , logo: "/OPIcons/rightel.png"};
+    if (
+      [
+        "0910",
+        "0911",
+        "0912",
+        "0919",
+        "0913",
+        "0914",
+        "0915",
+        "0916",
+        "0917",
+        "0918",
+        "0991",
+        "0992",
+        "0993",
+      ].includes(prefix)
+    ) {
+      return {
+        name: "همراه اول",
+        color: "#a0eaf5",
+        textColor: "#3d4849",
+        logo: "/OPIcons/hamrah.png",
+      };
+    } else if (
+      [
+        "0935",
+        "0936",
+        "0937",
+        "0938",
+        "0939",
+        "0901",
+        "0902",
+        "0903",
+        "0904",
+        "0905",
+      ].includes(prefix)
+    ) {
+      return {
+        name: "ایرانسل",
+        color: "#f4c403",
+        textColor: "#445355",
+        logo: "/OPIcons/irancell.png",
+      };
+    } else if (["0920", "0921", "0922", "0923"].includes(prefix)) {
+      return {
+        name: "رایتل",
+        color: "#800080",
+        textColor: "#fff",
+        logo: "/OPIcons/rightel.png",
+      };
     } else {
       return { name: "اپراتور ناشناخته", color: "#bdbdbd" };
     }
@@ -239,7 +282,6 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
     }
   };
 
-
   useEffect(() => {
     const fetchUserCards = async () => {
       try {
@@ -259,8 +301,6 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
     fetchUserCards();
   }, [dispatch]);
 
- 
-
   const formik = useFormik({
     initialValues: {
       initialCard: "",
@@ -268,15 +308,15 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
       cvv2: "",
       cardMonth: "",
       cardYear: "",
-      saveCard: false,
     },
+    validateOnBlur:false,
     validationSchema: Yup.object({
       initialCard: Yup.string()
         .matches(
           /^\d{4}-\d{4}-\d{4}-\d{4}$/,
-          "شماره کارت مبدا را کامل وارد کنید."
+          "شماره کارت را کامل وارد کنید."
         )
-        .required("شماره کارت مبدا الزامی است"),
+        .required("شماره کارت الزامی است"),
       dynamicPassword: Yup.string()
         .matches(/^\d{1,5}$/, "رمز پویای معتبر وارد کنید")
         .required("لطفا رمز پویای خود را وارد کنید"),
@@ -296,31 +336,28 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
         .matches(/^\d{2}$/, "سال معتبر نیست")
         .required("سال الزامی است"),
     }),
+    
     onSubmit: async (values) => {
       try {
         const result = await dispatch(verifyChargeInfo(values)).unwrap();
-        setTransactionStatus('success');
+        setTransactionStatus("success");
         setShowReceipt(true);
         setAmount(chargeAmount);
         setMobileNum(mobile);
         setSendInitialCard(values.initialCard);
-        const transactionDate = result.charge_date; 
+        const transactionDate = result.charge_date;
         setTransactionDate(transactionDate);
-        console.log(result.charge_date);
-        //toast.success(result.detail); 
       } catch (error) {
         setShowReceipt(true);
-        setTransactionStatus('failed');
+        setTransactionStatus("failed");
         setAmount(chargeAmount);
         setMobileNum(mobile);
         setSendInitialCard(values.initialCard);
         const transactionDate = error.error.charge_date;
         setTransactionDate(transactionDate);
-        console.log(error.error.charge_date);
-        //toast.error({ server: error.detail || "خطایی رخ داده است" });
         setTimer(null);
-       setIsTimerActive(false);
-      } 
+        setIsTimerActive(false);
+      }
     },
   });
 
@@ -369,20 +406,18 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
     return () => clearInterval(interval);
   }, [isTimerActive, timer]);
 
-
   const handleDynamicPasswordClick = () => {
     dispatch(sendPooyaCharge())
       .unwrap()
-       .then(() => {
+      .then(() => {
         setTimer(120);
-         setIsTimerActive(true);
-       })
-       .catch(() => {
-       setTimer(0);
-       setIsTimerActive(false);
-       });
+        setIsTimerActive(true);
+      })
+      .catch(() => {
+        setTimer(0);
+        setIsTimerActive(false);
+      });
   };
-
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -392,14 +427,21 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
     }${remainingSeconds} : ${minutes}`;
   };
 
-
   if (showCharging) {
-    return <Charging />; 
-}
+    return <Charging />;
+  }
 
-if (showReceipt) {
-  return <ChargingReciept  initailCard={sendInitialCard} transactionDate={transactionDate}  amount={amount} transactionStatus={transactionStatus} mobileNum={mobileNum} />;
-}
+  if (showReceipt) {
+    return (
+      <ChargingReciept
+        initailCard={sendInitialCard}
+        transactionDate={transactionDate}
+        amount={amount}
+        transactionStatus={transactionStatus}
+        mobileNum={mobileNum}
+      />
+    );
+  }
 
   return (
     <>
@@ -408,8 +450,8 @@ if (showReceipt) {
           maxWidth="full"
           sx={{
             paddingY: { xs: 5, sm: 0 },
-            paddingTop:{xs:2},
-            paddingX: { xs: 1.5, sm: 18, md: 46 },
+            paddingTop: { xs: 2 },
+            paddingX: { xs: 1.5, sm: 18, md: 30 },
             height: { sm: "125vh", xs: "70vh" },
             display: "flex",
             flexDirection: "column",
@@ -431,7 +473,7 @@ if (showReceipt) {
                   paddingY: { xs: 3.6, md: 4 },
                   borderRadius: 3,
                   width: "100%",
-                  paddingX: { xs: 2.9, sm: 7 },
+                  paddingX: { xs: 2.9, sm: 4 , md:10},
                 }}
               >
                 <Box
@@ -440,25 +482,26 @@ if (showReceipt) {
                     color: operatorInfo.textColor,
                     borderRadius: "8px",
                     paddingY: 2.5,
-                    paddingX:4,
+                    paddingX: 4,
                     textAlign: "center",
                     mb: 1,
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "flex-end",
-                    position:'relative'
+                    position: "relative",
                   }}
                 >
-                  <img src={operatorInfo.logo}
-                  alt={`${operatorInfo.name} logo`}
-                  style={{
-                    width:'50px',
-                    height:'45px',
-                    position:'absolute',
-                    top:'13px',
-                    left:'24px',
-                    borderRadius:'10px'
-                  }}
+                  <img
+                    src={operatorInfo.logo}
+                    alt={`${operatorInfo.name} logo`}
+                    style={{
+                      width: "50px",
+                      height: "45px",
+                      position: "absolute",
+                      top: "13px",
+                      left: "24px",
+                      borderRadius: "10px",
+                    }}
                   />
                   <Typography
                     variant="h6"
@@ -475,7 +518,7 @@ if (showReceipt) {
                   >
                     <Typography
                       variant="subtitle1"
-                      sx={{ alignSelf: "flex-start" , fontSize:'1rem' }}
+                      sx={{ alignSelf: "flex-start", fontSize: "1rem" }}
                     >
                       مبلغ:
                     </Typography>
@@ -615,8 +658,8 @@ if (showReceipt) {
                                   transform: {
                                     xs: "translate(8px, -17px) scale(0.85)",
                                     sm: "translate(13px, -14px) scale(0.75)",
-                                    md: "translate(12px, -14px) scale(0.70)", 
-                                    lg: "translate(10px, -22px) scale(0.65)", 
+                                    md: "translate(12px, -14px) scale(0.70)",
+                                    lg: "translate(10px, -22px) scale(0.65)",
                                   },
                                 },
                                 "&.Mui-error": {
@@ -681,7 +724,7 @@ if (showReceipt) {
                           <InputAdornment position="end">
                             <IconButton
                               onClick={handleTogglePasswordPooya}
-                              style={{ fontSize: "1.2rem", color: "navy" }}
+                              style={{ fontSize: "1.2rem", color: "navy" , marginRight:-10 }}
                             >
                               {showPasswordPooya ? (
                                 <VisibilityOff />
@@ -731,12 +774,12 @@ if (showReceipt) {
                           bottom: "-1.6rem",
                         },
                       }}
-                      onKeyPress={(event) => {
-                        const keyCode = event.key;
-                        if (!/^\d$/.test(keyCode)) {
-                          event.preventDefault();
-                        }
-                      }}
+                      // onKeyPress={(event) => {
+                      //   const keyCode = event.key;
+                      //   if (!/^\d$/.test(keyCode)) {
+                      //     event.preventDefault();
+                      //   }
+                      // }}
                     />
                     <Box
                       sx={{
@@ -747,7 +790,7 @@ if (showReceipt) {
                         "&:hover": {
                           opacity: 0.5,
                         },
-                        width: {sm:"30%" , xs:"38%"},
+                        width: { sm: "30%", xs: "38%" },
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
@@ -991,7 +1034,7 @@ if (showReceipt) {
 
                   <Button
                     color="primary"
-                    onClick={()=>setShowCharging(true)}
+                    onClick={() => setShowCharging(true)}
                     endIcon={<KeyboardBackspaceIcon />}
                     sx={{
                       textAlign: "center",
@@ -1013,8 +1056,6 @@ if (showReceipt) {
                 </Box>
               </Paper>
             </form>
-        
-           
           </Box>
         </Box>
       ) : (
