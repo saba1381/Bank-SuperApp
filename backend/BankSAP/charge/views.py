@@ -54,7 +54,7 @@ class VerifyCardAndOTPAPIView(APIView):
 
     def post(self, request):
 
-        card_number = request.data.get('card_number')
+        card_number = request.data.get('initialCard')
         cvv2 = request.data.get('cvv2')
         cardMonth = request.data.get('cardMonth')
         cardYear = request.data.get('cardYear')
@@ -63,7 +63,8 @@ class VerifyCardAndOTPAPIView(APIView):
 
         cached_otp = cache.get(f'otp_{request.user.id}')
         if not cached_otp or cached_otp != dynamicPassword:
-            return Response({"detail": "کد OTP نامعتبر است یا منقضی شده است."}, status=status.HTTP_400_BAD_REQUEST)
+            #return Response({"detail": "رمز پویا نا متعبر است"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         
         recharge_data = cache.get(f'recharge_{request.user.id}')
         if not recharge_data:
@@ -79,4 +80,4 @@ class VerifyCardAndOTPAPIView(APIView):
         cache.delete(f'otp_{request.user.id}')
 
 
-        return Response({"detail": "اطلاعات کارت و کد OTP با موفقیت تأیید شد."}, status=status.HTTP_200_OK)
+        return Response({"detail": "خرید شارژ با موفقیت انجام شد."}, status=status.HTTP_200_OK)

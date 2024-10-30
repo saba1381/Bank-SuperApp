@@ -23,9 +23,9 @@ import * as Yup from "yup";
 import {
   transferCard,
   fetchCards,
-  saveDesCard,
-  fetchSavedDesCards,
-  deleteDesCard,
+  sendPooyaCharge,
+  verifyChargeInfo
+
 } from "../account/accountSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UseAppDispatch, UseAppSelector } from "../../store/configureStore";
@@ -43,11 +43,7 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
   const [bankName, setBankName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const yearInputRef = useRef(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [isInvalidCard, setIsInvalidCard] = useState(false);
-  const [isInvalidDesCard, setIsInvalidDesCard] = useState(false);
   const [bankColor, setBankColor] = useState("black");
   const [textColor, setTextColor] = useState("white");
   const dispatch = UseAppDispatch();
@@ -242,59 +238,7 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
       }
     }
   };
-  const handleDesCardChange = (e) => {
-    const inputValue = e.target.value.replace(/\D/g, "");
-    if (inputValue.length > 16) return;
 
-    const formattedNumber = formatCardNumber(inputValue);
-    formik.setFieldValue("desCard", formattedNumber);
-
-    const firstSixDigits = inputValue.substring(0, 6);
-    const bank = banks[firstSixDigits];
-
-    if (inputValue.length >= 6) {
-      if (bank) {
-        if (bankName !== bank.name) {
-          setBankName(bank.name);
-          const color = bankColors[firstSixDigits] || "red";
-          setBankColor(color);
-          setTextColor(getTextColor(color));
-          setIsInvalidDesCard(false);
-        }
-      } else {
-        if (bankName !== "کارت ناشناخته است") {
-          setBankName("کارت ناشناخته است");
-          setIsInvalidDesCard(true);
-        }
-      }
-    } else {
-      if (inputValue.length === 0) {
-        setBankName("");
-        setIsInvalidDesCard(false);
-      } else {
-        if (bankName !== "") {
-          setBankName("");
-          setIsInvalidDesCard(false);
-        }
-      }
-    }
-
-    if (inputValue.length === 16) {
-      if (!isValidCardNumber(inputValue)) {
-        setIsInvalidDesCard(true);
-      } else {
-        setIsInvalidDesCard(false);
-      }
-    }
-  };
-
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
-
-  const handleHelpSnackbarClose = () => {
-    setHelpSnackbarOpen(false);
-  };
 
   useEffect(() => {
     const fetchUserCards = async () => {
@@ -353,45 +297,14 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
         .required("سال الزامی است"),
     }),
     onSubmit: async (values) => {
-      if (isInvalidCard || isInvalidDesCard) {
-        formik.setTouched({
-          initialCard: true,
-          desCard: true,
-        });
-        return;
-      }
-
-      const errors = await formik.validateForm();
-
-      if (Object.keys(errors).length > 0) {
-        formik.setTouched({
-          initialCard: true,
-          dynamicPassword: true,
-          amount: true,
-          cvv2: true,
-          cardMonth: true,
-          cardYear: true,
-        });
-        return;
-      }
-      const formattedValues = {
-        ...values,
-        initialCard: values.initialCard.replace(/-/g, ""),
-        desCard: values.desCard.replace(/-/g, ""),
-      };
-      dispatch(transferCard(formattedValues))
-        .unwrap()
-        .then((response) => {
-          setCurrentComponent(true);
-          setInitialCard(values.initialCard);
-        })
-        .catch((error) => {
-          const errorMessage = error.error.detail;
-          if (errorMessage.includes("مبدا")) {
-            formik.setFieldError("initialCard", " ");
-          }
-          toast.error(errorMessage, { autoClose: 3000 });
-        });
+      try {
+        const result = await dispatch(verifyChargeInfo(values)).unwrap();
+        toast.success(result.detail); 
+      } catch (error) {
+        toast.error({ server: error.detail || "خطایی رخ داده است" });
+        setTimer(null);
+       setIsTimerActive(false);
+      } 
     },
   });
 
@@ -437,20 +350,24 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
     } else if (timer === 0) {
       setIsTimerActive(false);
     }
-
     return () => clearInterval(interval);
   }, [isTimerActive, timer]);
+
+
   const handleDynamicPasswordClick = () => {
-    // dispatch(sendOtp())
-    //   .unwrap()
-    //   .then(() => {
-    //     setTimer(120);
-    //     setIsTimerActive(true);
-    //   })
-    //   .catch(() => {
-    //    // setShowTransfer(true);
-    //   });
+    dispatch(sendPooyaCharge())
+      .unwrap()
+       .then(() => {
+        setTimer(120);
+         setIsTimerActive(true);
+       })
+       .catch(() => {
+       setTimer(0);
+       setIsTimerActive(false);
+       });
   };
+
+
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -458,6 +375,8 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
       remainingSeconds < 10 ? "0" : ""
     }${remainingSeconds} : ${minutes}`;
   };
+
+
   if (showCharging) {
     return <Charging />; 
 }
@@ -1074,27 +993,7 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                 </Box>
               </Paper>
             </form>
-            <Snackbar
-              open={snackbarOpen}
-              autoHideDuration={2000}
-              onClose={handleSnackbarClose}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            >
-              <Alert
-                onClose={handleSnackbarClose}
-                severity={snackbarSeverity}
-                sx={{ width: "100%" }}
-              >
-                {snackbarMessage}
-              </Alert>
-            </Snackbar>
-            <Backdrop
-              open={helpSnackbarOpen}
-              sx={{
-                zIndex: (theme) => theme.zIndex.modal - 1,
-                bgcolor: "rgba(0, 0, 0, 0.5)",
-              }}
-            />
+        
            
           </Box>
         </Box>

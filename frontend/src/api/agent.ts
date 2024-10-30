@@ -109,6 +109,8 @@ const Card = {
 
 const Charge ={
   Charging: (values: object) => requests.post("charge/recharge/", values),
+  SendOtp :(values: object) => requests.post("charge/send-otp/", values),
+  VerifyChargeInfo : (values: object) => requests.post("charge/verify-info/", values),
 };
 
 const agent = {

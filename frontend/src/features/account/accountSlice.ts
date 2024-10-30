@@ -323,6 +323,34 @@ export const chargeUser = createAsyncThunk(
 );
 
 
+export const sendPooyaCharge = createAsyncThunk(
+    'account/sendPooyaCharge',
+    async (data: object, thunkAPI) => {
+        try {
+            const response = await agent.Charge.SendOtp(data);
+            return response;
+        } catch (error: any) {
+            console.log(error.data.detail)
+            return thunkAPI.rejectWithValue({ error: error.data.detail });
+        }
+    }
+);
+
+
+export const verifyChargeInfo = createAsyncThunk(
+    'account/verifyChargeInfo',
+    async (data: object, thunkAPI) => {
+        try {
+            const response = await agent.Charge.VerifyChargeInfo(data);
+            return response;
+        } catch (error: any) {
+            console.log(error.data.detail);
+            toast.error(error.data.detail , { autoClose: 3000 });
+            return thunkAPI.rejectWithValue({ error: error.data });
+        }
+    }
+);
+
 
 export const accountSlice = createSlice({
     name: 'account',
@@ -544,6 +572,21 @@ export const accountSlice = createSlice({
     .addCase(chargeUser.rejected, (state, action) => {
         state.isLoading = false;
         //state.error = action.payload?.error || 'خطا در انجام شارژ';
+    });
+    
+    builder
+    .addCase(sendPooyaCharge.pending, (state) => {
+      state.isLoading = true;  
+    })
+    .addCase(sendPooyaCharge.fulfilled, (state) => {
+      state.isLoading = false; 
+      toast.success('رمز پویا با موفقیت ارسال شد', {
+          autoClose: 3000,  
+        }); 
+    })
+    .addCase(sendPooyaCharge.rejected, (state) => {
+      state.isLoading = false;
+      toast.error('خطا در ارسال رمز پویا');  
     });
 
         
