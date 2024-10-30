@@ -30,14 +30,11 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import { UseAppDispatch, UseAppSelector } from "../../store/configureStore";
 import CardTransferForm from "./CardTransferInfo";
-import CreditCardIcon from "@mui/icons-material/CreditCard";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { toast } from "react-toastify";
-import ClearIcon from "@mui/icons-material/Clear";
 import { toPersianNumbers } from "../../util/util";
-import { sendOtp, verifyOtp } from "../account/accountSlice";
 import Charging from "./Charging";
+import ChargingReciept from "./ChargingReceipt";
 
 const CompleteCharging = ({ mobile, chargeAmount }) => {
   const [bankName, setBankName] = useState("");
@@ -54,10 +51,10 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [userCards, setUserCards] = useState([]);
-  const [userDesCards, setUserDesCards] = useState([]);
   const [currentComponent, setCurrentComponent] = useState(false);
-  const [initialCard, setInitialCard] = useState("");
+  const [sendInitialCard, setSendInitialCard] = useState("");
   const [amount, setAmount] = useState("");
+  const [mobileNum, setMobileNum] = useState("");
   const [helpSnackbarOpen, setHelpSnackbarOpen] = useState(false);
   const [showPasswordPooya, setShowPasswordPooya] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -67,6 +64,9 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [timer, setTimer] = useState(120);
   const [showCharging, setShowCharging] = useState(false);
+  const [showReceipt, setShowReceipt] = useState(false); 
+  const [transactionStatus, setTransactionStatus] = useState(null);
+  const [transactionDate, setTransactionDate] = useState(null);
 
   const getOperator = (mobile) => {
     const prefix = mobile.substring(0, 4);
@@ -299,9 +299,25 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
     onSubmit: async (values) => {
       try {
         const result = await dispatch(verifyChargeInfo(values)).unwrap();
-        toast.success(result.detail); 
+        setTransactionStatus('success');
+        setShowReceipt(true);
+        setAmount(chargeAmount);
+        setMobileNum(mobile);
+        setSendInitialCard(values.initialCard);
+        const transactionDate = result.charge_date; 
+        setTransactionDate(transactionDate);
+        console.log(result.charge_date);
+        //toast.success(result.detail); 
       } catch (error) {
-        toast.error({ server: error.detail || "خطایی رخ داده است" });
+        setShowReceipt(true);
+        setTransactionStatus('failed');
+        setAmount(chargeAmount);
+        setMobileNum(mobile);
+        setSendInitialCard(values.initialCard);
+        const transactionDate = error.error.charge_date;
+        setTransactionDate(transactionDate);
+        console.log(error.error.charge_date);
+        //toast.error({ server: error.detail || "خطایی رخ داده است" });
         setTimer(null);
        setIsTimerActive(false);
       } 
@@ -379,6 +395,10 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
 
   if (showCharging) {
     return <Charging />; 
+}
+
+if (showReceipt) {
+  return <ChargingReciept  initailCard={sendInitialCard} transactionDate={transactionDate}  amount={amount} transactionStatus={transactionStatus} mobileNum={mobileNum} />;
 }
 
   return (
@@ -1000,7 +1020,7 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
       ) : (
         <CardTransferForm
           ownerName={ownersName}
-          initailCard={initialCard}
+          //initailCard={initialCard}
           amount={amount}
         />
       )}

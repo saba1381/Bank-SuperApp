@@ -5,10 +5,10 @@ from django.core.cache import cache
 from .models import Recharge
 from .serializers import RechargeSerializer
 from rest_framework.permissions import IsAuthenticated
-import random
 import pyotp
-import base64
-import secrets
+import jdatetime
+import pytz
+from datetime import datetime
 
 class RechargeAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -59,25 +59,36 @@ class VerifyCardAndOTPAPIView(APIView):
         cardMonth = request.data.get('cardMonth')
         cardYear = request.data.get('cardYear')
         dynamicPassword = request.data.get('dynamicPassword')
-
-
-        cached_otp = cache.get(f'otp_{request.user.id}')
-        if not cached_otp or cached_otp != dynamicPassword:
-            #return Response({"detail": "رمز پویا نا متعبر است"}, status=status.HTTP_400_BAD_REQUEST)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        
         recharge_data = cache.get(f'recharge_{request.user.id}')
-        if not recharge_data:
-            return Response({"detail": "اطلاعات شارژ یافت نشد. لطفا اطلاعات را دوباره وارد کنید."}, status=status.HTTP_400_BAD_REQUEST)
-        
         recharge = Recharge(
             user=request.user,
             mobile_number=recharge_data['mobile_number'],
             amount=recharge_data['amount']
         )
+        iran_timezone = pytz.timezone("Asia/Tehran")
+        iran_time = datetime.now().astimezone(iran_timezone)
+        jalali_date = jdatetime.datetime.fromgregorian(datetime=iran_time).strftime('%Y/%m/%d %H:%M:%S')
+        
+
+        if not recharge_data:
+            return Response({"detail": "اطلاعات شارژ یافت نشد. لطفا اطلاعات را دوباره وارد کنید." , "charge_date": jalali_date}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+
+        cached_otp = cache.get(f'otp_{request.user.id}')
+        if not cached_otp or cached_otp != dynamicPassword:
+            #return Response({"detail": "رمز پویا نا متعبر است"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"charge_date": jalali_date},status=status.HTTP_400_BAD_REQUEST)
+        
+        
+
         recharge.save()
+        iran_timezone = pytz.timezone("Asia/Tehran")
+        iran_time = recharge.timestamp.astimezone(iran_timezone)
+        jalali_date = jdatetime.datetime.fromgregorian(datetime=iran_time).strftime('%Y/%m/%d %H:%M:%S')
+        
         cache.delete(f'recharge_{request.user.id}')
         cache.delete(f'otp_{request.user.id}')
 
 
-        return Response({"detail": "خرید شارژ با موفقیت انجام شد."}, status=status.HTTP_200_OK)
+        return Response({"detail": "خرید شارژ با موفقیت انجام شد." , "charge_date": jalali_date}, status=status.HTTP_200_OK)
