@@ -61,6 +61,7 @@ console.log("Account state:", accountState);
 
   const formik = useFormik({
     initialValues: {
+      username: user?.username || '', 
       first_name: user?.first_name || '', 
       last_name: user?.last_name || '',
       email: user?.email || '',
@@ -72,6 +73,7 @@ console.log("Account state:", accountState);
     validationSchema, 
     onSubmit: async (values) => {
       const formData = new FormData();
+      formData.append('username', values.username);
       formData.append('first_name', values.first_name);
       formData.append('last_name', values.last_name);
       formData.append('email', values.email);
@@ -83,17 +85,27 @@ console.log("Account state:", accountState);
         formData.append('profile_image', selectedImageFile);
       }
 
-      try {
-        await dispatch(updateUserProfile(formData));
+     
+    try {
+      const response = await dispatch(updateUserProfile(formData));
 
-        
-        setSnackbarMessage('پروفایل با موفقیت به‌روزرسانی شد');
-        setSnackbarSeverity('success');
-        setOpenSnackbar(true);
-        setTimeout(() => {
-          navigate('/cp')
-        }, 4000);
-      } catch (error) {
+      if (response.error) {
+        const errorMessage = typeof response.payload.error === "string"
+                ? response.payload.error
+                : Object.values(response.payload.error).flat()[0];
+                setSnackbarMessage(errorMessage || 'خطا در به‌روزرسانی پروفایل');
+                setSnackbarSeverity('error');
+      } else { 
+          setSnackbarMessage('پروفایل با موفقیت به‌روزرسانی شد');
+          setSnackbarSeverity('success');
+          setTimeout(() => {
+              navigate('/cp');
+          }, 4000);
+      }
+
+      setOpenSnackbar(true);
+      
+    }catch (error) {
         
         setSnackbarMessage('خطا در به‌روزرسانی پروفایل');
         setSnackbarSeverity('error');
@@ -193,6 +205,33 @@ console.log("Account state:", accountState);
                   </label>
                 </Box>
               </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  id="username"
+                  name="username"
+                  label={
+                    <span>
+                       نام کاربری <span style={{ color: 'red' }}>*</span>
+                    </span>
+                  }
+                  variant="outlined"
+                  value={formik.values.username}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.username && Boolean(formik.errors.username)}
+                  helperText={formik.touched.username && formik.errors.username}
+                  InputLabelProps={{ sx: { color: 'gray' } }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '&:hover fieldset': { borderColor: '#FF1493' },
+                      '&.Mui-focused fieldset': { borderColor: '#FF1493' },
+                    },
+                    '& label.Mui-focused': { color: '#FF1493' },
+                  }}
+                />
+              </Grid>
+
 
               <Grid item xs={12} sm={6}>
                 <TextField

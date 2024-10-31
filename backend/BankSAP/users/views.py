@@ -248,13 +248,37 @@ class UpdateProfileView(APIView):
 
     def put(self, request):
         user = request.user
+        new_username = request.data.get("username")
+        new_mobile = request.data.get("phone_number")
+        new_email = request.data.get("email")
         serializer = UserSerializer(user, data=request.data, partial=True)
+        if new_username and User.objects.filter(username=new_username).exclude(id=user.id).exists():
+            return Response(
+                {"error": "نام کاربری تکراری است."},
+                status=status.HTTP_400_BAD_REQUEST,
+                headers={"error": "error"}
+            )
+        if new_mobile and User.objects.filter(phone_number=new_mobile).exclude(id=user.id).exists():
+            return Response(
+                {"error": "شماره موبایل تکراری است."},
+                status=status.HTTP_400_BAD_REQUEST,
+                headers={"error": "error"}
+            )
+            
+        if new_email and User.objects.filter(email=new_email).exclude(id=user.id).exists():
+            return Response(
+                {"error": "ایمیل تکراری است."},
+                status=status.HTTP_400_BAD_REQUEST,
+                headers={"error": "error"}
+            )
         
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         print(f"Validation Errors: {serializer.errors}")  
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        response['error'] = 'error'
+        return response
 
 
 class ChangePasswordView(APIView):
