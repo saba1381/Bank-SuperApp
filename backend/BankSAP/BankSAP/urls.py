@@ -23,7 +23,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/users/', include('users.urls')),
     path('api/card/', include('cards.urls')),
-    path('api/charge/' , include('charge.urls'))
+    path('api/charge/' , include('charge.urls')),
+    path('api/history/' , include('transaction_history.urls')),
 ]
 
 if settings.DEBUG:

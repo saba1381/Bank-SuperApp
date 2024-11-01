@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'users',
     'corsheaders',
     'cards',
-    'charge'
+    'charge',
+    'transaction_history',
 ]
 
 REST_FRAMEWORK = {
