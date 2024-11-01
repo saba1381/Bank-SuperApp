@@ -9,10 +9,8 @@ import {
   Alert,
   Autocomplete,
   IconButton,
-  Backdrop,
-  FormControl,
-  FormControlLabel,
-  Checkbox,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import { purple } from "@mui/material/colors";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -66,6 +64,23 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
   const [showReceipt, setShowReceipt] = useState(false);
   const [transactionStatus, setTransactionStatus] = useState(null);
   const [transactionDate, setTransactionDate] = useState(null);
+  const [anchorElSource, setAnchorElSource] = useState(null);
+
+  const handleOpenMenuSource = (event) => {
+    if (userCards.length > 0) {
+      setAnchorElSource(event.currentTarget);
+    }
+  };
+
+  const handleCloseMenuSource = () => {
+    setAnchorElSource(null);
+  };
+
+  const handleSelectSourceCard = (cardNumber) => {
+    const formattedNumber = formatCardNumber(cardNumber);
+    formik.setFieldValue("initialCard", formattedNumber);
+    handleCloseMenuSource();
+  };
 
   const getOperator = (mobile) => {
     const prefix = mobile.substring(0, 4);
@@ -546,151 +561,131 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.5 }}
                   >
-                    {Array.isArray(userCards) && (
-                      <Autocomplete
-                        freeSolo
-                        options={userCards.map((card) => ({
-                          label: `${formatCardNumber(card.card_number)}`,
-                          value: card.card_number,
-                        }))}
-                        PopperProps={{
-                          modifiers: [
-                            {
-                              name: "offset",
-                              options: {
-                                offset: [0, 0],
-                              },
+                      <TextField
+                      label="شماره کارت"
+                      fullWidth
+                      name="initialCard"
+                      value={formik.values.initialCard}
+                      onClick={handleOpenMenuSource}
+                      onChange={(e) => {
+                        formik.setFieldValue("initialCard", e.target.value);
+                        handleCardNumberChange(e);
+                      }}
+                      onKeyDown={(e) => handleKeyDown(e, pooyaRef)}
+                      inputRef={IncardNum}
+                      inputProps={{ maxLength: 19 }}
+                      error={
+                        isInvalidCard ||
+                        (formik.touched.initialCard &&
+                          Boolean(formik.errors.initialCard))
+                      }
+                      helperText={
+                        (isInvalidCard && "شماره کارت اشتباه است") ||
+                        (formik.touched.initialCard &&
+                        formik.errors.initialCard &&
+                        formik.errors.initialCard.trim() !== ""
+                          ? formik.errors.initialCard
+                          : null)
+                      }
+                      InputLabelProps={{
+                        sx: {
+                          color:
+                            formik.touched.initialCard &&
+                            (formik.errors.initialCard || isInvalidCard)
+                              ? "red"
+                              : "grey",
+                          "&.Mui-focused": {
+                            color: "#1C3AA9",
+                            fontSize: {
+                              xs: "1.01rem",
+                              sm: "1.3rem",
+                              md: "1.4rem",
+                              lg: "1.5rem",
                             },
-                          ],
-                        }}
-                        getOptionLabel={(option) => option.label}
-                        renderOption={(props, option) => {
-                          const firstSixDigits = option.value.substring(0, 6);
-                          const bank = banks[firstSixDigits];
-
-                          return (
-                            <li
-                              {...props}
-                              style={{
-                                backgroundColor: "#f3f4f9",
-                                paddingY: 0.1,
-                                boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.01)",
-                                transition: "background-color 0.3s ease",
-                                zIndex: -10,
-                                fontSize: { xs: "0.7rem", sm: "0.9rem" },
-                              }}
-                              onMouseEnter={(e) =>
-                                (e.currentTarget.style.backgroundColor =
-                                  "#ececec")
-                              }
-                              onMouseLeave={(e) =>
-                                (e.currentTarget.style.backgroundColor =
-                                  "#f7f7f7")
-                              }
-                            >
-                              {bank ? (
-                                <>
-                                  <img
-                                    src={bank.icon.props.src}
-                                    alt={bank.icon.props.alt}
-                                    style={{
-                                      width: bank.iconWidth,
-                                      height: bank.iconHeight,
-                                      marginLeft: "3px",
-                                      scale: "70%",
-                                    }}
-                                  />
-                                  {option.label}
-                                </>
-                              ) : (
-                                option.label
-                              )}
-                            </li>
-                          );
-                        }}
-                        inputValue={formik.values.initialCard || ""}
-                        onInputChange={(event, newValue) => {
-                          const formattedNumber = formatCardNumber(newValue);
-                          formik.setFieldValue("initialCard", formattedNumber);
-                          handleCardNumberChange({
-                            target: { value: newValue },
-                          });
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="شماره کارت"
-                            fullWidth
-                            name="initialCard"
-                            value={formik.values.initialCard}
-                            onChange={handleCardNumberChange}
-                            onKeyDown={(e) => handleKeyDown(e, pooyaRef)}
-                            inputRef={IncardNum}
-                            inputProps={{ maxLength: 19, ...params.inputProps }}
-                            error={
-                              isInvalidCard ||
-                              (formik.touched.initialCard &&
-                                Boolean(formik.errors.initialCard))
+                            transform: {
+                              xs: "translate(10px, -15px) scale(0.85)",
+                              sm: "translate(13px, -14px) scale(0.75)",
+                              md: "translate(12px, -14px) scale(0.70)",
+                              lg: "translate(10px, -22px) scale(0.65)",
+                            },
+                          },
+                          "&.Mui-error": { color: "pink" },
+                          fontSize: "1rem",
+                        },
+                      }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: "10px",
+                          "& fieldset": {
+                            borderColor:
+                              formik.touched.initialCard &&
+                              Boolean(formik.errors.initialCard) &&
+                              isInvalidCard
+                                ? "red"
+                                : "",
+                          },
+                        },
+                        textAlign: "center",
+                        justifyContent: "center",
+                        marginBottom: 2,
+                        borderRadius: "8px",
+                        position: "relative",
+                        zIndex: 10,
+                      }}
+                    />
+                    <Menu
+                      anchorEl={anchorElSource}
+                      open={Boolean(anchorElSource)}
+                      onClose={handleCloseMenuSource}
+                      PaperProps={{
+                        style: {
+                          maxHeight: 200,
+                          width: "auto",
+                        },
+                      }}
+                    >
+                      {userCards.map((card) => {
+                        const firstSixDigits = card.card_number.substring(0, 6);
+                        const bank = banks[firstSixDigits];
+                        return (
+                          <MenuItem
+                            key={card.card_number}
+                            onClick={() =>
+                              handleSelectSourceCard(card.card_number)
                             }
-                            helperText={
-                              (isInvalidCard && "شماره کارت اشتباه است") ||
-                              (formik.touched.initialCard &&
-                              formik.errors.initialCard &&
-                              formik.errors.initialCard.trim() !== ""
-                                ? formik.errors.initialCard
-                                : null)
+                            style={{
+                              backgroundColor: "#f3f4f9",
+                              paddingY: 0.1,
+                              boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.01)",
+                              fontSize: "0.9rem",
+                              transition: "background-color 0.3s ease",
+                            }}
+                            onMouseEnter={(e) =>
+                              (e.currentTarget.style.backgroundColor =
+                                "#ececec")
                             }
-                            InputLabelProps={{
-                              sx: {
-                                color:
-                                  formik.touched.initialCard &&
-                                  (formik.errors.initialCard || isInvalidCard)
-                                    ? "red"
-                                    : "grey",
-                                "&.Mui-focused": {
-                                  color: "#1C3AA9",
-                                  fontSize: {
-                                    xs: "1.01rem",
-                                    sm: "1.3rem",
-                                    md: "1.4rem",
-                                    lg: "1.5rem",
-                                  },
-                                  transform: {
-                                    xs: "translate(8px, -17px) scale(0.85)",
-                                    sm: "translate(13px, -14px) scale(0.75)",
-                                    md: "translate(12px, -14px) scale(0.70)",
-                                    lg: "translate(10px, -22px) scale(0.65)",
-                                  },
-                                },
-                                "&.Mui-error": {
-                                  color: "pink",
-                                },
-                                fontSize: "1rem",
-                              },
-                            }}
-                            sx={{
-                              "& .MuiOutlinedInput-root": {
-                                borderRadius: "10px",
-                                "& fieldset": {
-                                  borderColor:
-                                    formik.touched.initialCard &&
-                                    Boolean(formik.errors.initialCard) &&
-                                    isInvalidCard
-                                      ? "red"
-                                      : "",
-                                },
-                              },
-                              textAlign: "center",
-                              justifyContent: "center",
-                              marginBottom: 2,
-                              borderRadius: "8px",
-                              position: "relative",
-                              zIndex: 10,
-                            }}
-                          />
-                        )}
-                      />
-                    )}
+                            onMouseLeave={(e) =>
+                              (e.currentTarget.style.backgroundColor =
+                                "#f7f7f7")
+                            }
+                          >
+                            {bank && (
+                              <img
+                                src={bank.icon.props.src}
+                                alt={bank.icon.props.alt}
+                                style={{
+                                  width: bank.iconWidth,
+                                  height: bank.iconHeight,
+                                  marginLeft: "3px",
+                                  scale: "70%",
+                                }}
+                              />
+                            )}
+                            {formatCardNumber(card.card_number)}
+                          </MenuItem>
+                        );
+                      })}
+                    </Menu>
                   </motion.div>
                   <Box
                     sx={{
@@ -709,6 +704,7 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                       value={formik.values.dynamicPassword}
                       onKeyDown={(e) => handleKeyDown(e, cvv2Ref)}
                       inputRef={pooyaRef}
+                      onBlur={formik.handleBlur}
                       type={showPasswordPooya ? "text" : "password"}
                       {...formik.getFieldProps("dynamicPassword")}
                       error={
@@ -830,6 +826,7 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                       fullWidth
                       name="cvv2"
                       value={formik.values.cvv2}
+                      onBlur={formik.handleBlur}
                       onChange={formik.handleChange}
                       onKeyDown={(e) => {
                         handleKeyDown(e, exDate);

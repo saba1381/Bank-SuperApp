@@ -341,7 +341,6 @@ const Transfer = () => {
     const fetchUserDesCards = async () => {
       try {
         const Descards = await dispatch(fetchSavedDesCards()).unwrap();
-        console.log(Descards);
 
         if (Array.isArray(Descards)) {
           setUserDesCards(Descards);
@@ -400,6 +399,7 @@ const Transfer = () => {
         .matches(/^\d{2}$/, "سال معتبر نیست")
         .required("سال الزامی است"),
     }),
+    validateOnBlur: false,
     onSubmit: async (values) => {
       if (isInvalidCard || isInvalidDesCard) {
         formik.setTouched({
@@ -526,8 +526,8 @@ const Transfer = () => {
             sx={{
               width: "100%",
               mb: 2,
-              paddingTop: { xs: 10, sm: 2 },
-              paddingBottom: { xs: 8, sm: 8 },
+              paddingTop: { xs: 4, sm: 2 },
+              paddingBottom: { xs: 13, sm: 12 },
             }}
           >
             <form onSubmit={formik.handleSubmit}>
@@ -718,6 +718,7 @@ const Transfer = () => {
                       name="desCard"
                       value={formik.values.desCard}
                       onClick={handleOpenMenu}
+                      autoComplete="off"
                       onChange={(e) => {
                         formik.setFieldValue("desCard", e.target.value);
                         handleDesCardChange(e);
@@ -886,6 +887,11 @@ const Transfer = () => {
                         formik.touched.amount && Boolean(formik.errors.amount)
                       }
                       helperText={formik.touched.amount && formik.errors.amount}
+                      onBlur={() => {
+                        formik.setFieldTouched("cvv2", true);
+                        console.log("Touched CVV2:", formik.touched.cvv2); // بررسی مقدار touched
+                        console.log("Errors CVV2:", formik.errors.cvv2); // بررسی خطاها
+                      }}
                       InputLabelProps={{
                         sx: {
                           color: "grey",
@@ -944,6 +950,7 @@ const Transfer = () => {
                       fullWidth
                       name="cvv2"
                       value={formik.values.cvv2}
+                      onBlur={formik.handleBlur}
                       onChange={formik.handleChange}
                       onKeyDown={(e) => {
                         handleKeyDown(e, exDate);

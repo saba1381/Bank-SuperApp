@@ -39,7 +39,6 @@ const ProfileEdit = () => {
   const dispatch = UseAppDispatch();
   const { user, isLoading } = useSelector((state) => state.account);
   const accountState = useSelector((state) => state.account);
-console.log("Account state:", accountState);
   const [profileImage, setProfileImage] = useState(null);
   const [selectedImageFile, setSelectedImageFile] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);

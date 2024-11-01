@@ -114,7 +114,6 @@ export const fetchUserProfile = createAsyncThunk(
         
         try {
             const response = await agent.UserProfile.profileInfo();
-            console.log(response);
             return response;
         } catch (error: any) {
             return thunkAPI.rejectWithValue({ error: error.response?.data });
@@ -344,7 +343,6 @@ export const verifyChargeInfo = createAsyncThunk(
             const response = await agent.Charge.VerifyChargeInfo(data);
             return response;
         } catch (error: any) {
-            console.log(error.data.detail);
             toast.error(error.data.detail , { autoClose: 3000 });
             return thunkAPI.rejectWithValue({ error: error.data });
         }

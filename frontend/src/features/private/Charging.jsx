@@ -180,7 +180,7 @@ const Charging = () => {
           sx={{
             paddingY: { xs: 8, sm: 0 },
             paddingX: { xs: 1.5, sm: 18, md:36},
-            height: { sm: "125vh", xs: "70vh" },
+            height: { sm: "90vh", xs: "70vh" },
             display: "flex",
             flexDirection: "column",
             gap: 3,
@@ -201,7 +201,7 @@ const Charging = () => {
                   paddingY: { xs: 4, md: 4 },
                   borderRadius: 3,
                   width: "100%",
-                  paddingX: { xs: 2.9, sm: 4 , md:10 },
+                  paddingX: { xs: 2.9, sm: 3 , md:6 },
                 }}
               >
                 <Box sx={{ display: "grid", gap: 0.6, mb: 4 }}>
