@@ -60,14 +60,17 @@ class VerifyCardAndOTPAPIView(APIView):
         cardYear = request.data.get('cardYear')
         dynamicPassword = request.data.get('dynamicPassword')
         recharge_data = cache.get(f'recharge_{request.user.id}')
-        recharge = Recharge(
-            user=request.user,
-            mobile_number=recharge_data['mobile_number'],
-            amount=recharge_data['amount']
-        )
         iran_timezone = pytz.timezone("Asia/Tehran")
         iran_time = datetime.now().astimezone(iran_timezone)
         jalali_date = jdatetime.datetime.fromgregorian(datetime=iran_time).strftime('%Y/%m/%d %H:%M:%S')
+
+        recharge = Recharge(
+            user=request.user,
+            mobile_number=recharge_data['mobile_number'] if recharge_data else '',
+            amount=recharge_data['amount'] if recharge_data else 0,
+            status=False
+        )
+        recharge.save()
         
 
         if not recharge_data:
@@ -82,8 +85,8 @@ class VerifyCardAndOTPAPIView(APIView):
         
         
 
+        recharge.status = True
         recharge.save()
-        iran_timezone = pytz.timezone("Asia/Tehran")
         iran_time = recharge.timestamp.astimezone(iran_timezone)
         jalali_date = jdatetime.datetime.fromgregorian(datetime=iran_time).strftime('%Y/%m/%d %H:%M:%S')
         

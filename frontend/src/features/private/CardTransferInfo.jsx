@@ -144,7 +144,8 @@ const formatAmount = (amount) => {
     <Box sx={{
 
         height: 'auto', 
-        paddingBottom:{sm:10}
+        paddingBottom:{sm:10},
+        maxHeight:400
 
       }}>
     <Box sx={{ maxWidth: 400, mx: 'auto', paddingY: 3,paddingX:1, borderRadius: 2, boxShadow: 3, bgcolor: 'white' }}>

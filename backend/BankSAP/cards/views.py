@@ -195,66 +195,60 @@ class VerifyOTPAPIView(APIView):
     def post(self, request):
         otp_input = request.data.get('otp') 
         card_info = cache.get(f'card_info_{request.user.id}')
-        secret = cache.get(f'secret_{request.user.id}')
         otp_data = cache.get(f'otp_{request.user.id}')
-
         transaction_date = jdatetime.datetime.now().strftime('%H:%M %Y/%m/%d')
 
-
-        if not otp_data:
-            return Response(
-                {"detail": "رمز پویای شما یافت نشده است" , "transaction_date": transaction_date},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        if timezone.now() > otp_data['expiry']:
-            return Response(
-                {"detail": "رمز پویای شما منقضی شده است." , "transaction_date": transaction_date },
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        if otp_input != otp_data['otp']:
-            print(f"Failed OTP: {otp_input}, Expected OTP: {otp_data['otp']}")
-            return Response(
-                {"detail": "رمز پویا نادرست است." , "transaction_date": transaction_date },
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        if not card_info:
-            return Response(
-                {"detail": "اطلاعات انتقال وجه یافت نشد." , "transaction_date": transaction_date},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        def get_card_owner(card_number):
-            mock_owners = {
-                '603799': 'علی رضا زاده', 
-                '589210': 'مریم نوروزی',
-                '621986': 'محمد حسینی',
-                '502229' : 'صبا بصیری' ,
-                '622106' :'مریم امینی' ,
-                '589463' : 'محمد باقری',
-                '610433' : 'نقی جوادی'
-            }
-            card_prefix = card_number[:6] 
-            return mock_owners.get(card_prefix, 'نامشخص')  
-
-        des_card_owner = get_card_owner(card_info['desCard'])
-
+        # ایجاد تراکنش با وضعیت پیش‌فرض ناموفق
         card_transaction = CardToCard(
             user=request.user,
-            initialCard=card_info['initialCard'],
-            desCard=card_info['desCard'],
-            amount=card_info['amount'],
-            cvv2=card_info['cvv2'],
-            cardMonth=card_info['cardMonth'],
-            cardYear=card_info['cardYear'],
+            initialCard=card_info['initialCard'] if card_info else '',
+            desCard=card_info['desCard'] if card_info else '',
+            amount=card_info['amount'] if card_info else 0,
+            cvv2=card_info['cvv2'] if card_info else '',
+            cardMonth=card_info['cardMonth'] if card_info else '',
+            cardYear=card_info['cardYear'] if card_info else '',
+            status=False
         )
         card_transaction.save()
 
+        # بررسی عدم وجود OTP
+        if not otp_data:
+            return Response(
+                {"detail": "رمز پویای شما یافت نشده است", "transaction_date": transaction_date},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # بررسی انقضای OTP
+        if timezone.now() > otp_data['expiry']:
+            return Response(
+                {"detail": "رمز پویای شما منقضی شده است.", "transaction_date": transaction_date},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # بررسی صحت OTP
+        if otp_input != otp_data['otp']:
+            return Response(
+                {"detail": "رمز پویا نادرست است.", "transaction_date": transaction_date},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # بررسی اطلاعات کارت
+        if not card_info:
+            return Response(
+                {"detail": "اطلاعات انتقال وجه یافت نشد.", "transaction_date": transaction_date},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # تعیین مالک کارت مقصد
+        des_card_owner = self.get_card_owner(card_info['desCard'])
+
+        # اگر تمام بررسی‌ها موفقیت‌آمیز بود، وضعیت تراکنش به موفقیت تغییر داده می‌شود
+        card_transaction.status = True
+        card_transaction.save()
+
+        # حذف اطلاعات OTP و کارت از کش
         cache.delete(f'otp_{request.user.id}')
         cache.delete(f'card_info_{request.user.id}')
-        cache.delete(f'secret_{request.user.id}')
 
         return Response(
             {
@@ -264,6 +258,20 @@ class VerifyOTPAPIView(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+    def get_card_owner(self, card_number):
+        mock_owners = {
+            '603799': 'علی رضا زاده', 
+            '589210': 'مریم نوروزی',
+            '621986': 'محمد حسینی',
+            '502229': 'صبا بصیری',
+            '622106': 'مریم امینی',
+            '589463': 'محمد باقری',
+            '610433': 'نقی جوادی'
+        }
+        card_prefix = card_number[:6] 
+        return mock_owners.get(card_prefix, 'نامشخص')
+
     
 
 class SaveCardAPIView(APIView):

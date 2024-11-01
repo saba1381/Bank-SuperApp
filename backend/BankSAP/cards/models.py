@@ -39,6 +39,7 @@ class CardToCard(models.Model):
     cardMonth = models.CharField(max_length=2)
     cardYear = models.CharField(max_length=4)
     created_at = models.CharField(max_length=19, editable=False)
+    status = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.user.username} - {self.initialCard} to {self.desCard}'
