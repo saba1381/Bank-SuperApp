@@ -143,12 +143,11 @@ const formatAmount = (amount) => {
     
     <Box sx={{
 
-        height: 'auto', 
-        paddingBottom:{sm:10},
-        maxHeight:400
-
+        height: {xs: "70vh", sm: "90vh",},
+        paddingBottom: { xs:20, sm: 15 },
+        overflowY:{sm:'auto'}
       }}>
-    <Box sx={{ maxWidth: 400, mx: 'auto', paddingY: 3,paddingX:1, borderRadius: 2, boxShadow: 3, bgcolor: 'white' }}>
+    <Box sx={{ maxWidth: 400, mx: 'auto', paddingY: 3,paddingX:1, borderRadius: 2, boxShadow: 3, bgcolor: 'white'  }}>
      <Box 
   sx={{ 
     display: 'flex', 

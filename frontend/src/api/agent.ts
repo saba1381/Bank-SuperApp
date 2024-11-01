@@ -21,6 +21,7 @@ axios.interceptors.response.use(
   },
   async (error) => {
     if (error?.response) {
+      let isTokenExpiredNotificationShown = false;
       const { data, status } = error.response;
       switch (status) {
         case 400:
@@ -38,11 +39,18 @@ axios.interceptors.response.use(
 
         case 401:
           if (data.message === "Token is expired" || data.message === "Unauthorized" ) {
-            toast.error('دسترسی شما قطع شد، لطفاً مجدد وارد شوید');
-            store.dispatch(signOut()); 
+            if (!isTokenExpiredNotificationShown) {
+              toast.error('دسترسی شما قطع شد، لطفاً مجدد وارد شوید');
+              isTokenExpiredNotificationShown = true;
+              store.dispatch(signOut());
+            }
           } else {
             store.dispatch(refreshTokensAsync());
-            toast.error('زمان توکن شما به پایان رسیده است. لطفاً مجدداً وارد شوید.');
+            if (!isTokenExpiredNotificationShown) {
+              toast.error('زمان توکن شما به پایان رسیده است. لطفاً مجدداً وارد شوید.');
+              
+            }
+            isTokenExpiredNotificationShown = true;
           }
           break;
 

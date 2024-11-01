@@ -3,35 +3,31 @@ from django.db import models
 from django.utils import timezone  
 import jdatetime
 class UserManager(BaseUserManager):
-    def create_user(self, phone_number, national_code, password=None, **extra_fields):
-        if not phone_number:
-            raise ValueError('Phone number is required')
-        if not national_code:
-            raise ValueError('National code is required')
-        
-        extra_fields.setdefault('is_customer', True)
-        extra_fields.setdefault('is_superuser', False)
+    def create_user(self, username, password=None,**extra_fields):
+        if not username:
+            raise ValueError('Username is required')
 
-        user = self.model(phone_number=phone_number, national_code=national_code, **extra_fields)
+        user = self.model(username=username,**extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, phone_number, national_code, password=None, **extra_fields):
+    def create_superuser(self, username, password=None, **extra_fields):
         extra_fields.setdefault('is_customer', False)
         extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_staff', True)
 
         if extra_fields.get('is_customer') is not False:
             raise ValueError('Superuser must have is_customer=False.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
-        return self.create_user(phone_number, national_code, password, **extra_fields)
+        return self.create_user(username, password,**extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=150, unique=True , null=True, blank=True)
-    phone_number = models.CharField(max_length=11, unique=True , null=False , blank=False)
-    national_code = models.CharField(max_length=10, unique=True , null=False , blank=False)
+    phone_number = models.CharField(max_length=11, unique=True , null=True , blank=False)
+    national_code = models.CharField(max_length=10, unique=True , null=True , blank=False)
     first_name = models.CharField(max_length=30, blank=True, null=True)  
     last_name = models.CharField(max_length=30, blank=True, null=True) 
     email = models.EmailField(max_length=255, unique=False, null=True, blank=True)  
@@ -44,7 +40,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['phone_number']
+    #REQUIRED_FIELDS = ['phone_number']
 
     objects = UserManager()
 
