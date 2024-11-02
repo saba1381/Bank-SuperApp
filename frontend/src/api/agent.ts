@@ -121,10 +121,15 @@ const Charge ={
   VerifyChargeInfo : (values: object) => requests.post("charge/verify-info/", values),
 };
 
+const Transactions = {
+  TransactionHistory: () => requests.get("history/transaction/"),
+}
+
 const agent = {
   UserProfile,
   Card,
-  Charge
+  Charge,
+  Transactions
 };
 
 export default agent;

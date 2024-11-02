@@ -11,10 +11,12 @@ interface AccountState {
     cards: Array<any> | [],
     cardInfo: Card | null,    
     error: string | null, 
+    transactions: Array<any> | [],
     
 }
 
 const initialState: AccountState = {
+    transactions: [],
     user: null,
     isLoading: false,
     cards: [], 
@@ -178,8 +180,8 @@ export const fetchCards = createAsyncThunk(
     'account/fetchCards',
     async (_, thunkAPI) => {
         try {
-            const response = await agent.Card.CardList(); // فراخوانی API برای دریافت لیست کارت‌ها
-            return response; // برگرداندن داده‌های کارت‌ها
+            const response = await agent.Card.CardList(); 
+            return response; 
         } catch (error: any) {
             const errorMessage = error.data.detail || 'خطا در دریافت کارت‌ها';
             return thunkAPI.rejectWithValue({ error: errorMessage });
@@ -348,6 +350,22 @@ export const verifyChargeInfo = createAsyncThunk(
         }
     }
 );
+
+
+export const fetchTransactionsHistory = createAsyncThunk(
+    'account/fetchTransactionsHistory',
+    async (_, thunkAPI) => {
+        try {
+            const response = await agent.Transactions.TransactionHistory(); 
+            console.log(response);
+            return response; 
+        } catch (error: any) {
+            const errorMessage = error.data.detail ||'خطا در دریافت اطلاعات';
+            return thunkAPI.rejectWithValue({ error: errorMessage });
+        }
+    }
+);
+
 
 
 export const accountSlice = createSlice({
@@ -585,6 +603,19 @@ export const accountSlice = createSlice({
     .addCase(sendPooyaCharge.rejected, (state) => {
       state.isLoading = false;
       toast.error('خطا در ارسال رمز پویا');  
+    });
+
+    builder
+    .addCase(fetchTransactionsHistory.pending, (state) => {
+      state.isLoading = true; 
+    })
+    .addCase(fetchTransactionsHistory.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.transactions  = action.payload; 
+    })
+    .addCase(fetchTransactionsHistory.rejected, (state) => {
+      state.isLoading = false; 
+      //toast.error('خطا در دریافت لیست کارت‌ها');
     });
 
         

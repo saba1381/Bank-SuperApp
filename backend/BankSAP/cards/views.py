@@ -199,10 +199,12 @@ class VerifyOTPAPIView(APIView):
         transaction_date = jdatetime.datetime.now().strftime('%H:%M %Y/%m/%d')
 
         # ایجاد تراکنش با وضعیت پیش‌فرض ناموفق
+        des_card_owner = self.get_card_owner(card_info['desCard']) if card_info else 'نامشخص'
         card_transaction = CardToCard(
             user=request.user,
             initialCard=card_info['initialCard'] if card_info else '',
             desCard=card_info['desCard'] if card_info else '',
+            desCardOwner=des_card_owner,
             amount=card_info['amount'] if card_info else 0,
             cvv2=card_info['cvv2'] if card_info else '',
             cardMonth=card_info['cardMonth'] if card_info else '',

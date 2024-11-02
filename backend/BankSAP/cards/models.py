@@ -39,6 +39,7 @@ class CardToCard(models.Model):
     cardMonth = models.CharField(max_length=2)
     cardYear = models.CharField(max_length=4)
     created_at = models.CharField(max_length=19, editable=False)
+    desCardOwner = models.CharField(max_length=50, blank=True, null=True)
     status = models.BooleanField(default=False)
 
     def __str__(self):
