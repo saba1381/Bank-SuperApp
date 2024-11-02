@@ -1,26 +1,66 @@
 import React from 'react';
-import { Box, Card, Typography, Grid, List, ListItem, Divider, IconButton, Select, MenuItem, LinearProgress } from '@mui/material';
-import { ArrowBack, ArrowForward, MoreVert } from '@mui/icons-material';
-import { motion } from 'framer-motion';  // اضافه کردن Framer Motion
+import { Box, Card, Typography, Grid, List, ListItem, Divider, IconButton } from '@mui/material';
+import { ArrowBack } from '@mui/icons-material';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import {toPersianNumbers} from '../../util/util';
 
-// تبدیل اعداد انگلیسی به فارسی
-const toPersianNumber = (num) => {
-  return num.toString().replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
+const banks = {
+  603799: {
+    name: "ملی",
+    icon: <img src="/BankIcons/meli.png" alt="ملی" />,
+    iconWidth: "55px",
+    iconHeight: "55px",
+  },
+  589210: {
+    name: "سپه",
+    icon: <img src="/BankIcons/sepah.png" alt="سپه" />,
+    iconWidth: "48px",
+    iconHeight: "48px",
+  },
+  621986: {
+    name: "سامان",
+    icon: <img src="/BankIcons/saman.png" alt="سامان" />,
+    iconWidth: "40px",
+    iconHeight: "40px",
+  },
+  622106: {
+    name: "پارسیان",
+    icon: <img src="/BankIcons/parsian.png" alt="پارسیان" />,
+    iconWidth: "70px",
+    iconHeight: "70px",
+  },
+  589463: {
+    name: "رفاه کارگران",
+    icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />,
+    iconWidth: "28px",
+    iconHeight: "30px",
+  },
+  502229: {
+    name: "پاسارگاد",
+    icon: <img src="/BankIcons/pasargad.png" alt="پاسارگاد" />,
+    iconWidth: "30px",
+    iconHeight: "38px",
+  },
+  610433: {
+    name: "ملت",
+    icon: <img src="/BankIcons/melat.png" alt="ملت" />,
+    iconWidth: "35px",
+    iconHeight: "35px",
+  },
 };
-
-// داده‌های تراکنش
 const transactions = [
-  { id: 1, type: 'واریز', amount: 300000, date: '۱۴۰۱/۰۶/۰۹', balance: 357699, color: 'green' },
-  { id: 2, type: 'برداشت', amount: 80000, date: '۱۴۰۱/۰۶/۰۸', balance: 57999, color: 'red' },
-  { id: 3, type: 'برداشت', amount: 1060000, date: '۱۴۰۱/۰۶/۰۷', balance: 139699, color: 'red' },
-  { id: 4, type: 'برداشت', amount: 106000, date: '۱۴۰۱/۰۶/۰۷', balance: 1143999, color: 'red' },
+  { id: 1, type: 'خرید کد شارژ', amount: 200000, date: '۱۴۰۳/۰۸/۰۹ - ۲۲:۴۳', success: false },
+  { id: 2, type: 'انتقال وجه', name: 'صبا بصیری', amount: 50000, date: '۱۴۰۳/۰۸/۰۹ - ۲۲:۰۸', success: false },
+  { id: 3, type: 'انتقال وجه', name: 'مریم امینی', amount: 1000000, date: '۱۴۰۳/۰۸/۱۵ - ۱۵:۱۴', success: true },
+  // More transactions...
 ];
 
 const TransactionList = () => {
-  // تنظیمات انیمیشن برای ظاهر شدن صفحه
+  const navigate = useNavigate();
   const pageVariants = {
-    hidden: { opacity: 0, y: 20 }, // مخفی و کمی پایین تر از موقعیت اصلی
-    visible: { opacity: 1, y: 0 }, // نمایش و بازگشت به موقعیت اصلی
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
   };
 
   const pageTransition = {
@@ -30,88 +70,61 @@ const TransactionList = () => {
   };
 
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={pageVariants}
-      transition={pageTransition}
-    >
-      <Box sx={{ padding: 2, maxWidth: 600, margin: '0 auto', direction: 'rtl', backgroundColor: '#f8f9fa' }}>
-        
-        {/* Header */}
+    <motion.div initial="hidden" animate="visible" variants={pageVariants} transition={pageTransition}>
+      <Box sx={{ padding: 2, maxWidth: 600, margin: '0 auto', backgroundColor: '#f8f9fa' , maxHeight: "auto",
+        minHeight: "auto",
+        overflowY: "auto", paddingBottom: {xs:9 , sm:11 , md:13}, }}>
         <Box sx={{ display: 'flex', alignItems: 'center', backgroundColor: '#6200ea', padding: '16px', borderRadius: '8px 8px 0 0' }}>
-          <IconButton>
-            <ArrowBack sx={{ color: '#fff' }} />
-          </IconButton>
           <Typography variant="h6" sx={{ color: '#fff', flexGrow: 1, textAlign: 'center' }}>
-            گردش حساب
+            سوابق تراکنش
           </Typography>
+          <IconButton onClick={() => navigate('/cp')}>
+            <ArrowBack sx={{ color: '#fff' , fontSize:{xs:'1.5rem', sm:"1rem"}}} />
+          </IconButton>
         </Box>
 
-        {/* اطلاعات حساب */}
         <Card sx={{ marginTop: 2, padding: 2, borderRadius: '8px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}>
-          <Grid container justifyContent="space-between" alignItems="center">
-            <Typography variant="body2">شماره حساب</Typography>
-            <Select defaultValue={357699} size="small" sx={{ minWidth: 100 }}>
-              <MenuItem value={357699}>{toPersianNumber(357699)} ریال</MenuItem>
-            </Select>
-          </Grid>
-          <Typography variant="caption" sx={{ color: 'gray', marginTop: '8px', display: 'block' }}>
-            سود سرمایه‌گذاری کوتاه مدت
+          <Typography variant="body2" align="center" sx={{color:'navy.800'}}>
+           این اطلاعات شامل سوابق عملیات تراکنش شما در موبایل بانک است
           </Typography>
-          <LinearProgress variant="determinate" value={75} sx={{ marginTop: 1 }} />
         </Card>
 
-        {/* تنظیمات فیلتر */}
-        <Grid container justifyContent="space-between" alignItems="center" sx={{ marginTop: 2 }}>
-          <Typography variant="body2" sx={{ color: 'gray' }}>تعداد</Typography>
-          <Select defaultValue={10} size="small" sx={{ minWidth: 60 }}>
-            <MenuItem value={5}>۵</MenuItem>
-            <MenuItem value={10}>۱۰</MenuItem>
-          </Select>
-          <IconButton>
-            <MoreVert />
-          </IconButton>
-        </Grid>
-
-        {/* لیست تراکنش‌ها */}
         <List sx={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', marginTop: 2 }}>
           {transactions.map((transaction) => (
             <React.Fragment key={transaction.id}>
               <ListItem sx={{ padding: '12px 16px' }}>
-                <Grid container justifyContent="space-between" alignItems="center">
-                  
-                  {/* ستون راست: مبلغ و نوع */}
-                  <Grid item xs={5}>
-                    <Typography
-                      variant="body1"
-                      sx={{ color: transaction.color, fontWeight: 'bold', fontSize: '1rem' }}
-                    >
-                      {toPersianNumber(transaction.amount.toLocaleString())} <span>ریال</span>
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {transaction.type}
-                    </Typography>
-                  </Grid>
-
-                  {/* ستون چپ: مانده و تاریخ */}
-                  <Grid item xs={6} textAlign="right">
-                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                      {toPersianNumber(transaction.balance.toLocaleString())} ریال
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {transaction.date}
-                    </Typography>
-                  </Grid>
-
-                  {/* آیکون فلش */}
-                  <Grid item>
-                    {transaction.type === 'واریز' ? (
-                      <ArrowForward style={{ color: transaction.color }} />
+                <Grid container alignItems="center" justifyContent="space-between" sx={{width:'100%'}}>
+                   {/* Status Icon */}
+                   <Grid item >
+                    {transaction.success ? (
+                      <Typography sx={{ color: 'green', fontSize: '1.5rem' }}>✓</Typography>
                     ) : (
-                      <ArrowBack style={{ color: transaction.color }} />
+                      <Typography sx={{ color: 'red', fontSize: '1.5rem' }}>✕</Typography>
                     )}
                   </Grid>
+                  {/* bank's name and Type */}
+                  <Grid item xs={5} sx={{display:'flex' , justifyContent:'center',flexDirection:'column' , alignItems:'flex-start' , width:'50%' , marginLeft:1}}>
+                    <Typography sx={{color:'#363532' , fontSize:'0.9rem'}}>
+                      {transaction.type} {transaction.name && `- ${transaction.name}`}
+                    </Typography>
+                    <Typography sx={{color:'#363532' , fontSize:'0.9rem'}}>
+                      بانک ملت
+                    </Typography>
+                  </Grid>
+
+                  {/* Date and Time and amount*/}
+                  <Grid item xs={6} textAlign="right" sx={{display:'flex' , flexDirection:'column' , alignItems:"flex-end"}}>
+                  <Box sx={{mb: 1, display: 'flex', justifyContent: 'space-between',  color: '#56575b' , fontSize:'0.9rem'}}>
+                    <Typography variant="body1" sx={{ color: transaction.success ? 'green' : 'red', fontWeight: 'bold' }}>
+                      {toPersianNumbers(transaction.amount.toLocaleString())} ریال
+                    </Typography>
+                    </Box>
+                    <Typography variant="caption" sx={{color:'#363532' , fontSize:'0.9rem'}}>
+                      {toPersianNumbers(transaction.date)}
+                    </Typography>
+                  </Grid>
+
+                 
                 </Grid>
               </ListItem>
               <Divider />
