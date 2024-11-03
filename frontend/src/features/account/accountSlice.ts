@@ -357,7 +357,7 @@ export const fetchTransactionsHistory = createAsyncThunk(
     async (_, thunkAPI) => {
         try {
             const response = await agent.Transactions.TransactionHistory(); 
-            console.log(response);
+            console.log(response.initialCard);
             return response; 
         } catch (error: any) {
             const errorMessage = error.data.detail ||'خطا در دریافت اطلاعات';

@@ -83,7 +83,7 @@ const Transfer = () => {
 
   const handleSelectCard = (cardNumber) => {
     const formattedNumber = formatCardNumber(cardNumber);
-    formik.setFieldValue("initialCard", formattedNumber);
+    formik.setFieldValue("desCard", formattedNumber);
     handleCloseMenu();
   };
   const [anchorElSource, setAnchorElSource] = useState(null);
@@ -887,11 +887,7 @@ const Transfer = () => {
                         formik.touched.amount && Boolean(formik.errors.amount)
                       }
                       helperText={formik.touched.amount && formik.errors.amount}
-                      onBlur={() => {
-                        formik.setFieldTouched("cvv2", true);
-                        console.log("Touched CVV2:", formik.touched.cvv2); // بررسی مقدار touched
-                        console.log("Errors CVV2:", formik.errors.cvv2); // بررسی خطاها
-                      }}
+                      
                       InputLabelProps={{
                         sx: {
                           color: "grey",
@@ -952,6 +948,8 @@ const Transfer = () => {
                       value={formik.values.cvv2}
                       onBlur={formik.handleBlur}
                       onChange={formik.handleChange}
+                      
+                      
                       onKeyDown={(e) => {
                         handleKeyDown(e, exDate);
                         if (e.key.length === 1 && !/[0-9]/.test(e.key)) {
