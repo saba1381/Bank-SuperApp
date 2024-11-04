@@ -7,11 +7,11 @@ class RechargeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recharge
-        fields = ['transaction_type', 'amount', 'timestamp', 'status']
+        fields = ['transaction_type', 'amount', 'timestamp', 'status' , 'id']
 
 class CardToCardSerializer(serializers.ModelSerializer):
     transaction_type = serializers.CharField(default='card_to_card')
 
     class Meta:
         model = CardToCard
-        fields = ['transaction_type', 'amount', 'created_at', 'status' ,  'desCardOwner' , 'initialCard']
+        fields = ['transaction_type', 'amount', 'created_at', 'status' ,  'desCardOwner' , 'initialCard' , 'id']

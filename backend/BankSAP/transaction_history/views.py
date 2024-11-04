@@ -7,6 +7,10 @@ from cards.models import CardToCard
 from .serializers import RechargeSerializer, CardToCardSerializer
 from datetime import datetime
 import pytz
+from rest_framework.views import APIView
+from rest_framework.exceptions import NotFound
+from rest_framework import status
+from django.shortcuts import get_object_or_404
 
 class TransactionHistoryView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
@@ -127,3 +131,26 @@ class RechargeHistoryView(generics.ListAPIView):
             data.append(serialized)
 
         return Response(data)
+    
+
+class TransactionDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, transaction_id):
+        user = request.user
+
+        # تلاش برای یافتن تراکنش Recharge
+        try:
+            transaction = Recharge.objects.get(id=transaction_id, user=user)
+            transaction.delete()
+            return Response({'status': 'Transaction deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        except Recharge.DoesNotExist:
+            pass  # اگر پیدا نشد، ادامه می‌دهد.
+
+        # تلاش برای یافتن تراکنش CardToCard
+        try:
+            transaction = CardToCard.objects.get(id=transaction_id, user=user)
+            transaction.delete()
+            return Response({'status': 'Transaction deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        except CardToCard.DoesNotExist:
+            return Response({'error': 'Transaction not found'}, status=status.HTTP_404_NOT_FOUND)

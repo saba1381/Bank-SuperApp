@@ -123,6 +123,8 @@ const Charge ={
 
 const Transactions = {
   TransactionHistory: () => requests.get("history/transaction/"),
+  TransactionCardToCard: () => requests.get("history/transaction/card-to-card/"),
+  TransactionRecharge: () => requests.get("history/transaction/recharge/"),
 }
 
 const agent = {

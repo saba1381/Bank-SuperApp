@@ -366,7 +366,31 @@ export const fetchTransactionsHistory = createAsyncThunk(
     }
 );
 
+export const fetchTransactionsCardToCard = createAsyncThunk(
+    'account/fetchTransactionsCardToCard',
+    async (_, thunkAPI) => {
+        try {
+            const response = await agent.Transactions.TransactionCardToCard(); 
+            return response; 
+        } catch (error: any) {
+            const errorMessage = error.data.detail ||'خطا در دریافت اطلاعات';
+            return thunkAPI.rejectWithValue({ error: errorMessage });
+        }
+    }
+);
 
+export const fetchTransactionsRecharge = createAsyncThunk(
+    'account/fetchTransactionsRecharge',
+    async (_, thunkAPI) => {
+        try {
+            const response = await agent.Transactions.TransactionRecharge(); 
+            return response; 
+        } catch (error: any) {
+            const errorMessage = error.data.detail ||'خطا در دریافت اطلاعات';
+            return thunkAPI.rejectWithValue({ error: errorMessage });
+        }
+    }
+);
 
 export const accountSlice = createSlice({
     name: 'account',
@@ -616,6 +640,28 @@ export const accountSlice = createSlice({
     .addCase(fetchTransactionsHistory.rejected, (state) => {
       state.isLoading = false; 
       //toast.error('خطا در دریافت لیست کارت‌ها');
+    });
+    builder
+    .addCase(fetchTransactionsRecharge.pending, (state) => {
+      state.isLoading = true; 
+    })
+    .addCase(fetchTransactionsRecharge.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.transactions  = action.payload; 
+    })
+    .addCase(fetchTransactionsRecharge.rejected, (state) => {
+      state.isLoading = false; 
+    });
+    builder
+    .addCase(fetchTransactionsCardToCard.pending, (state) => {
+      state.isLoading = true; 
+    })
+    .addCase(fetchTransactionsCardToCard.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.transactions  = action.payload; 
+    })
+    .addCase(fetchTransactionsCardToCard.rejected, (state) => {
+      state.isLoading = false; 
     });
 
         

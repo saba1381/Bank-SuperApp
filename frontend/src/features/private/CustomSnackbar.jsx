@@ -15,13 +15,20 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { CiFilter } from "react-icons/ci";
 
-const CustomSnackbar = ({ open, onClose }) => {
+
+const CustomSnackbar = ({ open, onClose , onApplyFilter  }) => {
   const [transactionType, setTransactionType] = React.useState("both");
 
   const handleTransactionTypeChange = (event, newType) => {
     if (newType !== null) {
       setTransactionType(newType);
     }
+  };
+
+  const handleApplyClick = () => {
+    console.log(transactionType)
+    onApplyFilter(transactionType);
+    onClose();
   };
 
   return (
@@ -74,7 +81,6 @@ const CustomSnackbar = ({ open, onClose }) => {
               paddingBottom: "8px",
               width: "100%",
               mb: 3,
-
             }}
           >
             <CiFilter style={{ fontSize: "1.5rem" }} />
@@ -82,71 +88,84 @@ const CustomSnackbar = ({ open, onClose }) => {
               فیلتر سوابق تراکنش
             </Typography>
           </Box>
-          <Box sx={{
+          <Box
+            sx={{
               display: "flex",
               gap: "8px",
               alignItems: "center",
               marginBottom: "16px",
-              flexDirection:'row',
-              gap:1,
-              width:'100%',
-              justifyContent:'center',
-              fontSize:{sm:'0.8rem'}
-            }}>
-                <Box sx={{
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-    }}>
-          <Typography variant="body1" sx={{mb:0.6}} style={{color:'#858585'}}>نوع تراکنش</Typography>
-          <ToggleButtonGroup
-            value={transactionType}
-            exclusive
-            onChange={handleTransactionTypeChange}
-            sx={{
-                marginBottom: 0.5, // فاصله زیر فیلد را کم کنید
-                height: "48px", // ارتفاع را به صورت دستی تنظیم کنید
-                "& .MuiToggleButton-root": {
-                  height: "100%", // ارتفاع دکمه‌ها را همسان کنید
-                },
-              }}
+              flexDirection: "row",
+              gap: 1,
+              width: "100%",
+              justifyContent: "center",
+              fontSize: { sm: "0.8rem" },
+            }}
           >
-            <ToggleButton value="both">هر دو</ToggleButton>
-            <ToggleButton value="withdraw">انتقال وجه</ToggleButton>
-            <ToggleButton value="deposit">خرید شارژ</ToggleButton>
-          </ToggleButtonGroup>
-          </Box>
-
-          <Box
-            sx={{
+            <Box
+              sx={{
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
-                gap:0.5,
-                fontSize:{sm:'0.8rem'}
               }}
-          >
-            <Typography variant="body1" style={{color:'#858585' , marginBottom:0.9}}>تعداد (حداکثر ۳۰۰)</Typography>
-            <TextField
-              type="number"
-              variant="outlined"
-              //size="small"
-              defaultValue="10"
-              inputProps={{ min: 1, max: 300 }}
+            >
+              <Typography
+                variant="body1"
+                sx={{ mb: 0.6 }}
+                style={{ color: "#858585" }}
+              >
+                نوع تراکنش
+              </Typography>
+              <ToggleButtonGroup
+                value={transactionType}
+                exclusive
+                onChange={handleTransactionTypeChange}
+                sx={{
+                  marginBottom: 0.5, // فاصله زیر فیلد را کم کنید
+                  height: "48px", // ارتفاع را به صورت دستی تنظیم کنید
+                  "& .MuiToggleButton-root": {
+                    height: "100%", // ارتفاع دکمه‌ها را همسان کنید
+                  },
+                }}
+              >
+                <ToggleButton value="both">هر دو</ToggleButton>
+                <ToggleButton value="cardToCard">انتقال وجه</ToggleButton>
+                <ToggleButton value="recharge">خرید شارژ</ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+
+            <Box
               sx={{
-                borderRadius: '4px', 
-                '& .MuiOutlinedInput-root': { 
-                  borderRadius: '6px',
-                },
-                height:{xs:'51px' , sm:'50px'},
-                fontSize:{sm:'0.8rem'}
-                
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                gap: 0.5,
+                fontSize: { sm: "0.8rem" },
               }}
-            />
+            >
+              <Typography
+                variant="body1"
+                style={{ color: "#858585", marginBottom: 0.9 }}
+              >
+                تعداد (حداکثر ۳۰۰)
+              </Typography>
+              <TextField
+                type="number"
+                variant="outlined"
+                //size="small"
+                defaultValue="10"
+                inputProps={{ min: 1, max: 300 }}
+                sx={{
+                  borderRadius: "4px",
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "6px",
+                  },
+                  height: { xs: "51px", sm: "50px" },
+                  fontSize: { sm: "0.8rem" },
+                }}
+              />
+            </Box>
           </Box>
-          
-          </Box>
-{/* 
+          {/* 
           <Box
             sx={{
               display: "flex",
@@ -159,7 +178,7 @@ const CustomSnackbar = ({ open, onClose }) => {
             <Switch />
           </Box> */}
 
-          <Button variant="contained" color="primary" onClick={onClose}>
+          <Button variant="contained" color="primary" onClick={handleApplyClick}>
             اعمال فیلتر
           </Button>
         </Box>

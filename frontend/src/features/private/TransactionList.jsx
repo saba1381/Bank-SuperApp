@@ -11,17 +11,25 @@ import {
   IconButton,
   Snackbar,
   TextField,
+  Button,
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
+import { Delete as DeleteIcon } from "@mui/icons-material";
+import { FiEdit } from "react-icons/fi";
 import { RxCheckCircled } from "react-icons/rx";
 import { RxCrossCircled } from "react-icons/rx";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toPersianNumbers } from "../../util/util";
 import { UseAppDispatch, UseAppSelector } from "../../store/configureStore";
-import { fetchTransactionsHistory } from "../account/accountSlice";
+import {
+  fetchTransactionsHistory,
+  fetchTransactionsCardToCard,
+  fetchTransactionsRecharge,
+} from "../account/accountSlice";
 import { VscSettings } from "react-icons/vsc";
 import CustomSnackbar from "./CustomSnackbar";
+
 
 const banks = {
   603799: {
@@ -73,14 +81,29 @@ const TransactionList = () => {
   const navigate = useNavigate();
 
   const transactions = UseAppSelector((state) => state.account.transactions);
-  const loading = UseAppSelector((state) => state.account.loading);
+  const loading = UseAppSelector((state) => state.account.isLoading);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [transactionType, setTransactionType] = useState("both");
+
+
+
+  const handleApplyFilter = (selectedType) => {
+    console.log(selectedType)
+    setTransactionType(selectedType);
+  };
+  const fetchTransactions = () => {
+    if (transactionType === "cardToCard") {
+      dispatch(fetchTransactionsCardToCard());
+    } else if (transactionType === "recharge") {
+      dispatch(fetchTransactionsRecharge());
+    } else {
+      dispatch(fetchTransactionsHistory());
+    }
+  };
 
   useEffect(() => {
-    dispatch(fetchTransactionsHistory());
-  }, [dispatch]);
-
-  //console.log(transactions);
+    fetchTransactions();
+  }, [dispatch, transactionType]);
 
   const pageVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -109,7 +132,15 @@ const TransactionList = () => {
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
+  const handleDetails = (transactionId) => {
+    // Code to navigate to transaction details or show modal
+    console.log(`Viewing details for transaction ID: ${transactionId}`);
+  };
 
+  const handleDelete = (transactionId) => {
+    // Code to delete the transaction
+    console.log(`Deleting transaction ID: ${transactionId}`);
+  };
   return (
     <motion.div
       initial="hidden"
@@ -155,7 +186,6 @@ const TransactionList = () => {
           </IconButton>
         </Box>
 
-
         <Card
           sx={{
             marginTop: 2,
@@ -167,7 +197,6 @@ const TransactionList = () => {
           <Typography variant="body2" align="center" sx={{ color: "navy.800" }}>
             این اطلاعات شامل سوابق عملیات تراکنش شما در موبایل بانک است
           </Typography>
-          
         </Card>
         <Box
           sx={{
@@ -191,6 +220,7 @@ const TransactionList = () => {
                 bgcolor: "#d3d3d3",
               },
               cursor: "pointer",
+              border: "1px solid #d6d6d6",
             }}
           >
             <IconButton
@@ -202,6 +232,7 @@ const TransactionList = () => {
                 },
                 height: "40px",
                 width: "40px",
+                borderColor: "grey",
               }}
             >
               <VscSettings
@@ -212,37 +243,33 @@ const TransactionList = () => {
               />
             </IconButton>
           </Box>
-          
+
           <TextField
-            variant="outlined" 
-            size="small" 
+            variant="outlined"
+            size="small"
             sx={{
-              borderRadius: "10px", 
+              borderRadius: "10px",
               marginRight: "8px",
               width: "30%",
               height: "40px",
               "& .MuiOutlinedInput-root": {
-                height: "100%", 
-              }, 
+                height: "100%",
+              },
             }}
             autoComplete="off"
             placeholder="تعداد"
             type="number"
             inputProps={{
-              min: 0, 
-              max: 300, 
+              min: 0,
+              max: 300,
             }}
             onChange={(e) => {
               const value = Math.min(300, Math.max(0, Number(e.target.value)));
-              e.target.value = value; 
+              e.target.value = value;
             }}
           />
         </Box>
-        <CustomSnackbar
-          open={snackbarOpen}
-          onClose={handleSnackbarClose}
-          
-        />
+        <CustomSnackbar open={snackbarOpen} onClose={handleSnackbarClose} onApplyFilter={handleApplyFilter} />
 
         <List
           sx={{
@@ -371,14 +398,71 @@ const TransactionList = () => {
                     </Grid>
                   </Grid>
                 </ListItem>
-                <Divider />
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    paddingBottom: "10px",
+                    paddingLeft: 1,
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    startIcon={<DeleteIcon />}
+                    onClick={() => handleDelete(transaction.id)}
+                    sx={{
+                      flexGrow: 1,
+                      borderTopLeftRadius: "4px",
+                      borderBottomLeftRadius: "4px",
+                      borderBottomRightRadius: "0px",
+                      borderTopRightRadius: "0px",
+                      bgcolor: "#f1f1f1",
+                      color: "#0e5ec4",
+                      borderRightColor: "#d6d6d6",
+                      borderLeft: "none",
+                      borderTop: "none",
+                      borderBottom: "none",
+                      "&:hover": {
+                        bgcolor: "#d6d6d6",
+                        borderColor: "#d6d6d6",
+                        color: "#0e5ec4",
+                        borderLeft: "none",
+                        borderTop: "none",
+                        borderBottom: "none",
+                      },
+                    }}
+                  >
+                    حذف
+                  </Button>
+                  <Button
+                    //variant="outlined"
+                    startIcon={<FiEdit />}
+                    onClick={() => handleDetails(transaction.id)}
+                    sx={{
+                      flexGrow: 1,
+                      marginRight: 1,
+                      borderTopRightRadius: "4px",
+                      borderBottomRightRadius: "4px",
+                      borderBottomLeftRadius: "0px",
+                      borderTopLeftRadius: "0px",
+                      bgcolor: "#f1f1f1",
+                      color: "#0e5ec4",
+                      borderColor: "#717070",
+                      "&:hover": {
+                        bgcolor: "#d6d6d6",
+                      },
+                    }}
+                  >
+                    جزئیات
+                  </Button>
+                </Box>
+                <Divider sx={{ borderWidth: "7px", borderColor: "#f1f1f1" }} />
               </React.Fragment>
             ))
           ) : (
             <Typography align="center">هیچ تراکنشی برای شما نیست.</Typography>
           )}
         </List>
-        
       </Box>
     </motion.div>
   );
