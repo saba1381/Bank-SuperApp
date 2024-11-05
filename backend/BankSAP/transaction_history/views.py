@@ -23,7 +23,7 @@ class TransactionHistoryView(generics.ListAPIView):
         combined_with_dates = []
         iran_timezone = pytz.timezone("Asia/Tehran")
 
-        # پردازش تراکنش‌های Recharge و تبدیل تاریخ به datetime شمسی
+
         for instance in recharges:
             timestamp = instance.timestamp
             if isinstance(timestamp, str):
@@ -32,13 +32,13 @@ class TransactionHistoryView(generics.ListAPIView):
             jalali_datetime = jdatetime.datetime.fromgregorian(datetime=iran_time)
             combined_with_dates.append((instance, jalali_datetime))
 
-        # پردازش تراکنش‌های CardToCard بدون تغییر فرمت (چون به صورت شمسی ذخیره شده‌اند)
+
         for instance in card_to_cards:
             created_at = instance.created_at
             created_at_datetime = jdatetime.datetime.strptime(created_at, '%H:%M %Y/%m/%d')
             combined_with_dates.append((instance, created_at_datetime))
 
-        # مرتب‌سازی نزولی بر اساس datetime شمسی
+
         combined_with_dates.sort(key=lambda x: x[1], reverse=True)
 
         sorted_combined = [x[0] for x in combined_with_dates]
@@ -46,6 +46,13 @@ class TransactionHistoryView(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
+        limit = request.query_params.get('limit')
+        if limit:
+            try:
+                limit = int(limit)
+                queryset = queryset[:limit]
+            except ValueError:
+                return Response({'error': 'Invalid limit parameter'}, status=status.HTTP_400_BAD_REQUEST)
         data = []
         iran_timezone = pytz.timezone("Asia/Tehran")
 
@@ -81,10 +88,19 @@ class CardToCardHistoryView(generics.ListAPIView):
             created_at_datetime = jdatetime.datetime.strptime(created_at, '%H:%M %Y/%m/%d')
             combined_with_dates.append((instance, created_at_datetime))
 
-        # مرتب‌سازی نزولی بر اساس datetime شمسی
         combined_with_dates.sort(key=lambda x: x[1], reverse=True)
         sorted_combined = [x[0] for x in combined_with_dates]
         return sorted_combined
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        
+
+        limit = request.query_params.get('limit')
+        if limit is not None:
+            queryset = queryset[:int(limit)]
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class RechargeHistoryView(generics.ListAPIView):
@@ -106,15 +122,16 @@ class RechargeHistoryView(generics.ListAPIView):
             jalali_datetime = jdatetime.datetime.fromgregorian(datetime=iran_time)
             combined_with_dates.append((instance, jalali_datetime))
 
-        # مرتب‌سازی نزولی بر اساس datetime شمسی
         combined_with_dates.sort(key=lambda x: x[1], reverse=True)
 
-        # فقط نمونه‌ها را به صورت مرتب‌شده برمی‌گرداند
         sorted_combined = [x[0] for x in combined_with_dates]
         return sorted_combined
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
+        limit = request.query_params.get('limit')
+        if limit is not None:
+            queryset = queryset[:int(limit)]
         data = []
         iran_timezone = pytz.timezone("Asia/Tehran")
 
@@ -125,7 +142,7 @@ class RechargeHistoryView(generics.ListAPIView):
                 if isinstance(timestamp, str):
                     timestamp = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
                 iran_time = timestamp.astimezone(iran_timezone)
-                # تبدیل به فرمت شمسی
+
                 jalali_datetime = jdatetime.datetime.fromgregorian(datetime=iran_time)
                 serialized['timestamp'] = jalali_datetime.strftime('%H:%M %Y/%m/%d ')
             data.append(serialized)
@@ -139,15 +156,13 @@ class TransactionDeleteView(APIView):
     def delete(self, request, transaction_id):
         user = request.user
 
-        # تلاش برای یافتن تراکنش Recharge
         try:
             transaction = Recharge.objects.get(id=transaction_id, user=user)
             transaction.delete()
             return Response({'status': 'Transaction deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except Recharge.DoesNotExist:
-            pass  # اگر پیدا نشد، ادامه می‌دهد.
+            pass  
 
-        # تلاش برای یافتن تراکنش CardToCard
         try:
             transaction = CardToCard.objects.get(id=transaction_id, user=user)
             transaction.delete()
