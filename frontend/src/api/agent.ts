@@ -122,9 +122,9 @@ const Charge ={
 };
 
 const Transactions = {
-  TransactionHistory: () => requests.get("history/transaction/"),
-  TransactionCardToCard: () => requests.get("history/transaction/card-to-card/"),
-  TransactionRecharge: () => requests.get("history/transaction/recharge/"),
+  TransactionHistory: (limit?: number) => requests.get(`history/transaction/${limit ? `?limit=${limit}` : ''}`),
+  TransactionCardToCard: (limit?: number) => requests.get(`history/transaction/card-to-card/${limit ? `?limit=${limit}` : ''}`),
+  TransactionRecharge: (limit?: number) => requests.get(`history/transaction/recharge/${limit ? `?limit=${limit}` : ''}`),
   DeleteTransaction: (id: number) => requests.del(`history/transaction/delete/${id}/`, {}),
 }
 

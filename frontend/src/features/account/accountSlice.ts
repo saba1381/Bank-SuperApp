@@ -354,9 +354,9 @@ export const verifyChargeInfo = createAsyncThunk(
 
 export const fetchTransactionsHistory = createAsyncThunk(
     'account/fetchTransactionsHistory',
-    async (_, thunkAPI) => {
+    async (limit : number| undefined, thunkAPI) => {
         try {
-            const response = await agent.Transactions.TransactionHistory(); 
+            const response = await agent.Transactions.TransactionHistory(limit); 
             console.log(response.initialCard);
             return response; 
         } catch (error: any) {
@@ -368,9 +368,9 @@ export const fetchTransactionsHistory = createAsyncThunk(
 
 export const fetchTransactionsCardToCard = createAsyncThunk(
     'account/fetchTransactionsCardToCard',
-    async (_, thunkAPI) => {
+    async (limit : number| undefined,thunkAPI) => {
         try {
-            const response = await agent.Transactions.TransactionCardToCard(); 
+            const response = await agent.Transactions.TransactionCardToCard(limit); 
             return response; 
         } catch (error: any) {
             const errorMessage = error.data.detail ||'خطا در دریافت اطلاعات';
@@ -381,9 +381,9 @@ export const fetchTransactionsCardToCard = createAsyncThunk(
 
 export const fetchTransactionsRecharge = createAsyncThunk(
     'account/fetchTransactionsRecharge',
-    async (_, thunkAPI) => {
+    async (limit : number| undefined , thunkAPI) => {
         try {
-            const response = await agent.Transactions.TransactionRecharge(); 
+            const response = await agent.Transactions.TransactionRecharge(limit); 
             return response; 
         } catch (error: any) {
             const errorMessage = error.data.detail ||'خطا در دریافت اطلاعات';

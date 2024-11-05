@@ -40,11 +40,12 @@ const CustomSnackbar = ({ open, onClose , onApplyFilter  }) => {
           color: "#fff",
           zIndex: (theme) => theme.zIndex.drawer + 1,
           backgroundColor: "rgba(0, 0, 0, 0.5)",
+          height:'100%'
         }}
       />
       <Snackbar
         open={open}
-        autoHideDuration={6000}
+
         onClose={onClose}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         //sx={{ width: '100%' }}

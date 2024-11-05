@@ -85,26 +85,59 @@ const TransactionList = () => {
   const loading = UseAppSelector((state) => state.account.isLoading);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [transactionType, setTransactionType] = useState("both");
+  const [transactionCount, setTransactionCount] = useState(0);
+  const [prevTransactionType, setPrevTransactionType] = useState("both");
 
 
 
-  const handleApplyFilter = (selectedType) => {
-    console.log(selectedType)
+  const handleApplyFilter = (selectedType , count) => {
+    console.log(selectedType , count)
     setTransactionType(selectedType);
+    setTransactionCount(count);
   };
   const fetchTransactions = () => {
     if (transactionType === "cardToCard") {
-      dispatch(fetchTransactionsCardToCard());
+      dispatch(fetchTransactionsCardToCard(transactionCount))
     } else if (transactionType === "recharge") {
-      dispatch(fetchTransactionsRecharge());
+      dispatch(fetchTransactionsRecharge(transactionCount))
     } else {
-      dispatch(fetchTransactionsHistory());
+      dispatch(fetchTransactionsHistory(transactionCount))
     }
   };
 
   useEffect(() => {
+    if (transactionType !== prevTransactionType) {
+      setTransactionCount(0);  // ریست کردن تعداد
+      setPrevTransactionType(transactionType); // به‌روزرسانی نوع تراکنش قبلی
+    }
+  }, [transactionType, prevTransactionType]);
+
+  useEffect(() => {
     fetchTransactions();
-  }, [dispatch, transactionType]);
+  }, [dispatch, transactionType , transactionCount]);
+
+
+  useEffect(() => {
+    if (transactionCount > 0) {
+      if (transactionType === "cardToCard") {
+        dispatch(fetchTransactionsCardToCard(transactionCount));
+      } else if (transactionType === "recharge") {
+
+        dispatch(fetchTransactionsRecharge(transactionCount));
+      } else {
+        dispatch(fetchTransactionsHistory(transactionCount));
+      }
+      //setTransactionCount(0);
+    }
+  }, [dispatch, transactionType, transactionCount]);
+  const handleTransactionCountChange = (e) => {
+    const value = Math.min(300, Math.max(0, Number(e.target.value)));
+    setTransactionCount(value);
+  };
+
+  const filteredTransactions = transactionCount > 0 
+  ? transactions.slice(0, transactionCount) 
+  : transactions;
 
   const pageVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -160,11 +193,11 @@ const TransactionList = () => {
           padding: 2,
           maxWidth: 600,
           margin: "0 auto",
-          backgroundColor: "#f8f9fa",
+          //backgroundColor: "#f8f9fa",
           maxHeight: "auto",
-          minHeight: "auto",
+          minHeight:'auto',
           overflowY: "auto",
-          paddingBottom: { xs: 9, sm: 11, md: 13 },
+          paddingBottom: { xs: '100%', sm: 11, md: 13 },
         }}
       >
         <Box
@@ -254,6 +287,7 @@ const TransactionList = () => {
           <TextField
             variant="outlined"
             size="small"
+            value={transactionCount === 0 ? "" : transactionCount}
             sx={{
               borderRadius: "10px",
               marginRight: "8px",
@@ -262,6 +296,17 @@ const TransactionList = () => {
               "& .MuiOutlinedInput-root": {
                 height: "100%",
               },
+              "& input[type=number]": {
+      MozAppearance: "textfield",
+    },
+    "& input[type=number]::-webkit-outer-spin-button": {
+      WebkitAppearance: "none",
+      margin: 0,
+    },
+    "& input[type=number]::-webkit-inner-spin-button": {
+      WebkitAppearance: "none",
+      margin: 0,
+    },
             }}
             autoComplete="off"
             placeholder="تعداد"
@@ -270,13 +315,11 @@ const TransactionList = () => {
               min: 0,
               max: 300,
             }}
-            onChange={(e) => {
-              const value = Math.min(300, Math.max(0, Number(e.target.value)));
-              e.target.value = value;
-            }}
+            onChange={handleTransactionCountChange}
           />
+          
         </Box>
-        <CustomSnackbar open={snackbarOpen} onClose={handleSnackbarClose} onApplyFilter={handleApplyFilter} />
+        <CustomSnackbar open={snackbarOpen} onClose={handleSnackbarClose} onApplyFilter={handleApplyFilter} transactionCount={transactionCount}/>
 
         <List
           sx={{
@@ -288,7 +331,7 @@ const TransactionList = () => {
         >
           {loading ? (
             <Typography align="center">در حال بارگذاری...</Typography>
-          ) : transactions && transactions.length > 0 ? (
+          ) :  filteredTransactions && filteredTransactions.length > 0 ? (
             transactions.map((transaction) => (
               <React.Fragment key={transaction.id}>
                 <ListItem sx={{ padding: "12px 10px" }}>
@@ -484,7 +527,7 @@ const TransactionList = () => {
                     جزئیات
                   </Button>
                 </Box>
-                <Divider sx={{ borderWidth: "7px", borderColor: "#f1f1f1" }} />
+                <Divider sx={{ borderWidth: "7px", borderColor: "#f8f8f8" }} />
               </React.Fragment>
             ))
           ) : (

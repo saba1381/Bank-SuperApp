@@ -43,7 +43,7 @@ const BottomMenu = () => {
       display: 'flex',
       justifyContent: 'space-around',
       padding: '10px 0',
-      zIndex: 1000
+      zIndex: 1000,
     }}>
 
 
