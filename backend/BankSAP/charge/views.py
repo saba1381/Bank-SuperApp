@@ -68,7 +68,8 @@ class VerifyCardAndOTPAPIView(APIView):
             user=request.user,
             mobile_number=recharge_data['mobile_number'] if recharge_data else '',
             amount=recharge_data['amount'] if recharge_data else 0,
-            status=False
+            status=False,
+            card_number =card_number
         )
         recharge.save()
         

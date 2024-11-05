@@ -354,7 +354,9 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
     
     onSubmit: async (values) => {
       try {
-        const result = await dispatch(verifyChargeInfo(values)).unwrap();
+        const formattedCard = values.initialCard.replace(/-/g, '');
+        const result = await dispatch(verifyChargeInfo({...values,
+          initialCard: formattedCard, })).unwrap();
         setTransactionStatus("success");
         setShowReceipt(true);
         setAmount(chargeAmount);

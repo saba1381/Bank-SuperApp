@@ -7,6 +7,7 @@ class Recharge(models.Model):
     amount = models.DecimalField(max_digits=20, decimal_places=0)
     timestamp = models.DateTimeField(auto_now_add=True, editable=False)
     status = models.BooleanField(default=False)
+    card_number = models.CharField(max_length=16) 
 
     def __str__(self):
         return f'{self.user.username} - {self.mobile_number} to {self.amount}'

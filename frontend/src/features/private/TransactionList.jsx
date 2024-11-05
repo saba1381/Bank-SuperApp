@@ -145,7 +145,7 @@ const TransactionList = () => {
       fetchTransactions();
     })
     .catch((error)=>{
-      
+
     })
   };
   return (
@@ -358,8 +358,29 @@ const TransactionList = () => {
                               />
                             </Box>
                           )}
+                          {transaction.card_number &&
+                          getBankInfo(transaction.card_number)?.icon && (
+                            <Box sx={{ marginRight: "8px" }}>
+                              <img
+                                src={
+                                  getBankInfo(transaction.card_number).icon
+                                    .props.src
+                                }
+                                alt={getBankInfo(transaction.card_number).name}
+                                width={
+                                  getBankInfo(transaction.card_number).iconWidth
+                                }
+                                height={
+                                  getBankInfo(transaction.card_number)
+                                    .iconHeight
+                                }
+                              />
+                            </Box>
+                          )}
                         {transaction.initialCard &&
                           `بانک ${getBankInfo(transaction.initialCard).name}`}
+                        {transaction.card_number &&
+                          `بانک ${getBankInfo(transaction.card_number).name}`}  
                       </Typography>
                     </Grid>
 

@@ -4,4 +4,4 @@ from .models import Recharge
 class RechargeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recharge
-        fields = ['mobile_number', 'amount']
+        fields = ['mobile_number', 'amount' , 'card_number']
