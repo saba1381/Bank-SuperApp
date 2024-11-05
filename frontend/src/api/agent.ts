@@ -125,6 +125,7 @@ const Transactions = {
   TransactionHistory: () => requests.get("history/transaction/"),
   TransactionCardToCard: () => requests.get("history/transaction/card-to-card/"),
   TransactionRecharge: () => requests.get("history/transaction/recharge/"),
+  DeleteTransaction: (id: number) => requests.del(`history/transaction/delete/${id}/`, {}),
 }
 
 const agent = {

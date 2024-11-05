@@ -392,6 +392,21 @@ export const fetchTransactionsRecharge = createAsyncThunk(
     }
 );
 
+export const DeleteTransaction = createAsyncThunk(
+    'account/DeleteTransaction',
+    async (id:number, thunkAPI) => {
+        try {
+            const response = await agent.Transactions.DeleteTransaction(id);
+            toast.success('تراکنش با موفقیت حذف شد' , {autoClose:3000});
+            return response;
+        } catch (error: any) {
+            const errorMessage = error.data.detail || 'خطا در حذف تراکنش';
+            toast.error(errorMessage , {autoClose:3000});
+            return thunkAPI.rejectWithValue({ error: errorMessage });
+        }
+    }
+);
+
 export const accountSlice = createSlice({
     name: 'account',
     initialState,

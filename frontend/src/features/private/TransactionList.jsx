@@ -26,6 +26,7 @@ import {
   fetchTransactionsHistory,
   fetchTransactionsCardToCard,
   fetchTransactionsRecharge,
+  DeleteTransaction
 } from "../account/accountSlice";
 import { VscSettings } from "react-icons/vsc";
 import CustomSnackbar from "./CustomSnackbar";
@@ -138,8 +139,14 @@ const TransactionList = () => {
   };
 
   const handleDelete = (transactionId) => {
-    // Code to delete the transaction
-    console.log(`Deleting transaction ID: ${transactionId}`);
+    dispatch(DeleteTransaction(transactionId))
+    .unwrap()
+    .then(()=>{
+      fetchTransactions();
+    })
+    .catch((error)=>{
+      
+    })
   };
   return (
     <motion.div
