@@ -11,6 +11,7 @@ const BottomMenu = () => {
   const isSettingsPage = location.pathname.startsWith('/cp/setting');
   const isCPPage = location.pathname==='/cp';
   const isListCardPage = location.pathname.startsWith('/cp/user-cards');
+  const isProfilePage = location.pathname.startsWith('/cp/profile-view');
   const [isNewUser, setIsNewUser] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   useEffect(() => {
@@ -101,10 +102,10 @@ const BottomMenu = () => {
         '&:hover svg': { color: '#6b7280' },
         '&:hover': { '& *': { color: '#6b7280' } }
       }}
-      onClick={() => navigate('/profile')}
+      onClick={() => navigate('cp/profile-view')}
       >
-        <FaUserCircle style={{ color: '#3b82f6', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
-        <Typography variant="caption" sx={{ color: '#3b82f6', fontSize: '12px' }}>پروفایل</Typography>
+        <FaUserCircle style={{ color:isProfilePage ? '#6b7280' : '#3b82f6', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: isProfilePage ? '#6b7280' : '#3b82f6', fontSize: '12px' }}>پروفایل</Typography>
       </Box>
 
       {/* Menu Item: تنظیمات */}

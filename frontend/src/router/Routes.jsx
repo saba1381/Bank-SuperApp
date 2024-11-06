@@ -18,7 +18,7 @@ import Transfer from "../features/private/Transfer";
 import TransactionList from "../features/private/TransactionList";
 import CompleteInfo from "../features/private/CompleteInfo";
 import Charging from "../features/private/Charging";
-import CardToCardReciept from "../features/private/TransactionHistory/CardToCardReciept";
+import ProfileView from "../features/private/ProfileView";
 
 export const router = createBrowserRouter([
     {
@@ -56,6 +56,7 @@ export const router = createBrowserRouter([
                     { path: "cp/transaction-list", element: <TransactionList /> },
                     { path: "cp/complete-info", element: <CompleteInfo /> },
                     { path: "cp/charge", element: <Charging /> },
+                    { path: "cp/profile-view", element: <ProfileView /> },
                 ]
             },
 

@@ -65,6 +65,9 @@ const Header = () => {
     else if (path === "/cp/charge"){
       setHeaderTitle('خرید شارژ')
   }
+  else if (path === "/cp/profile-view"){
+    setHeaderTitle('پروفایل')
+}
      else {
       setHeaderTitle(" ");
     }
