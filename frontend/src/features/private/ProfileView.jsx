@@ -93,7 +93,7 @@ const ProfileView = () => {
                 color: "#56575b",
                 paddingX: 1,}}>
             <Typography variant="body1" fontWeight="bold" color="#616060" sx={{fontSize:'1.2rem'}}>شماره موبایل:</Typography>
-            <Typography variant="body1" sx={{fontSize:'0.99rem' , color:'#2367d5'}}>{toPersianNumbers(user?.phone_number) || 'نامشخص'}</Typography>
+            <Typography variant="body1" sx={{fontSize:'0.99rem' , color:'#2367d5'}}>{user?.phone_number ? toPersianNumbers(user.phone_number) : 'نامشخص'}</Typography>
           </Grid>
           <Grid item xs={12} sm={12} sx={{
                 display: "flex",

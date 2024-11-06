@@ -17,10 +17,10 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_staff', True)
 
-        if extra_fields.get('is_customer') is not False:
-            raise ValueError('Superuser must have is_customer=False.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
 
         return self.create_user(username, password,**extra_fields)
 
@@ -40,10 +40,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     
 
     USERNAME_FIELD = 'username'
-    #REQUIRED_FIELDS = ['phone_number']
+    REQUIRED_FIELDS = []
 
     objects = UserManager()
 
 
     def __str__(self):
-        return self.phone_number
+        return self.username if self.username else "Unknown User"
