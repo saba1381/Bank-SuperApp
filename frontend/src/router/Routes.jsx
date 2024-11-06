@@ -18,7 +18,7 @@ import Transfer from "../features/private/Transfer";
 import TransactionList from "../features/private/TransactionList";
 import CompleteInfo from "../features/private/CompleteInfo";
 import Charging from "../features/private/Charging";
-
+import CardToCardReciept from "../features/private/TransactionHistory/CardToCardReciept";
 
 export const router = createBrowserRouter([
     {

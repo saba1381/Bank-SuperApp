@@ -14,4 +14,4 @@ class CardToCardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CardToCard
-        fields = ['transaction_type', 'amount', 'created_at', 'status' ,  'desCardOwner' , 'initialCard' , 'id']
+        fields = ['transaction_type', 'amount', 'created_at', 'status' ,  'desCardOwner' , 'initialCard','desCard' , 'id']
