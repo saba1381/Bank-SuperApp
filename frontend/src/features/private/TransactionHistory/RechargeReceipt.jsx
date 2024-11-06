@@ -9,13 +9,12 @@ import { toast } from "react-toastify";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 
-const CardToCardReciept = ({
-  ownerName,
+const RechargeReciept = ({
   transactionDate,
   initialCard,
-  desCard,
   amount,
   transactionStatus,
+  mobileNumber,
   onBack,
 }) => {
   const navigate = useNavigate();
@@ -52,8 +51,8 @@ const CardToCardReciept = ({
     589463: {
       name: "رفاه کارگران",
       icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />,
-      iconWidth: "23px",
-      iconHeight: "23px",
+      iconWidth: "25px",
+      iconHeight: "25px",
     },
     502229: {
       name: "پاسارگاد",
@@ -74,8 +73,21 @@ const CardToCardReciept = ({
     return banks[firstSixDigits];
   };
 
+  const getOperator = (mobile) => {
+    const prefix = mobile.substring(0, 4);
+    if (["0910", "0911", "0912" , "0919" , "0913" , "0914" , "0915" , "0916" , "0917" , "0918" , "0991" , "0992" , "0993"].includes(prefix)) {
+      return { name: "همراه اول", color: "#a0eaf5", textColor: "#3d4849" , logo: "/OPIcons/hamrah.png"};
+    } else if (["0935", "0936", "0937" , "0938" , "0939" , "0901" , "0902" , "0903" , "0904" , "0905"].includes(prefix)) {
+      return { name: "ایرانسل", color: "#f4c403", textColor: "#445355" , logo: "/OPIcons/irancell.png"};
+    } else if (["0920", "0921" , "0922" , "0923"].includes(prefix)) {
+      return { name: "رایتل", color: "#800080", textColor: "#fff" , logo: "/OPIcons/rightel.png"};
+    } else {
+      return { name: "اپراتور ناشناخته", color: "#bdbdbd" };
+    }
+  };
+  const operatorInfo = getOperator(mobileNumber);
+
   const initailBankInfo = getBankInfo(initialCard);
-  const desBankInfo = getBankInfo(desCard);
 
   if (showTransaction) {
     return <TransactionList />;
@@ -91,9 +103,9 @@ const CardToCardReciept = ({
 
   const shareInfo = `\u200Fتاریخ:  ${toPersianNumbers(
     transactionDate
-  )} \nکارت مبدا: ${initialCard}\nکارت مقصد${maskCardNumber(
-    desCard
-  )} : \n مبلغ: ${toPersianNumbers(formatAmount(amount))} ریال`;
+  )} \nکارت : ${initialCard}\n \n مبلغ: ${toPersianNumbers(
+    formatAmount(amount)
+  )} ریال`;
 
   const handleShare = () => {
     if (navigator.share) {
@@ -179,13 +191,11 @@ const CardToCardReciept = ({
                 borderBottom: "1px dashed gray",
                 paddingY: 1,
                 color: "#56575b",
-                paddingX:1
+                paddingX: 1,
               }}
             >
               <Typography sx={{ fontSize: "1.2rem" }}>نوع تراکنش:</Typography>
-              <Typography sx={{ fontSize: "1.1rem" }}>
-                انتقال وجه کارت به کارت
-              </Typography>
+              <Typography sx={{ fontSize: "1.1rem" }}>خرید شارژ</Typography>
             </Box>
             <Box
               sx={{
@@ -195,7 +205,7 @@ const CardToCardReciept = ({
                 borderBottom: "1px dashed gray",
                 paddingY: 1,
                 color: "#56575b",
-                paddingX:1
+                paddingX: 1,
               }}
             >
               <Typography sx={{ fontSize: "1.2rem" }}>تاریخ:</Typography>
@@ -211,7 +221,7 @@ const CardToCardReciept = ({
                 borderBottom: "1px dashed gray",
                 paddingY: 1,
                 color: "#56575b",
-                paddingX:1
+                paddingX: 1,
               }}
             >
               <Typography sx={{ fontSize: "1.2rem" }}>مبلغ:</Typography>
@@ -228,12 +238,12 @@ const CardToCardReciept = ({
                 borderBottom: "1px dashed gray",
                 paddingY: 1,
                 color: "#56575b",
-                paddingX:1
+                paddingX: 1,
               }}
             >
-              <Typography sx={{ fontSize: "1.2rem" }}>کارت مبدا:</Typography>
+              <Typography sx={{ fontSize: "1.2rem" }}>شماره کارت :</Typography>
               <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography sx={{ fontSize: "1.1rem" }}>
+                <Typography sx={{ fontSize: "1.1rem" }}>
                   {initialCard
                     ? toPersianNumbers(
                         maskCardNumber(formatCardNumber(initialCard))
@@ -261,40 +271,10 @@ const CardToCardReciept = ({
                 borderBottom: "1px dashed gray",
                 paddingY: 1,
                 color: "#56575b",
-                paddingX:1
+                paddingX: 1,
               }}
             >
-              <Typography sx={{ fontSize: "1.2rem" }}>کارت مقصد:</Typography>
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography sx={{ fontSize: "1.1rem" }}>
-                  {toPersianNumbers(maskCardNumber(formatCardNumber(desCard)))}
-                </Typography>
-                {desBankInfo?.icon && (
-                  <Box sx={{ marginLeft: "4px" }}>
-                    <img
-                      src={desBankInfo.icon.props.src}
-                      alt={desBankInfo.name}
-                      width={desBankInfo.iconWidth}
-                      height={desBankInfo.iconHeight}
-                    />
-                  </Box>
-                )}
-              </Box>
-            </Box>
-            <Box
-              sx={{
-                mb: 1,
-                display: "flex",
-                justifyContent: "space-between",
-                borderBottom: "1px dashed gray",
-                paddingY: 1,
-                color: "#56575b",
-                paddingX:1
-              }}
-            >
-              <Typography sx={{ fontSize: "1.2rem" }}>
-                نام بانک : 
-              </Typography>
+              <Typography sx={{ fontSize: "1.2rem" }}>نام بانک :</Typography>
               <Typography sx={{ fontSize: "1.1rem" }}>{initialCard ?`بانک ${
                 getBankInfo(initialCard).name || 'نا مشخص'
               }` : 'نام بانک یافت نشد'}</Typography>
@@ -307,14 +287,27 @@ const CardToCardReciept = ({
                 borderBottom: "1px dashed gray",
                 paddingY: 1,
                 color: "#56575b",
-                paddingX:1
+                paddingX: 1,
               }}
             >
-              <Typography sx={{ fontSize: "1.2rem" }}>
-                نام دارنده کارت:
+              <Typography sx={{ fontSize: "1.2rem" }}>شماره موبایل:</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center' , gap:1 }}>
+              <Typography sx={{ fontSize: "1.1rem" }}>
+                {toPersianNumbers(mobileNumber)}
               </Typography>
-              <Typography sx={{ fontSize: "1.1rem" }}>{ownerName}</Typography>
+              <Box sx={{  }}>
+          <img src={operatorInfo.logo}
+                  alt={`${operatorInfo.name} logo`}
+                  style={{
+                    width:'35px',
+                    height:'35px',
+                    borderRadius:'10px'
+                  }}
+                  />
             </Box>
+            </Box>
+            </Box>
+
             <Box
               sx={{
                 display: "flex",
@@ -362,4 +355,4 @@ const CardToCardReciept = ({
   );
 };
 
-export default CardToCardReciept;
+export default RechargeReciept;

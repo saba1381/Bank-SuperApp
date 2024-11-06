@@ -33,6 +33,7 @@ import {
 import { VscSettings } from "react-icons/vsc";
 import CustomSnackbar from "./CustomSnackbar";
 import CardToCardReciept from "./TransactionHistory/CardToCardReciept";
+import RechargeReciept from "./TransactionHistory/RechargeReceipt";
 
 const banks = {
   603799: {
@@ -168,7 +169,7 @@ const TransactionList = () => {
   };
   const handleDetails = (transaction) => {
     if (transaction.transaction_type === "card_to_card") {
-      console.log(transaction)
+      console.log(transaction);
       setCurrentComponent(
         <CardToCardReciept
           ownerName={transaction.desCardOwner}
@@ -180,9 +181,20 @@ const TransactionList = () => {
           onBack={() => setCurrentComponent(false)}
         />
       );
+    } else if (transaction.transaction_type === "recharge") {
+      console.log(transaction);
+      setCurrentComponent(
+        <RechargeReciept
+          initialCard={transaction.card_number}
+          amount={transaction.amount}
+          transactionStatus={transaction.status}
+          transactionDate={transaction.timestamp}
+          mobileNumber={transaction.mobile_number}
+          onBack={() => setCurrentComponent(false)}
+        />
+      );
     }
   };
-  
 
   const handleDelete = (transactionId) => {
     dispatch(DeleteTransaction(transactionId))
@@ -395,7 +407,7 @@ const TransactionList = () => {
             {loading ? (
               <Typography align="center">در حال بارگذاری...</Typography>
             ) : filteredTransactions && filteredTransactions.length > 0 ? (
-              transactions.map((transaction) => (
+              transactions.map((transaction, index) => (
                 <React.Fragment key={transaction.id}>
                   <ListItem sx={{ padding: "12px 10px" }}>
                     <Grid
@@ -600,9 +612,11 @@ const TransactionList = () => {
                       جزئیات
                     </Button>
                   </Box>
-                  <Divider
-                    sx={{ borderWidth: "7px", borderColor: "#f8f8f8" }}
-                  />
+                  {index < filteredTransactions.length -1 && (
+                    <Divider
+                      sx={{ borderWidth: "7px", borderColor: "#f8f8f8" }}
+                    />
+                  )}
                 </React.Fragment>
               ))
             ) : (
@@ -610,10 +624,9 @@ const TransactionList = () => {
             )}
           </List>
         </Box>
-      
       ) : (
-      currentComponent
-    )}
+        currentComponent
+      )}
     </motion.div>
   );
 };
