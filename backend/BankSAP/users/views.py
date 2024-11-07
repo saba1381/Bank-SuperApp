@@ -16,62 +16,6 @@ from django.core.exceptions import ValidationError
 from .validators import CustomPasswordValidator  
 import re
 
-"""
-class RegisterView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        first_name = request.data.get('first_name')
-        last_name = request.data.get('last_name')
-        national_code = request.data.get('national_code')
-        phone_number = request.data.get('phone_number')
-        password = request.data.get('password')
-
-        errors = {}
-
-        validator = CustomPasswordValidator()
-        try:
-            validator.validate(password)
-        except ValidationError as e:
-            errors['password'] = e.messages  
-
-        
-        if User.objects.filter(national_code=national_code).exists() and User.objects.filter(phone_number=phone_number).exists():
-            errors['nationalId'] = ["این کد ملی قبلاً ثبت شده است."]
-            errors['mobile'] = ["این شماره تلفن قبلاً ثبت شده است."]
-        elif User.objects.filter(phone_number=phone_number).exists():
-            errors['mobile'] = ["این شماره تلفن قبلاً ثبت شده است."]
-        elif User.objects.filter(national_code=national_code).exists():
-            errors['nationalId'] = ["این کد ملی قبلاً ثبت شده است."]
-
-        if errors:
-            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
-
-        otp = random.randint(1000, 9999) 
-        print(f"Generated OTP for {phone_number}: {otp}")
-
-        cache.set(phone_number, otp, timeout=300)  
-        cache.set(f'user_data_{phone_number}', request.data, timeout=120)  
-
-        user_data = {
-            'phone_number': phone_number,
-            'national_code': national_code,
-            'first_name': first_name,
-            'last_name': last_name,
-            'password': password  
-        }
-
-        serializer = UserSerializer(data=user_data)
-        if not serializer.is_valid():
-            print(f"Serializer Errors: {serializer.errors}")
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        
-        return Response({"detail": f"Your OTP code is {otp}"}, status=status.HTTP_200_OK)
-
-
-
-"""
 def is_valid_national_code(national_code):
     if len(national_code) != 10 or not national_code.isdigit():
         return False
@@ -235,6 +179,8 @@ class LoginView(APIView):
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
+            'is_superuser': user.is_superuser,
+            'is_staff': user.is_staff,
         }, status=status.HTTP_200_OK)
 
 

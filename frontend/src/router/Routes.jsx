@@ -19,6 +19,7 @@ import TransactionList from "../features/private/TransactionList";
 import CompleteInfo from "../features/private/CompleteInfo";
 import Charging from "../features/private/Charging";
 import ProfileView from "../features/private/ProfileView";
+import AdminDashboard from "../features/private/test";
 
 export const router = createBrowserRouter([
     {
@@ -57,6 +58,14 @@ export const router = createBrowserRouter([
                     { path: "cp/complete-info", element: <CompleteInfo /> },
                     { path: "cp/charge", element: <Charging /> },
                     { path: "cp/profile-view", element: <ProfileView /> },
+                    
+                    
+                ]
+            },
+            {
+                element: <RequireAuth />,
+                children: [
+                    { path: "/admin", element: <AdminDashboard /> },
                 ]
             },
 
