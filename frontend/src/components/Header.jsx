@@ -33,8 +33,11 @@ const Header = () => {
   const [openDialog, setOpenDialog] = React.useState(false);
   const { headerTitle, setHeaderTitle } = useHeader();
   const location = useLocation();
-  const showLogoutIcon = user && location.pathname.startsWith("/cp") && !location.pathname.includes("/cp/setting") && !isLoading;
-
+  const showLogoutIcon =
+    user &&
+    !isLoading &&
+    (location.pathname.startsWith("/cp") && !location.pathname.includes("/cp/setting")) ||
+    (location.pathname.startsWith("/admin"));
 
 
 
@@ -103,7 +106,7 @@ const Header = () => {
           </Typography>
         </Box>
 
-        {user && showLogoutIcon  && !isLoading && (
+        {user && showLogoutIcon  && !isLoading &&(
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <LogoutIcon onClick={handleLogoutClick} />
           </Box>

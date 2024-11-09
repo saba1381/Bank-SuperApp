@@ -9,10 +9,13 @@ const BottomMenu = () => {
   const location = useLocation();
 
   const isSettingsPage = location.pathname.startsWith('/cp/setting');
-  const isCPPage = location.pathname==='/cp';
+  const isCPPageAdmin = location.pathname==='/cp' || location.pathname === '/admin';
   const isListCardPage = location.pathname.startsWith('/cp/user-cards');
   const isProfilePage = location.pathname.startsWith('/cp/profile-view');
+  const isAdminPage = location.pathname.startsWith('/admin');
   const [isNewUser, setIsNewUser] = useState(false);
+  const isAdminUserListPage = location.pathname === '/admin/user-list';
+  const isAdminUserProfilePage = location.pathname === '/admin/profile-view';
   const [notificationOpen, setNotificationOpen] = useState(false);
   useEffect(() => {
     const newUser = localStorage.getItem("isNewUser") === "true";
@@ -25,12 +28,17 @@ const BottomMenu = () => {
     if (isNewUser) {
       setNotificationOpen(true);
     } else {
-      navigate("/cp/user-cards", { state: { from: "/cp/" } });
+      const path = isAdminPage ? "/admin/user-list" : "/cp/user-cards";
+      navigate(path, { state: { from: location.pathname } });
     }
   };
+
+
   const handleNotificationClose = () => {
     setNotificationOpen(false);
   };
+
+  
 
 
   return (
@@ -72,10 +80,10 @@ const BottomMenu = () => {
         '&:hover svg': { color: '#6b7280' },
         '&:hover': { '& *': { color: '#6b7280' } }
       }}
-      onClick={()=>navigate("/cp/user-cards", { state: { from: "/cp/" } })}
+      onClick={handleCardListClick}
       >
-        <FaCreditCard style={{ color: isListCardPage ? '#6b7280' : '#3b82f6',fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
-        <Typography variant="caption" sx={{ color: isListCardPage ? '#6b7280' : '#3b82f6',fontSize: '12px' }}>کارت‌ها</Typography>
+        <FaCreditCard style={{ color: (isListCardPage || isAdminUserListPage) ? '#6b7280' : '#3b82f6',fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: (isListCardPage || isAdminUserListPage) ? '#6b7280' : '#3b82f6', fontSize: '12px' }}>{isAdminPage ? "لیست کاربران" : "کارت‌ها"}</Typography>
       </Box>
       
       {/* Menu Item: خانه */}
@@ -89,8 +97,8 @@ const BottomMenu = () => {
       }}
       onClick={() => navigate('/cp')}
       >
-        <FaHome style={{ color: isCPPage ? '#6b7280' : '#3b82f6',fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
-        <Typography variant="caption" sx={{ color: isCPPage ? '#6b7280' : '#3b82f6', fontSize: '12px' }}>خانه</Typography>
+        <FaHome style={{ color: isCPPageAdmin ? '#6b7280' : '#3b82f6',fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: isCPPageAdmin ? '#6b7280' : '#3b82f6', fontSize: '12px' }}>خانه</Typography>
       </Box>
 
       {/* Menu Item: پروفایل */}
@@ -102,10 +110,10 @@ const BottomMenu = () => {
         '&:hover svg': { color: '#6b7280' },
         '&:hover': { '& *': { color: '#6b7280' } }
       }}
-      onClick={() => navigate('cp/profile-view')}
+      onClick={() => navigate(isAdminPage ? '/admin/profile-view' : '/cp/profile-view')}
       >
-        <FaUserCircle style={{ color:isProfilePage ? '#6b7280' : '#3b82f6', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
-        <Typography variant="caption" sx={{ color: isProfilePage ? '#6b7280' : '#3b82f6', fontSize: '12px' }}>پروفایل</Typography>
+        <FaUserCircle style={{ color:(isProfilePage || isAdminUserProfilePage) ? '#6b7280' : '#3b82f6', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: (isProfilePage || isAdminUserProfilePage) ? '#6b7280' : '#3b82f6', fontSize: '12px' }}>پروفایل</Typography>
       </Box>
 
       {/* Menu Item: تنظیمات */}
@@ -117,7 +125,7 @@ const BottomMenu = () => {
         '&:hover svg': { color: '#6b7280' },
         '&:hover': { '& *': { color: '#6b7280' } }
       }}
-      onClick={() => navigate('/cp/setting')}
+      onClick={() => navigate(isAdminPage ? '/admin/setting' : '/cp/setting')}
       >
         <FaCog style={{
           color: isSettingsPage ? '#6b7280' : '#3b82f6',

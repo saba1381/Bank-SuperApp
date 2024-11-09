@@ -21,6 +21,8 @@ import Charging from "../features/private/Charging";
 import ProfileView from "../features/private/ProfileView";
 import AdminDashboard from "../features/private/test";
 
+const adminOrCpPath = (base, path) => `${base}${path}`;
+
 export const router = createBrowserRouter([
     {
         path: "/",
@@ -47,25 +49,34 @@ export const router = createBrowserRouter([
                 element: <RequireAuth />, 
                 children: [
                     { path: "cp", element: <PrivatePage /> },
-                    { path: "cp/edit-profile", element: <ProfileEdit /> },
-                    { path: "cp/user-cards", element: <CardList /> }, 
-                    { path: "cp/user-cards/add-card", element: <AddCard /> }, 
-                    { path: "cp/user-cards/edit-card", element: <EditCard /> },
-                    { path: "cp/setting", element: <Settings /> }, 
-                    { path: "cp/setting/edit-password", element: <ChangePassword /> },   
-                    { path: "cp/transfer", element: <Transfer /> },
-                    { path: "cp/transaction-list", element: <TransactionList /> },
-                    { path: "cp/complete-info", element: <CompleteInfo /> },
-                    { path: "cp/charge", element: <Charging /> },
-                    { path: "cp/profile-view", element: <ProfileView /> },
-                    
-                    
-                ]
-            },
-            {
-                element: <RequireAuth />,
-                children: [
-                    { path: "/admin", element: <AdminDashboard /> },
+                    { path: "admin", element: <AdminDashboard /> },
+
+                    {
+                        path: "cp",
+                        children: [
+                            { path: adminOrCpPath("/cp", "/edit-profile"), element: <ProfileEdit /> },
+                            { path: adminOrCpPath("/cp", "/user-cards"), element: <CardList /> },
+                            { path: adminOrCpPath("/cp", "/user-cards/add-card"), element: <AddCard /> },
+                            { path: adminOrCpPath("/cp", "/user-cards/edit-card"), element: <EditCard /> },
+                            { path: adminOrCpPath("/cp", "/setting"), element: <Settings /> },
+                            { path: adminOrCpPath("/cp", "/setting/edit-password"), element: <ChangePassword /> },
+                            { path: adminOrCpPath("/cp", "/transfer"), element: <Transfer /> },
+                            { path: adminOrCpPath("/cp", "/transaction-list"), element: <TransactionList /> },
+                            { path: adminOrCpPath("/cp", "/complete-info"), element: <CompleteInfo /> },
+                            { path: adminOrCpPath("/cp", "/charge"), element: <Charging /> },
+                            { path: adminOrCpPath("/cp", "/profile-view"), element: <ProfileView /> },
+                        ]
+                    },
+
+                    {
+                        path: "admin",
+                        children: [
+                            { path: adminOrCpPath("/admin", "/edit-profile"), element: <ProfileEdit /> },
+                            { path: adminOrCpPath("/admin", "/setting"), element: <Settings /> },
+                            { path: adminOrCpPath("/admin", "/setting/edit-password"), element: <ChangePassword /> },
+                            { path: adminOrCpPath("/admin", "/profile-view"), element: <ProfileView /> },
+                        ]
+                    },
                 ]
             },
 

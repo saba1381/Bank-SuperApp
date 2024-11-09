@@ -30,6 +30,7 @@ const Settings = () => {
   const { user, isLoading } = useSelector((state) => state.account);
   const dispatch = UseAppDispatch();
   const isCPPage = window.location.pathname === "/cp/setting";
+  const isSettingPage = window.location.pathname === "/admin/setting";
   const navigate = useNavigate();
   const [hasFetchedOnce, setHasFetchedOnce] = useState(false);  
   const [isNewUser, setIsNewUser] = useState(false);
@@ -73,7 +74,7 @@ const Settings = () => {
   const handleChangePasswordClick = () => {
     if (isNewUser) {
       setNotificationOpen(true); 
-    }else{navigate("/cp/setting/edit-password");}
+    }else{navigate( isCPPage ? "/cp/setting/edit-password" : "/admin/setting/edit-password")}
     
   };
 
@@ -85,7 +86,11 @@ const Settings = () => {
     if (isNewUser) {
       setNotificationOpen(true);
     } else {
-      navigate("/cp/edit-profile", { state: { from: "/cp/setting" } });
+      if(isCPPage){
+        navigate('/cp/edit-profile' , {state:{from : '/cp/setting'}});
+      }else if(isSettingPage){
+        navigate('/admin/edit-profile' , {state:{from : '/admin/setting'}});
+      }
     }
   };
 
@@ -144,7 +149,7 @@ const Settings = () => {
               </Box>
 
 
-              {user && !isLoading && isCPPage && (
+              {user && !isLoading && (isCPPage || isSettingPage) && (
                 <Box
                   sx={{
                     display: "flex",

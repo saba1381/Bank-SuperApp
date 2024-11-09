@@ -14,6 +14,9 @@ const ProfileView = () => {
     const navigate = useNavigate();
     const { user, isLoading } = useSelector((state) => state.account);
     const accountState = useSelector((state) => state.account);
+    const location = useLocation();
+const isAdminPage = location.pathname === '/admin/profile-view';
+
 
 
     useEffect(() => {
@@ -28,7 +31,7 @@ const ProfileView = () => {
       : '/default-profile.png';
 
   return (
-    <Container maxWidth="md" sx={{ paddingY: 3 }}>
+    <Container maxWidth="md" sx={{ paddingTop: 3 , paddingBottom:12 }}>
         <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
         <Button
           variant="contained"
@@ -43,7 +46,7 @@ const ProfileView = () => {
         {isLoading ? (
               <Typography align="center">در حال بارگذاری...</Typography>
             ) : (
-      <Paper elevation={4} sx={{display:'flex' , flexDirection:'column', paddingX: {xs:4, sm:20},paddingBottom:{xs:1 , sm:10},paddingTop:4,borderRadius: 4, textAlign: 'center', mx: 'auto' , height:{xs:'70vh' , sm:'130vh'} }}>
+      <Paper elevation={4} sx={{display:'flex' , flexDirection:'column', textAlign: 'center', borderRadius: 5, width: { md: '60%', sx: '100%' }, mx: 'auto' , paddingX:{sm:10 , xs:4} , paddingY:4}}>
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <Avatar
             src={profileImageURL}
@@ -112,7 +115,13 @@ const ProfileView = () => {
               <Button
                 variant="contained"
                 sx={{ bgcolor: '#FF1493', '&:hover': { bgcolor: '#ff61a6' } }}
-                onClick={()=>{navigate("/cp/edit-profile" , {state : {from : '/cp/profile-view'}})}}
+                onClick={() => {
+                  if (isAdminPage) {
+                      navigate('/admin/edit-profile', { state: { from: '/admin/profile-view' } });
+                  } else {
+                      navigate('/cp/edit-profile', { state: { from: '/cp/profile-view' } });
+                  }
+              }}
               >
                 ویرایش پروفایل
               </Button>

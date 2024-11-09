@@ -21,7 +21,7 @@ import { changePassword } from "../../account/accountSlice";
 import { unwrapResult, unwrap } from "@reduxjs/toolkit";
 import { motion } from "framer-motion";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import { useNavigate } from "react-router-dom";
+import { useNavigate ,useLocation  } from 'react-router-dom';
 
 const ChangePassword = ({ onBack }) => {
   const [showHelp, setShowHelp] = useState(false);
@@ -42,6 +42,9 @@ const ChangePassword = ({ onBack }) => {
   const handleClickShowNewPassword = () => setShowNewPassword(!showNewPassword);
   const handleClickShowConfirmPassword = () =>
     setShowConfirmPassword(!showConfirmPassword);
+  const location = useLocation();
+  const isAdminPage = location.pathname === '/admin/setting/edit-password';
+  const isCpPage = location.pathname === '/cp/setting/edit-password';
 
   const dispatch = UseAppDispatch();
 
@@ -52,6 +55,15 @@ const ChangePassword = ({ onBack }) => {
     }
   };
 
+  const handleBackClick = () => {
+    if (isAdminPage) {
+      navigate('/admin/setting'); // هدایت به صفحه تنظیمات ادمین
+    } else if (isCpPage) {
+      navigate('/cp/setting'); // هدایت به صفحه تنظیمات کاربر
+    } else {
+      navigate('/'); // در صورتی که صفحه در مسیرهای دیگر باشد
+    }
+  };
   const Overlay = styled("div")(({ theme }) => ({
     position: "fixed",
     top: 0,
@@ -185,7 +197,7 @@ const ChangePassword = ({ onBack }) => {
   <Button
     variant="contained"
     color="primary"
-    onClick={() => navigate("/cp/setting")}
+    onClick={handleBackClick}
     endIcon={<KeyboardBackspaceIcon />}
     sx={{ paddingX: 3, paddingY: 2, fontSize: 14, height: '40px'}}
   >

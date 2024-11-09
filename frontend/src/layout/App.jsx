@@ -21,7 +21,7 @@ export default function App() {
   const [showHistory, setShowHistory] = useState(false);
   const [showServices, setShowServices] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const isCPPage = window.location.pathname.startsWith('/cp'); 
+  const isCPPageAdmin = window.location.pathname.startsWith('/cp') || window.location.pathname.startsWith('/admin'); 
 
   const handleProfileClick = () => setShowProfile(true);
   const handleHistoryClick = () => setShowHistory(true);
@@ -54,7 +54,7 @@ export default function App() {
       component={"main"}
       sx={{flexGrow:1}}
       >
-           {user && isCPPage && !isLoading && (<BottomMenu
+           {user && isCPPageAdmin && !isLoading && (<BottomMenu
 
                   /> )}
         
