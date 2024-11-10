@@ -19,7 +19,7 @@ import TransactionList from "../features/private/TransactionList";
 import CompleteInfo from "../features/private/CompleteInfo";
 import Charging from "../features/private/Charging";
 import ProfileView from "../features/private/ProfileView";
-import AdminDashboard from "../features/private/test";
+import AdminDashboard from "../features/private/Admin components/AdminDashboard";
 
 const adminOrCpPath = (base, path) => `${base}${path}`;
 

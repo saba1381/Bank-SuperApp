@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Typography, Grid, Paper, Modal, Box, Avatar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Tooltip as MuiTooltip } from "@mui/material";
 import { BsGraphUp, BsPeople } from "react-icons/bs";
 import { MdAttachMoney, MdClose, MdDelete } from "react-icons/md";
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer, Tooltip } from "recharts";
+import { motion } from "framer-motion"; 
+import { UseAppDispatch, UseAppSelector } from "../../../store/configureStore";
+import {
+  CountOfUsers,
+  CountOfTransactions
+} from "../../account/accountSlice";
+import { toPersianNumbers } from "../../../util/util";
+import { FaMoneyBillTrendUp } from "react-icons/fa6";
 
-// داده نمونه برای نمودار و کاربران
 const chartData = [
   { name: "کاربران فعال", value: 400 },
   { name: "کاربران جدید", value: 300 },
@@ -16,64 +23,69 @@ const colors = ["#4caf50", "#ff9800", "#2196f3", "#f44336"];
 const initialUserData = [
   { id: 1, username: "user1", nationalCode: "1234567890", phoneNumber: "09121234567", fullName: "علی محمدی", gender: "مرد", email: "user1@example.com", profilePicture: null },
   { id: 2, username: "user2", nationalCode: "0987654321", phoneNumber: "09121112233", fullName: "فاطمه حسینی", gender: "زن", email: "user2@example.com", profilePicture: "https://example.com/user2.jpg" },
-  // کاربران بیشتر...
+
 ];
 
 const AdminDashboard = () => {
   const [open, setOpen] = useState(false);
   const [userData, setUserData] = useState(initialUserData);
+  const loading = UseAppSelector((state) => state.account.isLoading);
+  const dispatch = UseAppDispatch();
+  const userCount = UseAppSelector((state) => state.account.userCount); 
+  const transactionCount = UseAppSelector((state) => state.account.transactionCount); 
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  // تابع حذف کاربر
   const handleDelete = (id) => {
     setUserData((prevData) => prevData.filter((user) => user.id !== id));
   };
 
-  return (
-    <Container maxWidth="lg" sx={{ pt: 5 }}>
-      <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
-        داشبورد ادمین
-      </Typography>
+  const pageTransition = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
+  };
 
-      <Grid container spacing={3} sx={{ mt: 3 }}>
+  useEffect(()=>{
+    dispatch(CountOfUsers());
+    dispatch(CountOfTransactions());
+  } , [dispatch])
+
+  return (
+    <motion.div initial="initial" animate="animate" variants={pageTransition}>
+    <Container maxWidth="lg" sx={{ pt: 5, pb: 5 , paddingX:4 }}>
+      <Grid container spacing={3}>
+        
         {/* کارت‌های اطلاعاتی */}
-        <Grid item xs={12} sm={6} md={4}>
-          <Paper elevation={3} sx={{ p: 3, display: "flex", alignItems: "center", flexDirection: "column", textAlign: "center" }}>
-            <BsPeople size={50} color="#2196f3" />
-            <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" }}>تعداد کاربران</Typography>
-            <Typography variant="h5" color="text.secondary">850</Typography>
-          </Paper>
-        </Grid>
-        
-        <Grid item xs={12} sm={6} md={4}>
-          <Paper elevation={3} sx={{ p: 3, display: "flex", alignItems: "center", flexDirection: "column", textAlign: "center" }}>
-            <MdAttachMoney size={50} color="#4caf50" />
-            <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" }}>تعداد تراکنش‌ها</Typography>
-            <Typography variant="h5" color="text.secondary">1200</Typography>
-          </Paper>
-        </Grid>
-        
-        <Grid item xs={12} sm={6} md={4}>
-          <Paper elevation={3} sx={{ p: 3, display: "flex", alignItems: "center", flexDirection: "column", textAlign: "center" }}>
-            <BsGraphUp size={50} color="#ff9800" />
-            <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" }}>درآمد امروز</Typography>
-            <Typography variant="h5" color="text.secondary">500,000 تومان</Typography>
-          </Paper>
-        </Grid>
+        {[
+          { icon: <BsPeople size={50} color="#2196f3" />, label: "تعداد کاربران", value: userCount ?  toPersianNumbers(userCount) : 'نامشخص' },
+          { icon: <FaMoneyBillTrendUp size={46} color="#4caf50" />, label: "تعداد تراکنش‌ها", value: transactionCount ? toPersianNumbers(transactionCount) : 'نامشخص' },
+          { icon: <BsGraphUp size={50} color="#ff9800" />, label: "درآمد امروز", value: "500,000 تومان" },
+        ].map((card, index) => (
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Paper elevation={5} sx={{ p: 3, display: "flex", alignItems: "center", flexDirection: "column", textAlign: "center", borderRadius: "15px", transition: "0.3s" }}>
+                {card.icon}
+                <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" }}>{card.label}</Typography>
+                <Typography variant="h5" color="text.secondary">{card.value}</Typography>
+              </Paper>
+            </motion.div>
+          </Grid>
+        ))}
         
         {/* کارت لیست کاربران */}
         <Grid item xs={12} sm={6} md={4}>
-          <Paper elevation={3} sx={{ p: 3, display: "flex", alignItems: "center", flexDirection: "column", textAlign: "center", cursor: "pointer" }} onClick={handleOpen}>
-            <BsPeople size={50} color="#2196f3" />
-            <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" }}>لیست کاربران</Typography>
-          </Paper>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Paper elevation={5} sx={{ p: 3, display: "flex", alignItems: "center", flexDirection: "column", textAlign: "center", cursor: "pointer", borderRadius: "15px" }} onClick={handleOpen}>
+              <BsPeople size={50} color="#2196f3" />
+              <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" }}>لیست کاربران</Typography>
+            </Paper>
+          </motion.div>
         </Grid>
 
         {/* نمودار */}
         <Grid item xs={12}>
-          <Paper elevation={3} sx={{ p: 3 }}>
+          <Paper elevation={5} sx={{ p: 3, borderRadius: "15px" }}>
             <Typography variant="h6" align="center" gutterBottom>آنالیز کاربران و تراکنش‌ها</Typography>
             <Box sx={{ height: 300, width: "100%" }}>
               <ResponsiveContainer width="100%" height="100%">
@@ -101,12 +113,12 @@ const AdminDashboard = () => {
 
         {/* مودال لیست کاربران */}
         <Modal open={open} onClose={handleClose} aria-labelledby="user-list-modal" sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Box sx={{ bgcolor: "background.paper", p: 4, borderRadius: 2, width: "80%", maxHeight: "90vh", overflowY: "auto" }}>
+          <Box sx={{ bgcolor: "background.paper", p: 4, borderRadius: 3, width: "80%", maxHeight: "90vh", overflowY: "auto", boxShadow: 24 }}>
             <IconButton onClick={handleClose} sx={{ position: "absolute", top: 16, right: 16 }}>
               <MdClose />
             </IconButton>
             <Typography variant="h5" align="center" gutterBottom>لیست کاربران</Typography>
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} sx={{ borderRadius: "15px" }}>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -152,6 +164,7 @@ const AdminDashboard = () => {
         </Modal>
       </Grid>
     </Container>
+    </motion.div>
   );
 };
 

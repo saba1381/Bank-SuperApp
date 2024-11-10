@@ -12,7 +12,8 @@ interface AccountState {
     cardInfo: Card | null,    
     error: string | null, 
     transactions: Array<any> | [],
-    
+    userCount: number | null,
+    transactionCount: number | null,
 }
 
 const initialState: AccountState = {
@@ -21,7 +22,9 @@ const initialState: AccountState = {
     isLoading: false,
     cards: [], 
     cardInfo: null,     
-    error: null,    
+    error: null, 
+    userCount: null,   
+    transactionCount: null,   
 };
 
 export const verifyOTP = createAsyncThunk(
@@ -407,6 +410,34 @@ export const DeleteTransaction = createAsyncThunk(
     }
 );
 
+
+export const CountOfUsers = createAsyncThunk(
+    'account/CountOfUsers',
+    async (_, thunkAPI) => {
+        try {
+            const response = await agent.Admin.CountUsers(); 
+            return response; 
+        } catch (error: any) {
+            const errorMessage = error.data.detail || 'خطا در دریافت شمارش';
+            return thunkAPI.rejectWithValue({ error: errorMessage });
+        }
+    }
+);
+
+
+export const CountOfTransactions = createAsyncThunk(
+    'account/CountOfTransactions',
+    async (_, thunkAPI) => {
+        try {
+            const response = await agent.Admin.CountTransaction(); 
+            return response; 
+        } catch (error: any) {
+            const errorMessage = error.data.detail || 'خطا در دریافت شمارش';
+            return thunkAPI.rejectWithValue({ error: errorMessage });
+        }
+    }
+);
+
 export const accountSlice = createSlice({
     name: 'account',
     initialState,
@@ -678,6 +709,31 @@ export const accountSlice = createSlice({
     .addCase(fetchTransactionsCardToCard.rejected, (state) => {
       state.isLoading = false; 
     });
+    builder
+            .addCase(CountOfUsers.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(CountOfUsers.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.userCount = action.payload; 
+            })
+            .addCase(CountOfUsers.rejected, (state, action) => {
+                state.isLoading = false;
+                //state.error = action.payload?.error || 'خطا در دریافت شمارش کاربران';
+            });
+
+            builder
+            .addCase(CountOfTransactions.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(CountOfTransactions.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.transactionCount = action.payload; 
+            })
+            .addCase(CountOfTransactions.rejected, (state, action) => {
+                state.isLoading = false;
+                //state.error = action.payload?.error || 'خطا در دریافت شمارش کاربران';
+            });
 
         
           

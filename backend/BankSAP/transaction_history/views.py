@@ -169,3 +169,15 @@ class TransactionDeleteView(APIView):
             return Response({'status': 'Transaction deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except CardToCard.DoesNotExist:
             return Response({'error': 'Transaction not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+
+class TotalTransactionsCountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        recharge_count = Recharge.objects.count()
+        card_to_card_count = CardToCard.objects.count()
+
+        total_transactions = recharge_count + card_to_card_count
+
+        return Response( total_transactions, status=status.HTTP_200_OK)

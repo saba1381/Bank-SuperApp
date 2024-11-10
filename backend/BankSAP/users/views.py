@@ -258,3 +258,11 @@ class ChangePasswordView(APIView):
         user.save()
 
         return Response({"detail": "رمز عبور با موفقیت تغییر کرد."}, status=status.HTTP_200_OK)
+    
+
+class UserCountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_count = User.objects.count()
+        return Response(user_count, status=status.HTTP_200_OK)

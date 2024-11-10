@@ -128,11 +128,17 @@ const Transactions = {
   DeleteTransaction: (id: number) => requests.del(`history/transaction/delete/${id}/`, {}),
 }
 
+const Admin ={
+  CountUsers : () => requests.get("users/number-of-users/"),
+  CountTransaction : () => requests.get("history/transaction/count/"),
+}
+
 const agent = {
   UserProfile,
   Card,
   Charge,
-  Transactions
+  Transactions,
+  Admin
 };
 
 export default agent;

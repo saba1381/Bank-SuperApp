@@ -71,6 +71,9 @@ const Header = () => {
   else if (path === "/cp/profile-view"){
     setHeaderTitle('پروفایل')
 }
+else if (path === "/admin"){
+  setHeaderTitle('پنل ادمین')
+}
      else {
       setHeaderTitle(" ");
     }
