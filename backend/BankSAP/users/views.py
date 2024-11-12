@@ -5,7 +5,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.cache import cache
 from .models import User
 from .serializers import UserSerializer
-import random
+from datetime import datetime, timedelta
+from django.utils import timezone
 import secrets
 from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
@@ -266,3 +267,36 @@ class UserCountView(APIView):
     def get(self, request):
         user_count = User.objects.count()
         return Response(user_count, status=status.HTTP_200_OK)
+
+
+class UserListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        limit = request.query_params.get('limit')
+        gender = request.query_params.get('gender')
+        last_login = request.query_params.get('last_login')
+        users = User.objects.all()  
+
+        if last_login:
+            now = timezone.now()
+            if last_login == "today":
+                users = users.filter(last_login__date=now.date())
+            elif last_login == "last_7_days":
+                start_date = now - timedelta(days=7)
+                users = users.filter(last_login__date__gte=start_date.date())
+            elif last_login == "this_month":
+                start_date = now.replace(month=1)
+                users = users.filter(last_login__date__gte=start_date.date())
+            elif last_login == "this2_month":
+                start_date = now.replace(month=2)
+                users = users.filter(last_login__date__gte=start_date.date())
+
+
+        if limit and limit.isdigit():
+            users = users[:int(limit)]
+
+        if gender:
+            users = users.filter(gender=gender)
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

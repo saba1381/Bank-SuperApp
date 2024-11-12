@@ -4,15 +4,13 @@ from django.utils.translation import gettext_lazy as _
 from .models import User
 
 class UserAdmin(BaseUserAdmin):
-    # تنظیمات نمایش فیلدها در لیست کاربران در پنل ادمین
+
     list_display = ('username', 'phone_number', 'national_code', 'first_name', 'last_name')
     search_fields = ('username', 'phone_number', 'national_code', 'first_name', 'last_name')
     readonly_fields = ('last_login',)
 
-    # فیلترهایی که در پنل ادمین نشان داده می‌شود
     list_filter = ('is_customer', 'is_superuser', 'gender', 'last_login')
 
-    # تنظیمات نمایش فیلدها در فرم کاربر
     fieldsets = (
         (None, {'fields': ('username', 'phone_number', 'national_code', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'gender', 'profile_image')}),
@@ -20,7 +18,7 @@ class UserAdmin(BaseUserAdmin):
         (_('Important dates'), {'fields': ('last_login',)}),
     )
 
-    # تنظیمات فرم اضافه کردن کاربر جدید
+
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
@@ -28,7 +26,7 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
 
-    ordering = ('username',)  # ترتیب نمایش کاربران
+    ordering = ('username',) 
 
-# ثبت مدل کاربر در پنل ادمین
+
 admin.site.register(User, UserAdmin)
