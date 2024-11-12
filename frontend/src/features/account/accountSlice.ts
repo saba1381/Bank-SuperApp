@@ -14,6 +14,7 @@ interface AccountState {
     transactions: Array<any> | [],
     userCount: number | null,
     transactionCount: number | null,
+    transactionStatus: number | null
 }
 
 const initialState: AccountState = {
@@ -24,7 +25,8 @@ const initialState: AccountState = {
     cardInfo: null,     
     error: null, 
     userCount: null,   
-    transactionCount: null,   
+    transactionCount: null,  
+    transactionStatus : null 
 };
 
 export const verifyOTP = createAsyncThunk(
@@ -438,6 +440,20 @@ export const CountOfTransactions = createAsyncThunk(
     }
 );
 
+export const CountOfTransactionsStatus = createAsyncThunk(
+    'account/CountOfTransactionsStatus',
+    async (_, thunkAPI) => {
+        try {
+            const response = await agent.Admin.CountStatusTransaction(); 
+            console.log(response);
+            return response; 
+        } catch (error: any) {
+            const errorMessage = error.data.detail || 'خطا در دریافت شمارش';
+            return thunkAPI.rejectWithValue({ error: errorMessage });
+        }
+    }
+);
+
 export const accountSlice = createSlice({
     name: 'account',
     initialState,
@@ -731,6 +747,19 @@ export const accountSlice = createSlice({
                 state.transactionCount = action.payload; 
             })
             .addCase(CountOfTransactions.rejected, (state, action) => {
+                state.isLoading = false;
+                //state.error = action.payload?.error || 'خطا در دریافت شمارش کاربران';
+            });
+
+            builder
+            .addCase(CountOfTransactionsStatus.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(CountOfTransactionsStatus.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.transactionStatus = action.payload; 
+            })
+            .addCase(CountOfTransactionsStatus.rejected, (state, action) => {
                 state.isLoading = false;
                 //state.error = action.payload?.error || 'خطا در دریافت شمارش کاربران';
             });

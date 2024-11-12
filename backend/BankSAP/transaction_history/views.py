@@ -181,3 +181,38 @@ class TotalTransactionsCountView(APIView):
         total_transactions = recharge_count + card_to_card_count
 
         return Response( total_transactions, status=status.HTTP_200_OK)
+    
+
+
+class TransactionStatusSeparateCountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Count successful and unsuccessful transactions for all users in Recharge
+        successful_recharges = Recharge.objects.filter(status=True).count()
+        unsuccessful_recharges = Recharge.objects.filter(status=False).count()
+        
+        # Count successful and unsuccessful transactions for all users in CardToCard
+        successful_card_to_cards = CardToCard.objects.filter(status=True).count()
+        unsuccessful_card_to_cards = CardToCard.objects.filter(status=False).count()
+        total_successful = successful_recharges + successful_card_to_cards
+        total_unsuccessful = unsuccessful_recharges + unsuccessful_card_to_cards
+        
+        response_data = {
+            "recharge": {
+                "successful": successful_recharges,
+                "unsuccessful": unsuccessful_recharges
+            },
+            "card_to_card": {
+                "successful": successful_card_to_cards,
+                "unsuccessful": unsuccessful_card_to_cards
+            },
+            "totals": {
+                "total_successful": total_successful,
+                "total_unsuccessful": total_unsuccessful
+            }
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
+

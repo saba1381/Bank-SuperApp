@@ -131,6 +131,7 @@ const Transactions = {
 const Admin ={
   CountUsers : () => requests.get("users/number-of-users/"),
   CountTransaction : () => requests.get("history/transaction/count/"),
+  CountStatusTransaction : () => requests.get("history/transaction/counts/"),
 }
 
 const agent = {

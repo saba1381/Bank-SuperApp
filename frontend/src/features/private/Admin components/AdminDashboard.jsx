@@ -7,17 +7,13 @@ import { motion } from "framer-motion";
 import { UseAppDispatch, UseAppSelector } from "../../../store/configureStore";
 import {
   CountOfUsers,
-  CountOfTransactions
+  CountOfTransactions,
+  CountOfTransactionsStatus
 } from "../../account/accountSlice";
 import { toPersianNumbers } from "../../../util/util";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 
-const chartData = [
-  { name: "کاربران فعال", value: 400 },
-  { name: "کاربران جدید", value: 300 },
-  { name: "تراکنش‌های موفق", value: 300 },
-  { name: "تراکنش‌های ناموفق", value: 200 },
-];
+
 const colors = ["#4caf50", "#ff9800", "#2196f3", "#f44336"];
 
 const initialUserData = [
@@ -33,6 +29,8 @@ const AdminDashboard = () => {
   const dispatch = UseAppDispatch();
   const userCount = UseAppSelector((state) => state.account.userCount); 
   const transactionCount = UseAppSelector((state) => state.account.transactionCount); 
+  const transactionStatus = UseAppSelector((state) => state.account.transactionStatus);
+
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -49,11 +47,18 @@ const AdminDashboard = () => {
   useEffect(()=>{
     dispatch(CountOfUsers());
     dispatch(CountOfTransactions());
-  } , [dispatch])
+    dispatch(CountOfTransactionsStatus());
+  } , [dispatch]);
+  const chartData = [
+    { name: "کارت به کارت موفق", value: transactionStatus?.card_to_card.successful || 0 },
+    { name: "کارت به کارت ناموفق", value: transactionStatus?.card_to_card.unsuccessful || 0 },
+    { name: "خرید شارژ موفق", value: transactionStatus?.recharge.successful || 0 },
+    { name: "خرید شارژ ناموفق", value: transactionStatus?.recharge.unsuccessful || 0 },
+  ];
 
   return (
     <motion.div initial="initial" animate="animate" variants={pageTransition}>
-    <Container maxWidth="lg" sx={{ pt: 5, pb: 5 , paddingX:4 }}>
+    <Container maxWidth="lg" sx={{ pt: 5, pb: 13, paddingX:4 }}>
       <Grid container spacing={3}>
         
         {/* کارت‌های اطلاعاتی */}
@@ -86,7 +91,7 @@ const AdminDashboard = () => {
         {/* نمودار */}
         <Grid item xs={12}>
           <Paper elevation={5} sx={{ p: 3, borderRadius: "15px" }}>
-            <Typography variant="h6" align="center" gutterBottom>آنالیز کاربران و تراکنش‌ها</Typography>
+            <Typography variant="h6" align="center" gutterBottom>آنالیز تراکنش‌ها</Typography>
             <Box sx={{ height: 300, width: "100%" }}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
