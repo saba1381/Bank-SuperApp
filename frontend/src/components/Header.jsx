@@ -24,22 +24,20 @@ import {
 import { useHeader } from "../components/contexts/HeaderContext";
 import { useLocation } from "react-router-dom";
 
-
 const Header = () => {
   const { user, isLoading } = useSelector((state) => state.account);
   const dispatch = UseAppDispatch();
-  const isCPPage = window.location.pathname==="/cp";
+  const isCPPage = window.location.pathname === "/cp";
   const isSettingPage = window.location.pathname.startsWith("/cp/setting");
   const [openDialog, setOpenDialog] = React.useState(false);
   const { headerTitle, setHeaderTitle } = useHeader();
   const location = useLocation();
   const showLogoutIcon =
-    user &&
-    !isLoading &&
-    (location.pathname.startsWith("/cp") && !location.pathname.includes("/cp/setting")) ||
-    (location.pathname.startsWith("/admin"));
-
-
+    (user &&
+      !isLoading &&
+      location.pathname.startsWith("/cp") &&
+      !location.pathname.includes("/cp/setting")) ||
+    location.pathname.startsWith("/admin");
 
   const handleLogoutClick = () => {
     setOpenDialog(true);
@@ -52,32 +50,28 @@ const Header = () => {
   const handleConfirmLogout = () => {
     dispatch(signOut());
     setOpenDialog(false);
-    localStorage.removeItem('isNewUser');
+    localStorage.removeItem("isNewUser");
   };
 
   useEffect(() => {
     const path = location.pathname;
 
-    if (path==="/cp/setting") {
+    if (path === "/cp/setting") {
       setHeaderTitle("تنظیمات");
     } else if (path.startsWith("/cp/setting/edit-password")) {
       setHeaderTitle("تغییر رمز عبور");
-    }else if (path === "/cp/transfer"){
-        setHeaderTitle('انتقال وجه')
-    }
-    else if (path === "/cp/charge"){
-      setHeaderTitle('خرید شارژ')
-  }
-  else if (path === "/cp/profile-view"){
-    setHeaderTitle('پروفایل')
-}
-else if (path === "/admin"){
-  setHeaderTitle('پنل ادمین')
-}
-     else {
+    } else if (path === "/cp/transfer") {
+      setHeaderTitle("انتقال وجه");
+    } else if (path === "/cp/charge") {
+      setHeaderTitle("خرید شارژ");
+    } else if (path === "/cp/profile-view") {
+      setHeaderTitle("پروفایل");
+    } else if (path === "/admin") {
+      setHeaderTitle("پنل ادمین");
+    } else {
       setHeaderTitle(" ");
     }
-  }, [setHeaderTitle, location.pathname]); 
+  }, [setHeaderTitle, location.pathname]);
 
   return (
     <AppBar
@@ -85,8 +79,7 @@ else if (path === "/admin"){
       sx={{
         background: "linear-gradient(to right, #7c33ed, #2460eb)",
         boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.1)",
-        paddingY:0.2, 
-
+        paddingY: 0.2,
       }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -96,20 +89,24 @@ else if (path === "/admin"){
             alt="App Icon"
             variant="square"
             sx={{
-              width: {xs:60 , md:70},
-              height: {xs:60 , md:70},
+              width: { xs: 60, md: 70 },
+              height: { xs: 60, md: 70 },
               marginLeft: "0.1rem",
             }}
           />
           <Typography
             variant="h4"
-            sx={{ display: "block", fontSize: { xs: "20px", md: "24px" } , ml:1}}
+            sx={{
+              display: "block",
+              fontSize: { xs: "20px", md: "24px" },
+              ml: 1,
+            }}
           >
-             {headerTitle}
+            {headerTitle}
           </Typography>
         </Box>
 
-        {user && showLogoutIcon  && !isLoading &&(
+        {user && showLogoutIcon && !isLoading && (
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <LogoutIcon onClick={handleLogoutClick} />
           </Box>
@@ -122,7 +119,7 @@ else if (path === "/admin"){
         PaperProps={{
           sx: {
             borderRadius: "16px",
-            zIndex:1000
+            zIndex: 1000,
           },
         }}
       >

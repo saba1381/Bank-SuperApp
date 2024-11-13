@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 from django.utils import timezone  
 import jdatetime
+import pytz
 class UserManager(BaseUserManager):
     def create_user(self, username, password=None,**extra_fields):
         if not username:
@@ -47,3 +48,17 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username if self.username else "Unknown User"
+    
+    def save(self, *args, **kwargs):
+        if self.last_login:
+            ir_tz = pytz.timezone('Asia/Tehran')
+            self.last_login = self.last_login.astimezone(ir_tz)  
+        super().save(*args, **kwargs)
+    
+    @property
+    def last_login_shamsi(self):
+        if self.last_login:
+            ir_tz = pytz.timezone('Asia/Tehran')
+            self.last_login = self.last_login.astimezone(ir_tz)
+            return jdatetime.datetime.fromgregorian(datetime=self.last_login).strftime('%Y/%m/%d %H:%M:%S')
+        return None
