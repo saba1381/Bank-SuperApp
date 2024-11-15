@@ -273,11 +273,15 @@ class UserListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        # دریافت پارامترها
         limit = request.query_params.get('limit')
         gender = request.query_params.get('gender')
         last_login = request.query_params.get('last_login')
-        users = User.objects.all()  
 
+        # شروع کوئری اولیه
+        users = User.objects.all()
+
+        # فیلتر بر اساس تاریخ آخرین ورود
         if last_login:
             now = timezone.now()
             if last_login == "today":
@@ -286,17 +290,21 @@ class UserListView(APIView):
                 start_date = now - timedelta(days=7)
                 users = users.filter(last_login__date__gte=start_date.date())
             elif last_login == "this_month":
-                start_date = now.replace(month=1)
+                start_date = now.replace(day=1)
                 users = users.filter(last_login__date__gte=start_date.date())
             elif last_login == "this2_month":
-                start_date = now.replace(month=2)
-                users = users.filter(last_login__date__gte=start_date.date())
+                current_month_start = now.replace(day=1)
+                last_month_start = (current_month_start - timedelta(days=1)).replace(day=1)
+                users = users.filter(last_login__date__gte=last_month_start.date(), last_login__date__lt=current_month_start.date())
 
+        # فیلتر بر اساس جنسیت
+        if gender:
+            users = users.filter(gender=gender)
 
+        # محدود کردن تعداد کاربران
         if limit and limit.isdigit():
             users = users[:int(limit)]
 
-        if gender:
-            users = users.filter(gender=gender)
+        # سریالایز کردن داده‌ها و ارسال پاسخ
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

@@ -132,7 +132,11 @@ const Admin ={
   CountUsers : () => requests.get("users/number-of-users/"),
   CountTransaction : () => requests.get("history/transaction/count/"),
   CountStatusTransaction : () => requests.get("history/transaction/counts/"),
-  UserList : () => requests.get("users/list-of-users/"),
+  UserList: (params: { limit?: string; gender?: string; last_login?: string }) => {
+    const queryString = new URLSearchParams(params).toString();
+    return requests.get(queryString ? `users/list-of-users/?${queryString}` : 'users/list-of-users/');
+  },
+  
 }
 
 const agent = {

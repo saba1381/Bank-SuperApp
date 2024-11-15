@@ -452,17 +452,18 @@ export const CountOfTransactionsStatus = createAsyncThunk(
 
 
 export const fetchUsers = createAsyncThunk(
-    "account/fetchUsers",
-    async (_, thunkAPI) => {
-      try {
-        const response = await agent.Admin.UserList();
-        return response;
-      } catch (error: any) {
-        const errorMessage = error.data.detail || "خطا در دریافت اطلاعات کاربران";
-        return thunkAPI.rejectWithValue({ error: errorMessage });
-      }
+  "account/fetchUsers",
+  async (params: { limit?: string; gender?: string; last_login?: string }, thunkAPI) => {
+    try {
+      const response = await agent.Admin.UserList(params);
+      return response;
+    } catch (error: any) {
+      const errorMessage = error.data.detail || "خطا در دریافت اطلاعات کاربران";
+      return thunkAPI.rejectWithValue({ error: errorMessage });
     }
-  );
+  }
+);
+
 
 export const accountSlice = createSlice({
   name: "account",
