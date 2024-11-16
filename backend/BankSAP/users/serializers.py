@@ -5,7 +5,7 @@ class UserSerializer(serializers.ModelSerializer):
     last_login_shamsi = serializers.ReadOnlyField()
     class Meta:
         model = User
-        fields = ['username','phone_number', 'national_code', 'first_name', 'last_name','gender','email' ,'password' ,'profile_image' , 'last_login_shamsi']
+        fields = ['username','phone_number', 'national_code', 'first_name', 'last_name','gender','email' ,'password' ,'profile_image' , 'last_login_shamsi' , 'id']
         extra_kwargs = {'password': {'write_only': True , 'required': False}}
 
     def create(self, validated_data):

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView, VerifyOTPView, LoginView, UpdateProfileView ,ChangePasswordView , UserProfileCompleteView , UserCountView , UserListView
+from .views import RegisterView, VerifyOTPView, LoginView, UpdateProfileView ,ChangePasswordView , UserProfileCompleteView , UserCountView , UserListView , DeleteUserView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -12,6 +12,7 @@ urlpatterns = [
     path('complete-info/', UserProfileCompleteView.as_view(), name='user-profile-complete'),
     path('number-of-users/', UserCountView.as_view(), name='count-users'),
     path('list-of-users/', UserListView.as_view(), name='list-users'),
+    path('delete-users/<int:user_id>/', DeleteUserView.as_view(), name='delete-user'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -112,6 +112,8 @@ class VerifyOTPView(APIView):
                 serializer = UserSerializer(data=user_data)
                 if serializer.is_valid():
                     user = serializer.save()
+                    user.last_login = timezone.now()
+                    user.save(update_fields=['last_login'])
                     refresh = RefreshToken.for_user(user)
                     cache.delete(phone_number)         
                     cache.delete(f'user_data_{phone_number}')
@@ -273,15 +275,14 @@ class UserListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # دریافت پارامترها
+
         limit = request.query_params.get('limit')
         gender = request.query_params.get('gender')
         last_login = request.query_params.get('last_login')
 
-        # شروع کوئری اولیه
         users = User.objects.all()
+        users = User.objects.filter(is_superuser=False)
 
-        # فیلتر بر اساس تاریخ آخرین ورود
         if last_login:
             now = timezone.now()
             if last_login == "today":
@@ -297,14 +298,31 @@ class UserListView(APIView):
                 last_month_start = (current_month_start - timedelta(days=1)).replace(day=1)
                 users = users.filter(last_login__date__gte=last_month_start.date(), last_login__date__lt=current_month_start.date())
 
-        # فیلتر بر اساس جنسیت
         if gender:
             users = users.filter(gender=gender)
 
-        # محدود کردن تعداد کاربران
         if limit and limit.isdigit():
             users = users[:int(limit)]
 
-        # سریالایز کردن داده‌ها و ارسال پاسخ
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class DeleteUserView(APIView):
+    permission_classes = [IsAuthenticated] 
+    authentication_classes = [JWTAuthentication]
+
+    def delete(self, request, user_id):
+
+        if not request.user.is_superuser:
+            return Response({"detail": "شما مجوز حذف کاربران را ندارید."}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+
+            user = User.objects.get(id=user_id)
+            
+        except User.DoesNotExist:
+            return Response({"detail": "کاربر مورد نظر یافت نشد."}, status=status.HTTP_404_NOT_FOUND)
+
+        user.delete()
+        return Response({"detail": "کاربر با موفقیت حذف شد."}, status=status.HTTP_200_OK)
