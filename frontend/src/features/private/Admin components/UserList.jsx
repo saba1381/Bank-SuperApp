@@ -12,7 +12,6 @@ import {
   IconButton,
   Card,
   Tooltip as MuiTooltip,
-  Button,
   Box,
   ToggleButtonGroup,
   ToggleButton,
@@ -21,6 +20,11 @@ import {
   InputLabel,
   FormControl,
   TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle, Button
 } from "@mui/material";
 import { MdDelete } from "react-icons/md";
 import { motion } from "framer-motion";
@@ -28,9 +32,12 @@ import { useNavigate } from "react-router-dom";
 import { ArrowBack } from "@mui/icons-material";
 import { UseAppDispatch, UseAppSelector } from "../../../store/configureStore";
 import { toPersianNumbers } from "../../../util/util";
-import { fetchUsers } from "../../account/accountSlice";
+import { fetchUsers , DeleteUser} from "../../account/accountSlice";
 import { Formik, Form, Field } from "formik";
 import { useTheme } from "@mui/material/styles";
+import { RiErrorWarningLine } from "react-icons/ri";
+
+
 
 const UserList = () => {
   const navigate = useNavigate();
@@ -41,6 +48,9 @@ const UserList = () => {
   const [genderFilter, setGenderFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("");
   const [limitFilter, setLimitFilter] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+
 
   useEffect(() => {
     const params = {};
@@ -92,8 +102,29 @@ const UserList = () => {
 
   console.log(filteredUsers);
 
-  const handleDelete = (id) => {
-    console.log(`Delete user with id: ${id}`);
+  const handleDeleteClick = (id) => {
+    setSelectedUserId(id);
+    setOpenDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
+    dispatch(DeleteUser(selectedUserId))
+      .unwrap()
+      .then(() => {
+        setOpenDialog(false);
+        setSelectedUserId(null);
+        dispatch(fetchUsers());
+      })
+      .catch((error) => {
+        setOpenDialog(false);
+        setSelectedUserId(null);
+        console.error("Error deleting user:", error);
+      });
+  };
+
+  const handleCancelDelete = () => {
+    setOpenDialog(false);
+    setSelectedUserId(null);
   };
 
   return (
@@ -255,6 +286,7 @@ const UserList = () => {
             )}
           </Formik>
         </Box>
+      
 
         {isLoading ? (
           <Typography variant="h6" sx={{ textAlign: "center" }}>
@@ -265,6 +297,7 @@ const UserList = () => {
             شما هیچ کارت بانکی را هنوز ثبت نکرده‌اید.
           </Typography>
         ) : (
+          <>
           <TableContainer
             component={Paper}
             sx={{
@@ -381,7 +414,7 @@ const UserList = () => {
                         <TableCell sx={{ px: 3 }}>
                           <MuiTooltip title="حذف">
                             <IconButton
-                              onClick={() => handleDelete(user.id)}
+                              onClick={() => handleDeleteClick(user.id)}
                               color="error"
                               sx={{
                                 "&:hover": { color: "#d32f2f" },
@@ -397,10 +430,31 @@ const UserList = () => {
                   })}
                 </TableBody>
               </Table>
+       
+
             </Box>
           </TableContainer>
+            <Dialog open={openDialog} onClose={handleCancelDelete} PaperProps={{
+          sx: {
+            borderRadius: "16px",
+            zIndex: 1000,
+          },
+        }}>
+            <DialogTitle color="secondary" sx={{display:'flex' , flexDirection:'row' , alignItems:'center' , gap:1}}> <RiErrorWarningLine /> حذف کاربر</DialogTitle>
+            <DialogContent>
+              <DialogContentText sx={{color:'navy'}}>آیا از حذف این کاربر مطمئن هستید؟</DialogContentText>
+            </DialogContent>
+            <DialogActions  sx={{ justifyContent: "start" }}>
+            <Button onClick={handleConfirmDelete} color="secondary">حذف</Button>
+              <Button onClick={handleCancelDelete} color="primary">لغو</Button>
+              
+            </DialogActions>
+          </Dialog>
+          </>
         )}
+       
       </Box>
+     
     </motion.div>
   );
 };

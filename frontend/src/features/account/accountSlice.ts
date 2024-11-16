@@ -465,6 +465,21 @@ export const fetchUsers = createAsyncThunk(
 );
 
 
+export const DeleteUser = createAsyncThunk(
+  "account/DeleteUser",
+  async (id: number, thunkAPI) => {
+    try {
+      const response = await agent.Admin.DeleteUser(id);
+      toast.success("کاربر با موفقیت حذف شد", { autoClose: 3000 });
+      return response;
+    } catch (error: any) {
+      const errorMessage = error.data.detail || "خطا در حذف کاربر";
+      toast.error(errorMessage, { autoClose: 3000 });
+      return thunkAPI.rejectWithValue({ error: errorMessage });
+    }
+  }
+);
+
 export const accountSlice = createSlice({
   name: "account",
   initialState,

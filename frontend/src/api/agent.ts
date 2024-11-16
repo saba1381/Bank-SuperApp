@@ -136,6 +136,7 @@ const Admin ={
     const queryString = new URLSearchParams(params).toString();
     return requests.get(queryString ? `users/list-of-users/?${queryString}` : 'users/list-of-users/');
   },
+  DeleteUser: (id: number) => requests.del(`users/delete-users/${id}/`, {}),
   
 }
 
