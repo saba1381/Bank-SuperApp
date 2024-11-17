@@ -6,14 +6,6 @@ import {
   Paper,
   Modal,
   Box,
-  Avatar,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
   Tooltip as MuiTooltip,
 } from "@mui/material";
 import { BsGraphUp, BsPeople } from "react-icons/bs";
@@ -36,6 +28,13 @@ import {
 import { toPersianNumbers } from "../../../util/util";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
+import dayjs from "dayjs";
+import jalaliday from "jalaliday";
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import { RiUserSearchFill } from "react-icons/ri";
+import { BiTransfer } from "react-icons/bi";
+import { FaSimCard } from "react-icons/fa";
+dayjs.extend(jalaliday);
 
 const colors = ["#4caf50", "#ff9800", "#2196f3", "#f44336"];
 
@@ -69,6 +68,19 @@ const AdminDashboard = () => {
   const dispatch = UseAppDispatch();
   const userCount = UseAppSelector((state) => state.account.userCount);
   const navigate = useNavigate();
+  const [date, setDate] = useState(
+    dayjs().calendar("jalali").locale("fa").format("dddd D MMMM")
+  );
+  const [time, setTime] = useState(dayjs().format("HH:mm:ss"));
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setDate(dayjs().calendar("jalali").locale("fa").format("dddd D MMMM"));
+      setTime(dayjs().format("HH:mm:ss"));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
 
   const transactionCount = UseAppSelector(
@@ -122,7 +134,107 @@ const AdminDashboard = () => {
     <motion.div initial="initial" animate="animate" variants={pageTransition}>
       <Container maxWidth="lg" sx={{ pt: 5, pb: 13, paddingX: 4 }}>
         <Grid container spacing={3}>
-          {/* کارت‌های اطلاعاتی */}
+
+          <Grid item xs={6} sm={6} md={4}>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Paper
+                elevation={5}
+                sx={{
+                  paddingX: 2,
+                  paddingY:4,
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "column",
+                  textAlign: "center",
+                  borderRadius: "15px",
+                  flexDirection:'column',
+                  height:175
+                }}
+              >
+                <CalendarMonthIcon style={{color:'#981eec' , fontSize:50}} />
+              
+              <Typography variant="h5" sx={{ marginTop: 1 , marginBottom:0.1 }}>
+                  {toPersianNumbers(date)}
+                </Typography>
+                <Typography variant="h5">
+                  {toPersianNumbers(time)}
+                </Typography>
+              </Paper>
+            </motion.div>
+          </Grid>
+
+           <Grid item xs={6} sm={6} md={4} >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Paper
+                elevation={5}
+                sx={{
+                  p: 3,
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "column",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  borderRadius: "15px",
+                  height:175
+                }}
+                onClick={() => navigate("/admin/user-list")}
+              >
+                <RiUserSearchFill size={50} color="#ec7f33" style={{marginTop:8}} />
+                <Typography variant="h5" sx={{ mt: 2, fontWeight: "bold" }}>
+                  لیست کاربران
+                </Typography>
+              </Paper>
+            </motion.div>
+          </Grid>
+          
+<Grid item xs={6} sm={6} md={4} >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Paper
+                elevation={5}
+                sx={{
+                  p:3,
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "column",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  borderRadius: "15px",
+                  height:175
+                }}
+                onClick={() => navigate("/admin/user-list")}
+              >
+                <BiTransfer size={50} color="#ec33ac" style={{marginTop:8}} />
+                <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" , fontSize:18}}>
+                  تراکنش های انتقال وجه 
+                </Typography>
+              </Paper>
+            </motion.div>
+          </Grid>
+
+          <Grid item xs={6} sm={6} md={4} >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Paper
+                elevation={5}
+                sx={{
+                  p:3,
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "column",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  borderRadius: "15px",
+                  height:175
+                }}
+                onClick={() => navigate("/admin/user-list")}
+              >
+                <FaSimCard size={50} color="#7ab3f4" style={{marginTop:8}} />
+                <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" , fontSize:18}}>
+                  تراکنش های خرید شارژ
+                </Typography>
+              </Paper>
+            </motion.div>
+          </Grid>
+
           {[
             {
               icon: <BsPeople size={50} color="#2196f3" />,
@@ -136,13 +248,9 @@ const AdminDashboard = () => {
                 ? toPersianNumbers(transactionCount)
                 : "نامشخص",
             },
-            {
-              icon: <BsGraphUp size={50} color="#ff9800" />,
-              label: "درآمد امروز",
-              value: "500,000 تومان",
-            },
           ].map((card, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
+            
+            <Grid item xs={6} sm={6} md={4} key={index}>
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -150,7 +258,8 @@ const AdminDashboard = () => {
                 <Paper
                   elevation={5}
                   sx={{
-                    p: 3,
+                    paddingY: 3,
+                    paddingX:2,
                     display: "flex",
                     alignItems: "center",
                     flexDirection: "column",
@@ -160,7 +269,7 @@ const AdminDashboard = () => {
                   }}
                 >
                   {card.icon}
-                  <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" }}>
+                  <Typography variant="h5" sx={{ mt: 2, fontWeight: "bold" }}>
                     {card.label}
                   </Typography>
                   <Typography variant="h5" color="text.secondary">
@@ -171,29 +280,7 @@ const AdminDashboard = () => {
             </Grid>
           ))}
 
-          {/* کارت لیست کاربران */}
-          <Grid item xs={12} sm={6} md={4}>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Paper
-                elevation={5}
-                sx={{
-                  p: 3,
-                  display: "flex",
-                  alignItems: "center",
-                  flexDirection: "column",
-                  textAlign: "center",
-                  cursor: "pointer",
-                  borderRadius: "15px",
-                }}
-                onClick={() => navigate("/admin/user-list")}
-              >
-                <BsPeople size={50} color="#2196f3" />
-                <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" }}>
-                  لیست کاربران
-                </Typography>
-              </Paper>
-            </motion.div>
-          </Grid>
+          
 
           {/* نمودار */}
           <Grid item xs={12}>
