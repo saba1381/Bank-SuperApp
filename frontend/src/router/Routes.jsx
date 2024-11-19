@@ -21,6 +21,7 @@ import Charging from "../features/private/Charging";
 import ProfileView from "../features/private/ProfileView";
 import AdminDashboard from "../features/private/Admin components/AdminDashboard";
 import UserList from "../features/private/Admin components/UserList";
+import Transfers from "../features/private/Admin components/Transfers";
 
 const adminOrCpPath = (base, path) => `${base}${path}`;
 
@@ -77,6 +78,7 @@ export const router = createBrowserRouter([
                             { path: adminOrCpPath("/admin", "/setting/edit-password"), element: <ChangePassword /> },
                             { path: adminOrCpPath("/admin", "/profile-view"), element: <ProfileView /> },
                             { path: adminOrCpPath("/admin", "/user-list"), element: <UserList /> },
+                            { path: adminOrCpPath("/admin", "/transfers"), element: <Transfers /> },
                         ]
                     },
                 ]

@@ -24,7 +24,8 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle, Button
+  DialogTitle,
+  Button,
 } from "@mui/material";
 import { MdDelete } from "react-icons/md";
 import { motion } from "framer-motion";
@@ -32,12 +33,10 @@ import { useNavigate } from "react-router-dom";
 import { ArrowBack } from "@mui/icons-material";
 import { UseAppDispatch, UseAppSelector } from "../../../store/configureStore";
 import { toPersianNumbers } from "../../../util/util";
-import { fetchUsers , DeleteUser} from "../../account/accountSlice";
+import { fetchUsers, DeleteUser } from "../../account/accountSlice";
 import { Formik, Form, Field } from "formik";
 import { useTheme } from "@mui/material/styles";
 import { RiErrorWarningLine } from "react-icons/ri";
-
-
 
 const UserList = () => {
   const navigate = useNavigate();
@@ -51,6 +50,13 @@ const UserList = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
 
+  const dateFilterLabels = {
+    today: "امروز",
+    last_7_days: "هفت روز گذشته",
+    this_month: "یک ماه گذشته",
+    this2_month: "دو ماه گذشته",
+    "": "انتخاب بازه زمانی",
+  };
 
   useEffect(() => {
     const params = {};
@@ -164,19 +170,19 @@ const UserList = () => {
         <Box
           sx={{
             display: "flex",
-            flexWrap: "nowrap", // المان‌ها در یک خط باقی می‌مانند
-            justifyContent: "space-between", // فاصله مناسب بین المان‌ها
-            alignItems: "center", // تراز وسط عمودی
-            gap: 2, // فاصله یکنواخت بین المان‌ها
+            flexWrap: "nowrap", 
+            justifyContent: "space-between", 
+            alignItems: "center", 
+            gap: 1, 
             marginTop: 2,
             padding: 2,
             borderRadius: "8px",
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
             backgroundColor: "#f5f5f5",
-            overflowX: "auto", // در صورت محدودیت عرض، اسکرول افقی فعال شود
+            overflowX: "auto", 
           }}
         >
-          {/* فیلتر جنسیت */}
+
           <ToggleButtonGroup
             value={genderFilter}
             exclusive
@@ -197,7 +203,7 @@ const UserList = () => {
             </ToggleButton>
           </ToggleButtonGroup>
 
-          {/* فیلتر تاریخ */}
+
           <FormControl
             sx={{
               minWidth: { xs: "30%", sm: 200 },
@@ -207,7 +213,13 @@ const UserList = () => {
               flexShrink: 0,
             }}
           >
-            <Select value={dateFilter} onChange={handleDateChange} displayEmpty>
+            <Select
+              value={dateFilter}
+              onChange={handleDateChange}
+              displayEmpty
+              renderValue={(selected) => dateFilterLabels[selected] || "انتخاب بازه زمانی"}
+              sx={{ color: "gray" }}
+            >
               <MenuItem value="">همه</MenuItem>
               <MenuItem value="today">امروز</MenuItem>
               <MenuItem value="last_7_days">هفت روز گذشته</MenuItem>
@@ -286,175 +298,190 @@ const UserList = () => {
             )}
           </Formik>
         </Box>
-      
 
         {isLoading ? (
           <Typography variant="h6" sx={{ textAlign: "center" }}>
             در حال بارگذاری...
           </Typography>
         ) : users.length === 0 ? (
-          <Typography variant="h6" sx={{ textAlign: "center" }}>
-            شما هیچ کارت بانکی را هنوز ثبت نکرده‌اید.
+          <Typography variant="h6" sx={{ textAlign: "center" , marginTop:5 }}>
+           هیچ کاربری برای نمایش وجود ندارد.
           </Typography>
         ) : (
           <>
-          <TableContainer
-            component={Paper}
-            sx={{
-              borderRadius: "15px",
-              mt: 2,
-              boxShadow: "0px 8px 16px rgba(0,0,0,0.2)",
-            }}
-          >
-            <Box sx={{ overflowX: "auto" }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell
-                      sx={{
-                        fontWeight: "bold",
-                        color: "#1976d2",
-                        px: 1,
-                        textAlign: "center",
-                      }}
-                    >
-                      نام کاربری
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: "bold", color: "#388e3c" }}>
-                      کد ملی
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>
-                      نام و نام خانوادگی
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        fontWeight: "bold",
-                        color: "#388e3c",
-                        textAlign: "center",
-                      }}
-                    >
-                      شماره موبایل
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>
-                      جنسیت
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: "bold", color: "#388e3c" }}>
-                      ایمیل
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        fontWeight: "bold",
-                        color: "#1976d2",
-                        textAlign: "center",
-                      }}
-                    >
-                      عکس پروفایل
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: "bold", color: "#388e3c" }}>
-                      آخرین ورود
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: "bold", color: "#d32f2f" }}>
-                      عملیات
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {users.map((user) => {
-                    const profileImageURL =
-                      user?.profile_image &&
-                      user.profile_image.startsWith("/media/")
-                        ? `http://127.0.0.1:8000${user.profile_image}`
-                        : user?.profile_image
-                        ? `http://127.0.0.1:8000/media/${user.profile_image}`
-                        : "/default-profile.png";
-
-                    return (
-                      <motion.tr
-                        key={user.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
+            <TableContainer
+              component={Paper}
+              sx={{
+                borderRadius: "15px",
+                mt: 2,
+                boxShadow: "0px 8px 16px rgba(0,0,0,0.2)",
+              }}
+            >
+              <Box sx={{ overflowX: "auto" }}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#1976d2",
+                          px: 1,
+                          textAlign: "center",
+                        }}
                       >
-                        <TableCell sx={{ px: 1, textAlign: "center" }}>
-                          {user.username}
-                        </TableCell>
-                        <TableCell sx={{ px: 1 }}>
-                          {user.national_code
-                            ? toPersianNumbers(user.national_code)
-                            : "نامشخص"}
-                        </TableCell>
-                        <TableCell sx={{ px: 1, textAlign: "center" }}>
-                          {user.first_name} {user.last_name}
-                        </TableCell>
-                        <TableCell sx={{ textAlign: "center" }}>
-                          {user.phone_number
-                            ? toPersianNumbers(user.phone_number)
-                            : "ثبت نشده"}
-                        </TableCell>
+                        نام کاربری
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "bold", color: "#388e3c" }}>
+                        کد ملی
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>
+                        نام و نام خانوادگی
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#388e3c",
+                          textAlign: "center",
+                        }}
+                      >
+                        شماره موبایل
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>
+                        جنسیت
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "bold", color: "#388e3c" }}>
+                        ایمیل
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#1976d2",
+                          textAlign: "center",
+                        }}
+                      >
+                        عکس پروفایل
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "bold", color: "#388e3c" }}>
+                        آخرین ورود
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "bold", color: "#d32f2f" }}>
+                        عملیات
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {users.map((user) => {
+                      const profileImageURL =
+                        user?.profile_image &&
+                        user.profile_image.startsWith("/media/")
+                          ? `http://127.0.0.1:8000${user.profile_image}`
+                          : user?.profile_image
+                          ? `http://127.0.0.1:8000/media/${user.profile_image}`
+                          : "/default-profile.png";
 
-                        <TableCell sx={{ px: 2 }}>
-                          {user.gender === "male"
-                            ? "مرد"
-                            : user.gender === "female"
-                            ? "زن"
-                            : "ثبت نشده"}
-                        </TableCell>
-                        <TableCell sx={{ px: 1 }}>
-                          {user.email || "ثبت نشده"}
-                        </TableCell>
-                        <TableCell sx={{ px: 2 }}>
-                          <Avatar src={profileImageURL} alt={user.username} />
-                        </TableCell>
-                        <TableCell>
-                          {user.last_login_shamsi
-                            ? toPersianNumbers(user.last_login_shamsi) ||
-                              "پس از ثبت نام وارد نشده"
-                            : "نامشخص"}
-                        </TableCell>
-                        <TableCell sx={{ px: 3 }}>
-                          <MuiTooltip title="حذف">
-                            <IconButton
-                              onClick={() => handleDeleteClick(user.id)}
-                              color="error"
-                              sx={{
-                                "&:hover": { color: "#d32f2f" },
-                                fontSize: { xs: 25, sm: 20 },
-                              }}
-                            >
-                              <MdDelete />
-                            </IconButton>
-                          </MuiTooltip>
-                        </TableCell>
-                      </motion.tr>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-       
+                      return (
+                        <motion.tr
+                          key={user.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <TableCell sx={{ px: 1, textAlign: "center" }}>
+                            {user.username}
+                          </TableCell>
+                          <TableCell sx={{ px: 1 }}>
+                            {user.national_code
+                              ? toPersianNumbers(user.national_code)
+                              : "نامشخص"}
+                          </TableCell>
+                          <TableCell sx={{ px: 1, textAlign: "center" }}>
+                            {user.first_name} {user.last_name}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "center" }}>
+                            {user.phone_number
+                              ? toPersianNumbers(user.phone_number)
+                              : "ثبت نشده"}
+                          </TableCell>
 
-            </Box>
-          </TableContainer>
-            <Dialog open={openDialog} onClose={handleCancelDelete} PaperProps={{
-          sx: {
-            borderRadius: "16px",
-            zIndex: 1000,
-          },
-        }}>
-            <DialogTitle color="secondary" sx={{display:'flex' , flexDirection:'row' , alignItems:'center' , gap:1}}> <RiErrorWarningLine /> حذف کاربر</DialogTitle>
-            <DialogContent>
-              <DialogContentText sx={{color:'navy'}}>آیا از حذف این کاربر مطمئن هستید؟</DialogContentText>
-            </DialogContent>
-            <DialogActions  sx={{ justifyContent: "start" }}>
-            <Button onClick={handleConfirmDelete} color="secondary">حذف</Button>
-              <Button onClick={handleCancelDelete} color="primary">لغو</Button>
-              
-            </DialogActions>
-          </Dialog>
+                          <TableCell sx={{ px: 2 }}>
+                            {user.gender === "male"
+                              ? "مرد"
+                              : user.gender === "female"
+                              ? "زن"
+                              : "ثبت نشده"}
+                          </TableCell>
+                          <TableCell sx={{ px: 1 }}>
+                            {user.email || "ثبت نشده"}
+                          </TableCell>
+                          <TableCell sx={{ px: 2 }}>
+                            <Avatar src={profileImageURL} alt={user.username} />
+                          </TableCell>
+                          <TableCell>
+                            {user.last_login_shamsi
+                              ? toPersianNumbers(user.last_login_shamsi) ||
+                                "پس از ثبت نام وارد نشده"
+                              : "نامشخص"}
+                          </TableCell>
+                          <TableCell sx={{ px: 3 }}>
+                            <MuiTooltip title="حذف">
+                              <IconButton
+                                onClick={() => handleDeleteClick(user.id)}
+                                color="error"
+                                sx={{
+                                  "&:hover": { color: "#d32f2f" },
+                                  fontSize: { xs: 25, sm: 20 },
+                                }}
+                              >
+                                <MdDelete />
+                              </IconButton>
+                            </MuiTooltip>
+                          </TableCell>
+                        </motion.tr>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </Box>
+            </TableContainer>
+            <Dialog
+              open={openDialog}
+              onClose={handleCancelDelete}
+              PaperProps={{
+                sx: {
+                  borderRadius: "16px",
+                  zIndex: 1000,
+                },
+              }}
+            >
+              <DialogTitle
+                color="secondary"
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                {" "}
+                <RiErrorWarningLine /> حذف کاربر
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText sx={{ color: "navy" }}>
+                  آیا از حذف این کاربر مطمئن هستید؟
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions sx={{ justifyContent: "start" }}>
+                <Button onClick={handleConfirmDelete} color="secondary">
+                  حذف
+                </Button>
+                <Button onClick={handleCancelDelete} color="primary">
+                  لغو
+                </Button>
+              </DialogActions>
+            </Dialog>
           </>
         )}
-       
       </Box>
-     
     </motion.div>
   );
 };

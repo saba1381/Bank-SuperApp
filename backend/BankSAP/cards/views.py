@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import CardSerializer
+from .serializers import CardSerializer , CardToCardSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from .models import Card
@@ -16,6 +16,7 @@ import base64
 import secrets
 import jdatetime
 from .models import SavedCard
+from datetime import datetime, timedelta
 
 class RegisterCardView(APIView):
     permission_classes = [IsAuthenticated]
@@ -198,7 +199,7 @@ class VerifyOTPAPIView(APIView):
         otp_data = cache.get(f'otp_{request.user.id}')
         transaction_date = jdatetime.datetime.now().strftime('%H:%M %Y/%m/%d')
 
-        # ایجاد تراکنش با وضعیت پیش‌فرض ناموفق
+
         des_card_owner = self.get_card_owner(card_info['desCard']) if card_info else 'نامشخص'
         card_transaction = CardToCard(
             user=request.user,
@@ -213,42 +214,41 @@ class VerifyOTPAPIView(APIView):
         )
         card_transaction.save()
 
-        # بررسی عدم وجود OTP
+
         if not otp_data:
             return Response(
                 {"detail": "رمز پویای شما یافت نشده است", "transaction_date": transaction_date},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # بررسی انقضای OTP
+
         if timezone.now() > otp_data['expiry']:
             return Response(
                 {"detail": "رمز پویای شما منقضی شده است.", "transaction_date": transaction_date},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # بررسی صحت OTP
+
         if otp_input != otp_data['otp']:
             return Response(
                 {"detail": "رمز پویا نادرست است.", "transaction_date": transaction_date},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # بررسی اطلاعات کارت
+
         if not card_info:
             return Response(
                 {"detail": "اطلاعات انتقال وجه یافت نشد.", "transaction_date": transaction_date},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # تعیین مالک کارت مقصد
+
         des_card_owner = self.get_card_owner(card_info['desCard'])
 
-        # اگر تمام بررسی‌ها موفقیت‌آمیز بود، وضعیت تراکنش به موفقیت تغییر داده می‌شود
+ 
         card_transaction.status = True
         card_transaction.save()
 
-        # حذف اطلاعات OTP و کارت از کش
         cache.delete(f'otp_{request.user.id}')
         cache.delete(f'card_info_{request.user.id}')
 
@@ -307,3 +307,41 @@ class DeleteCardAPIView(APIView):
         except SavedCard.DoesNotExist:
             print(f"Card not found for user: {request.user.username}")
             return Response({"detail": "کارت مورد نظر یافت نشد."}, status=status.HTTP_404_NOT_FOUND)
+        
+
+class AllCardToCardTransactionsView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated] 
+    serializer_class = CardToCardSerializer
+
+    def get_queryset(self):
+        queryset = CardToCard.objects.all().order_by('-created_at')
+
+        date_filter = self.request.query_params.get('date_filter')
+        if date_filter:
+            now = datetime.now()
+            if date_filter == 'today':
+                start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+                end_date = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+                queryset = queryset.filter(created_at__range=(start_date, end_date))
+            elif date_filter == '7days':
+                start_date = now - timedelta(days=7)
+                queryset = queryset.filter(created_at__gte=start_date)
+            elif date_filter == '1month':
+                start_date = now - timedelta(days=30)
+                queryset = queryset.filter(created_at__gte=start_date)
+            elif date_filter == '2months':
+                start_date = now - timedelta(days=60)
+                queryset = queryset.filter(created_at__gte=start_date)
+
+ 
+        limit = self.request.query_params.get('limit')
+        if limit:
+            try:
+                limit = int(limit)
+                queryset = queryset[:limit]
+            except ValueError:
+                pass  
+
+        return queryset
+
+

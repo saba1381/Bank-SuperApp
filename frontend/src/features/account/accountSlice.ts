@@ -480,6 +480,19 @@ export const DeleteUser = createAsyncThunk(
   }
 );
 
+export const fetchAllTransfers = createAsyncThunk(
+  "account/fetchAllTransfers",
+  async (params: { limit?: string; date_filter?: string }, thunkAPI) => {
+    try {
+      const response = await agent.Admin.TransfersList(params);
+      return response;
+    } catch (error: any) {
+      const errorMessage = error.data.detail || "خطا در دریافت اطلاعات تراکنش های انتقال وجه";
+      return thunkAPI.rejectWithValue({ error: errorMessage });
+    }
+  }
+);
+
 export const accountSlice = createSlice({
   name: "account",
   initialState,

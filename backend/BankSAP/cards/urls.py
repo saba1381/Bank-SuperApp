@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterCardView, CardListView , DeleteCardView ,EditCardView ,CardToCardAPIView , GenerateOTPAPIView , VerifyOTPAPIView , SaveCardAPIView, DeleteCardAPIView
+from .views import RegisterCardView, CardListView , DeleteCardView ,EditCardView ,CardToCardAPIView , GenerateOTPAPIView , VerifyOTPAPIView , SaveCardAPIView, DeleteCardAPIView , AllCardToCardTransactionsView
 
 urlpatterns = [
     path('add-card/', RegisterCardView.as_view(), name='register-card'),
@@ -12,4 +12,5 @@ urlpatterns = [
     path('verify-otp/', VerifyOTPAPIView.as_view(), name='verify-otp-card'),
     path('save_desCard/', SaveCardAPIView.as_view(), name='save_desCard'),
     path('delete-des-card/<str:des_card>/', DeleteCardAPIView.as_view(), name='delete-des-card'),
+    path('all-transfers/', AllCardToCardTransactionsView.as_view(), name='all-transfers'),
 ]

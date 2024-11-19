@@ -7,6 +7,8 @@ import { signOut } from "../features/account/accountSlice";
 axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 axios.defaults.withCredentials = false;
 
+let isTokenExpiredNotificationShown = false;
+
 const responseBody = (response: any) => response;
 
 axios.interceptors.request.use(config => {
@@ -50,7 +52,9 @@ axios.interceptors.response.use(
               toast.error('زمان توکن شما به پایان رسیده است. لطفاً مجدداً وارد شوید.');
               
             }
-            isTokenExpiredNotificationShown = true;
+            setTimeout(() => {
+              isTokenExpiredNotificationShown = false;
+            }, 3000); 
           }
           break;
 
@@ -137,6 +141,10 @@ const Admin ={
     return requests.get(queryString ? `users/list-of-users/?${queryString}` : 'users/list-of-users/');
   },
   DeleteUser: (id: number) => requests.del(`users/delete-users/${id}/`, {}),
+  TransfersList: (params: { limit?: string;  ate_filter?: string }) => {
+    const queryString = new URLSearchParams(params).toString();
+    return requests.get(queryString ? `card/all-transfers/?${queryString}` : 'card/all-transfers/');
+  },
   
 }
 
