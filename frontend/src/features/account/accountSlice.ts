@@ -807,6 +807,18 @@ export const accountSlice = createSlice({
         state.isLoading = false;
       });
 
+      builder
+      .addCase(fetchAllTransfers.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchAllTransfers.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.transactions = action.payload;
+      })
+      .addCase(fetchAllTransfers.rejected, (state) => {
+        state.isLoading = false;
+      });
+
     builder.addMatcher(
       isAnyOf(signInUser.rejected, verifyOTP.rejected),
       (state) => {

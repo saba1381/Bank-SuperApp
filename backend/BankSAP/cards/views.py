@@ -323,13 +323,13 @@ class AllCardToCardTransactionsView(generics.ListAPIView):
                 start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
                 end_date = now.replace(hour=23, minute=59, second=59, microsecond=999999)
                 queryset = queryset.filter(created_at__range=(start_date, end_date))
-            elif date_filter == '7days':
+            elif date_filter == 'thisweek':
                 start_date = now - timedelta(days=7)
                 queryset = queryset.filter(created_at__gte=start_date)
-            elif date_filter == '1month':
+            elif date_filter == 'thisMonth':
                 start_date = now - timedelta(days=30)
                 queryset = queryset.filter(created_at__gte=start_date)
-            elif date_filter == '2months':
+            elif date_filter == 'lastTwoMonth':
                 start_date = now - timedelta(days=60)
                 queryset = queryset.filter(created_at__gte=start_date)
 

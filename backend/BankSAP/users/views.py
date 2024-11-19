@@ -28,7 +28,7 @@ def is_valid_national_code(national_code):
     return check == 11 - s
 
 def is_valid_phone_number(phone_number):
-    return re.match(r'^091\d{8}$', phone_number)
+    return re.match(r'^09\d{9}$', phone_number)
 
 def mock_shahkar_service(national_code, phone_number):
 
@@ -267,7 +267,7 @@ class UserCountView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user_count = User.objects.count()
+        user_count = User.objects.exclude(is_superuser=True).count()
         return Response(user_count, status=status.HTTP_200_OK)
 
 

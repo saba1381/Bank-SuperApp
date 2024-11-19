@@ -17,6 +17,7 @@ import {
   FormControl,
   Select,
   MenuItem,
+  
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import { Delete as DeleteIcon } from "@mui/icons-material";
@@ -27,11 +28,9 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toPersianNumbers } from "../../../util/util";
 import { UseAppDispatch, UseAppSelector } from "../../../store/configureStore";
+import { Formik, Form, Field } from "formik";
 import {
-  fetchTransactionsHistory,
-  fetchTransactionsCardToCard,
-  fetchTransactionsRecharge,
-  DeleteTransaction,
+  fetchAllTransfers
 } from "../../account/accountSlice";
 import { VscSettings } from "react-icons/vsc";
 import CustomSnackbar from "./../CustomSnackbar";
@@ -95,12 +94,14 @@ const Transfers = () => {
   const [prevTransactionType, setPrevTransactionType] = useState("both");
   const [currentComponent, setCurrentComponent] = useState(false);
   const [dateFilter, setDateFilter] = useState("");
+  const [limitFilter, setLimitFilter] = useState("");
+  
 
   const dateFilterLabels = {
     today: "امروز",
-    last_7_days: "هفت روز گذشته",
-    this_month: "یک ماه گذشته",
-    this2_month: "دو ماه گذشته",
+    thisweek: "هفت روز گذشته",
+    thisMonth: "یک ماه گذشته",
+    lastTwoMonth: "دو ماه گذشته",
     "": "انتخاب بازه زمانی",
   };
 
@@ -109,37 +110,33 @@ const Transfers = () => {
     setTransactionType(selectedType);
     setTransactionCount(count);
   };
-  const fetchTransactions = () => {
-    if (transactionType === "cardToCard") {
-      dispatch(fetchTransactionsCardToCard(transactionCount));
-    } else if (transactionType === "recharge") {
-      dispatch(fetchTransactionsRecharge(transactionCount));
-    } else {
-      dispatch(fetchTransactionsHistory(transactionCount));
+
+  
+
+
+
+  useEffect(() => {
+    const params = {};
+    if (dateFilter !== "") params.date_filter = dateFilter;
+    if (limitFilter) params.limit = limitFilter;
+
+    dispatch(fetchAllTransfers(params));
+  }, [dispatch,dateFilter, limitFilter]);
+
+  
+
+  const handleLimitChange = (event) => {
+    const value = event.target.value;
+    if (!isNaN(value) && Number(value) >= 0) {
+      setLimitFilter(value);
     }
   };
 
   useEffect(() => {
-    if (transactionType !== prevTransactionType) {
-      setTransactionCount(0);
-      setPrevTransactionType(transactionType);
-    }
-  }, [transactionType, prevTransactionType]);
-
-  useEffect(() => {
-    fetchTransactions();
-  }, [dispatch, transactionType, transactionCount]);
-
-  useEffect(() => {
     if (transactionCount > 0) {
-      if (transactionType === "cardToCard") {
-        dispatch(fetchTransactionsCardToCard(transactionCount));
-      } else if (transactionType === "recharge") {
-        dispatch(fetchTransactionsRecharge(transactionCount));
-      } else {
-        dispatch(fetchTransactionsHistory(transactionCount));
-      }
-      //setTransactionCount(0);
+
+        dispatch(fetchAllTransfers(transactionCount));
+
     }
   }, [dispatch, transactionType, transactionCount]);
   const handleTransactionCountChange = (e) => {
@@ -179,43 +176,43 @@ const Transfers = () => {
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
-  const handleDetails = (transaction) => {
-    if (transaction.transaction_type === "card_to_card") {
-      console.log(transaction);
-      setCurrentComponent(
-        <CardToCardReciept
-          ownerName={transaction.desCardOwner}
-          initialCard={transaction.initialCard}
-          desCard={transaction.desCard}
-          amount={transaction.amount}
-          transactionStatus={transaction.status}
-          transactionDate={transaction.created_at}
-          onBack={() => setCurrentComponent(false)}
-        />
-      );
-    } else if (transaction.transaction_type === "recharge") {
-      console.log(transaction);
-      setCurrentComponent(
-        <RechargeReciept
-          initialCard={transaction.card_number}
-          amount={transaction.amount}
-          transactionStatus={transaction.status}
-          transactionDate={transaction.timestamp}
-          mobileNumber={transaction.mobile_number}
-          onBack={() => setCurrentComponent(false)}
-        />
-      );
-    }
-  };
+  // const handleDetails = (transaction) => {
+  //   if (transaction.transaction_type === "card_to_card") {
+  //     console.log(transaction);
+  //     setCurrentComponent(
+  //       <CardToCardReciept
+  //         ownerName={transaction.desCardOwner}
+  //         initialCard={transaction.initialCard}
+  //         desCard={transaction.desCard}
+  //         amount={transaction.amount}
+  //         transactionStatus={transaction.status}
+  //         transactionDate={transaction.created_at}
+  //         onBack={() => setCurrentComponent(false)}
+  //       />
+  //     );
+  //   } else if (transaction.transaction_type === "recharge") {
+  //     console.log(transaction);
+  //     setCurrentComponent(
+  //       <RechargeReciept
+  //         initialCard={transaction.card_number}
+  //         amount={transaction.amount}
+  //         transactionStatus={transaction.status}
+  //         transactionDate={transaction.timestamp}
+  //         mobileNumber={transaction.mobile_number}
+  //         onBack={() => setCurrentComponent(false)}
+  //       />
+  //     );
+  //   }
+  // };
 
-  const handleDelete = (transactionId) => {
-    dispatch(DeleteTransaction(transactionId))
-      .unwrap()
-      .then(() => {
-        fetchTransactions();
-      })
-      .catch((error) => {});
-  };
+  // const handleDelete = (transactionId) => {
+  //   dispatch(DeleteTransaction(transactionId))
+  //     .unwrap()
+  //     .then(() => {
+  //       fetchTransactions();
+  //     })
+  //     .catch((error) => {});
+  // };
 
   const handleTransactionTypeChange = (event, newType) => {
     if (newType !== null) {
@@ -331,51 +328,79 @@ const Transfers = () => {
                 >
                   <MenuItem value="">همه</MenuItem>
                   <MenuItem value="today">امروز</MenuItem>
-                  <MenuItem value="last_7_days">هفت روز گذشته</MenuItem>
-                  <MenuItem value="this_month">یک ماه گذشته</MenuItem>
-                  <MenuItem value="this2_month">دو ماه گذشته</MenuItem>
+                  <MenuItem value="thisweek">هفت روز گذشته</MenuItem>
+                  <MenuItem value="thisMonth">یک ماه گذشته</MenuItem>
+                  <MenuItem value="lastTwoMonth">دو ماه گذشته</MenuItem>
                 </Select>
               </FormControl>
             </Box>
+            <Formik
+            initialValues={{ count: "" }}
+            onSubmit={(values) => {
+              dispatch(
+                fetchAllTransfers({
+                  date: dateFilter,
+                  count: values.count,
+                })
+              );
+            }}
+          >
+            {({ errors, touched, handleSubmit }) => (
+              <Form
+                onSubmit={handleSubmit}
+                style={{
+                  borderRadius: "10px",
+                  marginRight: "4px",
+                  width: "30%",
+                  height: "40px",
+                  "& .MuiOutlinedInput-root": {
+                    height: "100%",
+                  },
+                  "& input[type=number]": {
+                    MozAppearance: "textfield",
+                  },
+                  "& input[type=number]::-webkit-outer-spin-button": {
+                    WebkitAppearance: "none",
+                    margin: 0,
+                  },
+                  "& input[type=number]::-webkit-inner-spin-button": {
+                    WebkitAppearance: "none",
+                    margin: 0,
+                  },
+                  borderRadius: "4px",
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "6px",
+                  },
+                  height: { xs: "52px", sm: "52px" },
+                }}
+              >
+                <Field
+                  as={TextField}
+                  name="count"
+                  type="text"
+                  label="تعداد"
+                  variant="outlined"
+                  value={limitFilter}
+                  onChange={handleLimitChange}
+                  //size="small"
+                  error={touched.count && Boolean(errors.count)}
+                  helperText={touched.count && errors.count}
+                  sx={{
+                    "& .MuiInputLabel-root": {
+                      color: "gray",
+                    },
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: "navy",
+                    },
 
-            <TextField
-              variant="outlined"
-              //size="small"
-              value={transactionCount === 0 ? "" : transactionCount}
-              sx={{
-                borderRadius: "10px",
-                marginRight: "8px",
-                width: "30%",
-                height: "40px",
-                "& .MuiOutlinedInput-root": {
-                  height: "100%",
-                },
-                "& input[type=number]": {
-                  MozAppearance: "textfield",
-                },
-                "& input[type=number]::-webkit-outer-spin-button": {
-                  WebkitAppearance: "none",
-                  margin: 0,
-                },
-                "& input[type=number]::-webkit-inner-spin-button": {
-                  WebkitAppearance: "none",
-                  margin: 0,
-                },
-                borderRadius: "6px",
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: "6px",
-                },
-                height: { xs: "51px", sm: "52px" },
-              }}
-              autoComplete="off"
-              placeholder="تعداد"
-              type="number"
-              inputProps={{
-                min: 0,
-                max: 300,
-              }}
-              onChange={handleTransactionCountChange}
-            />
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "12px",
+                    },
+                  }}
+                />
+              </Form>
+            )}
+          </Formik>
           </Box>
           <CustomSnackbar
             open={snackbarOpen}
@@ -542,7 +567,7 @@ const Transfers = () => {
                       </Grid>
                     </Grid>
                   </ListItem>
-                  <Box
+                  {/* <Box
                     sx={{
                       display: "flex",
                       justifyContent: "space-between",
@@ -599,7 +624,7 @@ const Transfers = () => {
                     >
                       جزئیات
                     </Button>
-                  </Box>
+                  </Box> */}
                   {index < filteredTransactions.length - 1 && (
                     <Divider
                       sx={{ borderWidth: "7px", borderColor: "#f8f8f8" }}
