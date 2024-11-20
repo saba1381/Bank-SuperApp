@@ -27,8 +27,20 @@ def is_valid_national_code(national_code):
         return check == s
     return check == 11 - s
 
+import re
+
 def is_valid_phone_number(phone_number):
-    return re.match(r'^09\d{9}$', phone_number)
+    valid_prefixes = {
+        '0911', '0912', '0913', '0914', '0915', '0916', '0917', '0918', '0919', '0910',
+        '0990', '0991', '0992', '0993', '0935', '0936', '0937', '0939', '0901',
+        '0902', '0903', '0904', '0905', '0921', '0920', '0922', '0923'
+    }
+
+    if not re.match(r'^09\d{9}$', phone_number):
+        return False
+    prefix = phone_number[:4]
+    return prefix in valid_prefixes
+
 
 def mock_shahkar_service(national_code, phone_number):
 
