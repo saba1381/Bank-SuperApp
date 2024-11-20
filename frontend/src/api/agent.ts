@@ -145,6 +145,10 @@ const Admin ={
     const queryString = new URLSearchParams(params).toString();
     return requests.get(queryString ? `card/all-transfers/?${queryString}` : 'card/all-transfers/');
   },
+  RechargesList: (params: { limit?: string;  ate_filter?: string }) => {
+    const queryString = new URLSearchParams(params).toString();
+    return requests.get(queryString ? `charge/all-recharges/?${queryString}` : 'charge/all-recharges/');
+  },
   
 }
 

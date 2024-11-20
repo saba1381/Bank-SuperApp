@@ -493,6 +493,20 @@ export const fetchAllTransfers = createAsyncThunk(
   }
 );
 
+
+export const fetchAllRecharges = createAsyncThunk(
+  "account/fetchAllRecharges",
+  async (params: { limit?: string; date_filter?: string }, thunkAPI) => {
+    try {
+      const response = await agent.Admin.RechargesList(params);
+      return response;
+    } catch (error: any) {
+      const errorMessage = error.data.detail || "خطا در دریافت اطلاعات تراکنش های خرید شارژ";
+      return thunkAPI.rejectWithValue({ error: errorMessage });
+    }
+  }
+);
+
 export const accountSlice = createSlice({
   name: "account",
   initialState,
@@ -818,6 +832,19 @@ export const accountSlice = createSlice({
       .addCase(fetchAllTransfers.rejected, (state) => {
         state.isLoading = false;
       });
+
+      builder
+      .addCase(fetchAllRecharges.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchAllRecharges.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.transactions = action.payload;
+      })
+      .addCase(fetchAllRecharges.rejected, (state) => {
+        state.isLoading = false;
+      });
+
 
     builder.addMatcher(
       isAnyOf(signInUser.rejected, verifyOTP.rejected),

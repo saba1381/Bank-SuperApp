@@ -235,7 +235,7 @@ const AdminDashboard = () => {
                   borderRadius: "15px",
                   height: 175,
                 }}
-                onClick={() => navigate("/admin/user-list")}
+                onClick={() => navigate("/admin/recharges")}
               >
                 <FaSimCard size={50} color="#7ab3f4" style={{ marginTop: 8 }} />
                 <Typography

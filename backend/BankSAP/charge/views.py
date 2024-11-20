@@ -8,7 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 import pyotp
 import jdatetime
 import pytz
-from datetime import datetime
+from datetime import datetime, timedelta
+from rest_framework import generics
 
 class RechargeAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -96,3 +97,59 @@ class VerifyCardAndOTPAPIView(APIView):
 
 
         return Response({"detail": "خرید شارژ با موفقیت انجام شد." , "charge_date": jalali_date}, status=status.HTTP_200_OK)
+
+
+from rest_framework.response import Response
+import jdatetime
+import pytz
+from datetime import datetime, timedelta
+
+class AllRechargeTransactionsView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = RechargeSerializer
+
+    def get_queryset(self):
+        queryset = Recharge.objects.all().order_by('-timestamp')
+
+        date_filter = self.request.query_params.get('date_filter')
+        if date_filter:
+            now = datetime.now()
+            if date_filter == 'today':
+                start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+                end_date = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+                queryset = queryset.filter(timestamp__gte=start_date, timestamp__lte=end_date)
+            elif date_filter == 'thisweek':
+                start_date = now - timedelta(days=7)
+                queryset = queryset.filter(timestamp__gte=start_date)
+            elif date_filter == 'thisMonth':
+                start_date = now - timedelta(days=30)
+                queryset = queryset.filter(timestamp__gte=start_date)
+            elif date_filter == 'lastTwoMonth':
+                start_date = now - timedelta(days=60)
+                queryset = queryset.filter(timestamp__gte=start_date)
+
+        limit = self.request.query_params.get('limit')
+        if limit:
+            try:
+                limit = int(limit)
+                queryset = queryset[:limit]
+            except ValueError:
+                pass  
+
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serialized_data = self.serializer_class(queryset, many=True).data
+
+        iran_timezone = pytz.timezone("Asia/Tehran")
+        for item in serialized_data:
+            timestamp = item.get('timestamp')
+            if timestamp:
+                if isinstance(timestamp, str):
+                    timestamp = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+                iran_time = timestamp.astimezone(iran_timezone)
+                jalali_datetime = jdatetime.datetime.fromgregorian(datetime=iran_time)
+                item['timestamp'] = jalali_datetime.strftime('%H:%M %Y/%m/%d')
+
+        return Response(serialized_data)

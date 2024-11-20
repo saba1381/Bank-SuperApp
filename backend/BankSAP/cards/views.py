@@ -6,7 +6,6 @@ from .serializers import CardSerializer , CardToCardSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from .models import Card
-from decimal import Decimal
 from django.core.cache import cache
 from .models import CardToCard
 from datetime import timedelta
@@ -17,6 +16,8 @@ import secrets
 import jdatetime
 from .models import SavedCard
 from datetime import datetime, timedelta
+import pytz
+
 
 class RegisterCardView(APIView):
     permission_classes = [IsAuthenticated]
@@ -310,38 +311,100 @@ class DeleteCardAPIView(APIView):
         
 
 class AllCardToCardTransactionsView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated] 
+    permission_classes = [IsAuthenticated]
     serializer_class = CardToCardSerializer
 
+    def parse_jalali_datetime(self, datetime_str):
+        time_part, date_part = datetime_str.split(' ')
+        jalali_date = jdatetime.datetime.strptime(date_part, '%Y/%m/%d')
+        hours, minutes = map(int, time_part.split(':'))
+        jalali_date = jalali_date.replace(hour=hours, minute=minutes)
+        return jalali_date
+
     def get_queryset(self):
-        queryset = CardToCard.objects.all().order_by('-created_at')
+        queryset = CardToCard.objects.all()
 
         date_filter = self.request.query_params.get('date_filter')
         if date_filter:
-            now = datetime.now()
+            now_jalali = jdatetime.datetime.now()  
+
             if date_filter == 'today':
-                start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
-                end_date = now.replace(hour=23, minute=59, second=59, microsecond=999999)
-                queryset = queryset.filter(created_at__range=(start_date, end_date))
+                start_date = now_jalali.replace(hour=0, minute=0, second=0, microsecond=0)
+                end_date = now_jalali.replace(hour=23, minute=59, second=59, microsecond=999999)
+                queryset = [
+                    obj for obj in queryset
+                    if start_date <= self.parse_jalali_datetime(obj.created_at) <= end_date
+                ]
+
             elif date_filter == 'thisweek':
-                start_date = now - timedelta(days=7)
-                queryset = queryset.filter(created_at__gte=start_date)
+                start_date = now_jalali - jdatetime.timedelta(days=now_jalali.weekday())
+                start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+                queryset = [
+                    obj for obj in queryset
+                    if self.parse_jalali_datetime(obj.created_at) >= start_date
+                ]
+
             elif date_filter == 'thisMonth':
-                start_date = now - timedelta(days=30)
-                queryset = queryset.filter(created_at__gte=start_date)
-            elif date_filter == 'lastTwoMonth':
-                start_date = now - timedelta(days=60)
-                queryset = queryset.filter(created_at__gte=start_date)
+                one_month_ago = now_jalali - jdatetime.timedelta(days=30)
+                queryset = [
+                    obj for obj in queryset
+                    if self.parse_jalali_datetime(obj.created_at) >= one_month_ago
+                ]
 
- 
-        limit = self.request.query_params.get('limit')
-        if limit:
+            if date_filter == 'lastTwoMonth':
+                two_months_ago = now_jalali - jdatetime.timedelta(days=60)
+                one_month_ago = now_jalali - jdatetime.timedelta(days=30)
+
+                filtered_queryset = []
+                for obj in queryset:
+                    created_at = self.parse_jalali_datetime(obj.created_at)
+                    if created_at and two_months_ago <= created_at < one_month_ago:
+                        filtered_queryset.append(obj)
+
+                queryset = filtered_queryset
+
+
+
+        
+        combined_with_dates = []
+        for instance in queryset:
+            created_at = instance.created_at
+
+            if isinstance(created_at, str) and '/' in created_at:
+                created_at_parts = created_at.split(' ')
+                time_part = created_at_parts[0]
+                date_part = created_at_parts[1]
+                jalali_date = jdatetime.datetime.strptime(date_part, '%Y/%m/%d')
+                gregorian_date = jalali_date.togregorian()
+
+                created_at_datetime = datetime(gregorian_date.year, gregorian_date.month, gregorian_date.day,
+                                                int(time_part.split(':')[0]), int(time_part.split(':')[1]))
+
+            else:
+                created_at_datetime = created_at
+
+            created_at_jalali = jdatetime.datetime.fromgregorian(datetime=created_at_datetime)
+
+            combined_with_dates.append((instance, created_at_jalali))
+
+        combined_with_dates.sort(key=lambda x: x[1], reverse=True)
+
+        sorted_combined = [x[0] for x in combined_with_dates]
+        return sorted_combined
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+        limit = request.query_params.get('limit')
+        if limit is not None:
             try:
-                limit = int(limit)
-                queryset = queryset[:limit]
+                queryset = queryset[:int(limit)]
             except ValueError:
-                pass  
+                pass
 
-        return queryset
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
 
 
