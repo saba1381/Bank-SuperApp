@@ -27,7 +27,8 @@ def is_valid_national_code(national_code):
         return check == s
     return check == 11 - s
 
-import re
+
+
 
 def is_valid_phone_number(phone_number):
     valid_prefixes = {
@@ -35,21 +36,20 @@ def is_valid_phone_number(phone_number):
         '0990', '0991', '0992', '0993', '0935', '0936', '0937', '0939', '0901',
         '0902', '0903', '0904', '0905', '0921', '0920', '0922', '0923'
     }
-
     if not re.match(r'^09\d{9}$', phone_number):
         return False
     prefix = phone_number[:4]
     return prefix in valid_prefixes
 
 
-def mock_shahkar_service(national_code, phone_number):
 
+
+def mock_shahkar_service(national_code, phone_number):
     if not is_valid_national_code(national_code):
         return {
             'status': 'error',
             'message': 'کد ملی نامعتبر است'
         }
-
     if not is_valid_phone_number(phone_number):
         return {
             'status': 'error',
@@ -59,6 +59,9 @@ def mock_shahkar_service(national_code, phone_number):
         'status': 'success',
         'message': 'اطلاعات معتبر است'
     }
+
+
+
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -169,10 +172,9 @@ class UserProfileCompleteView(APIView):
 
 
 class LoginView(APIView):
-    def post(self, request):
-        password = request.data.get('password')
+      def post(self, request):
         username = request.data.get('username')
-
+        password = request.data.get('password')
 
         if not username:
             return Response({"detail": "نام کاربری وارد نشده است."}, status=status.HTTP_400_BAD_REQUEST)
@@ -184,8 +186,11 @@ class LoginView(APIView):
         except User.MultipleObjectsReturned:
             return Response({"detail": "چندین کاربر با این نام کاربری وجود دارد."}, status=status.HTTP_400_BAD_REQUEST)
 
+        if user.is_superuser:
+            return Response({"detail": "این نام کاربری برای سوپر یوزر است. لطفاً از API مربوط به سوپر یوزر استفاده کنید."}, status=status.HTTP_403_FORBIDDEN)
+
         if not user.check_password(password):
-            return Response({"detail": "  رمز عبور اشتباه است."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "رمز عبور اشتباه است."}, status=status.HTTP_400_BAD_REQUEST)
 
         user.last_login = timezone.now()
         user.save(update_fields=['last_login'])
@@ -198,7 +203,37 @@ class LoginView(APIView):
             'is_staff': user.is_staff,
         }, status=status.HTTP_200_OK)
 
+class LoginSuperUSer(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
 
+        if not username:
+            return Response({"detail": "نام کاربری وارد نشده است."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"detail": "نام کاربری اشتباه است."}, status=status.HTTP_400_BAD_REQUEST)
+        except User.MultipleObjectsReturned:
+            return Response({"detail": "چندین کاربر با این نام کاربری وجود دارد."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not user.is_superuser:
+            return Response({"detail": "این API فقط برای سوپر یوزرها است."}, status=status.HTTP_403_FORBIDDEN)
+
+        if not user.check_password(password):
+            return Response({"detail": "رمز عبور اشتباه است."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.last_login = timezone.now()
+        user.save(update_fields=['last_login'])
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'is_superuser': user.is_superuser,
+            'is_staff': user.is_staff,
+        }, status=status.HTTP_200_OK)
 class UpdateProfileView(APIView):
     permission_classes = [IsAuthenticated]
 

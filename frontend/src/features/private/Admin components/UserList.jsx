@@ -139,7 +139,7 @@ const UserList = () => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.8 }}
     >
-      <Box sx={{ py: 4, paddingBottom: 10, px: { xs: 1.2, sm: 4 } }}>
+      <Box sx={{ paddingTop:4 , paddingBottom: 5, px: { xs: 1.2, sm:6 , md:7} }}>
         <Box
           sx={{
             display: "flex",
@@ -188,7 +188,7 @@ const UserList = () => {
             exclusive
             onChange={handleGenderChange}
             sx={{
-              flexShrink: 0, // اندازه ثابت
+              flexShrink: 0, 
               direction: "ltr",
             }}
           >
@@ -387,7 +387,7 @@ const UserList = () => {
                           transition={{ duration: 0.5 }}
                         >
                           <TableCell sx={{ px: 1, textAlign: "center" }}>
-                            {user.username}
+                            {user.username || 'ثبت نشده '}
                           </TableCell>
                           <TableCell sx={{ px: 1 }}>
                             {user.national_code
@@ -395,7 +395,7 @@ const UserList = () => {
                               : "نامشخص"}
                           </TableCell>
                           <TableCell sx={{ px: 1, textAlign: "center" }}>
-                            {user.first_name} {user.last_name}
+                            {user.first_name || 'ثبت'} {user.last_name || 'نشده'}
                           </TableCell>
                           <TableCell sx={{ textAlign: "center" }}>
                             {user.phone_number

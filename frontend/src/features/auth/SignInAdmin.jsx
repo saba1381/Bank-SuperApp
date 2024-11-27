@@ -21,7 +21,7 @@ import { styled } from "@mui/system";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { UseAppDispatch } from "../../store/configureStore";
-import { signInUser } from "../account/accountSlice";
+import { signInSuperUser } from "../account/accountSlice";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
@@ -60,7 +60,7 @@ const validationSchema = Yup.object({
   password: Yup.string().required("رمز عبور را وارد کنید"),
 });
 
-export default function SignIn() {
+export default function SignInAdmin() {
   const navigate = useNavigate();
   const dispatch = UseAppDispatch();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -105,7 +105,7 @@ export default function SignIn() {
 
       try {
         const result = await dispatch(
-          signInUser({
+          signInSuperUser({
             username: values.userName,
             password: values.password,
           })
@@ -156,7 +156,7 @@ export default function SignIn() {
         }}
       >
         <Helmet>
-          <title>ورود به موبایل بانک</title>
+          <title>ورود ورود سیستم</title>
         </Helmet>
 
         <StyledPaper
@@ -171,7 +171,7 @@ export default function SignIn() {
             alignItems="center"
           >
             <Typography variant="h4" align="start" gutterBottom>
-              <GradientText>ورود به موبایل بانک</GradientText>
+              <GradientText>ورود مدیر سیستم</GradientText>
             </Typography>
             <Button
               variant="outlined"
@@ -342,31 +342,14 @@ export default function SignIn() {
             />
 
             <Box display="flex" justifyContent="space-between" mt={2} gap={1}>
-              <MuiLink
-                component={Link}
-                to="/register"
-                underline="none"
-                variant="body2"
-                color="primary"
-                sx={{
-                  textAlign: "center",
-                  width: "100%",
-                  py: 1,
-                  borderRadius: 4,
-                  border: 1,
-                  borderColor: "grey.300",
-                  ":hover": { color: "grey.600" },
-                }}
-              >
-                ثبت نام
-              </MuiLink>
+              
               <Button
                 type="submit"
                 variant="contained"
                 fullWidth
                 disabled={formik.isSubmitting}
                 sx={{
-                  width: "80%",
+                  width: "100%",
                   bgcolor: "primary.main",
                   "&:hover": { bgcolor: "primary.dark" },
                   borderRadius: 4,

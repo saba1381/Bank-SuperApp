@@ -123,7 +123,7 @@ export default function Register() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        paddingX: { sm: 3, md: 4 },
+        paddingX: {sm: 6, md: 4 },
         paddingY: {xs:18 ,  sm: 2, md: 3 },
         height:'80vh'
       }}
@@ -132,7 +132,7 @@ export default function Register() {
         <title>ثبت نام در موبایل بانک</title>
       </Helmet>
       {!showActivationCode ? (
-        <StyledPaper sx={{ p: { xs: 2, md: 7 } }}>
+        <StyledPaper sx={{ p: { xs: 3, md: 7 } }}>
           <Typography variant="h3" align="center" gutterBottom>
             <GradientText>ثبت نام در موبایل بانک</GradientText>
           </Typography>
@@ -242,7 +242,7 @@ export default function Register() {
                 alignItems: "center",
                 width: "100%",
                 gap: 3,
-                mt: 4,
+                mt: 1,
               }}
             >
               <Box

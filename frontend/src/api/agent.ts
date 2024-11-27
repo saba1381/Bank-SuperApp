@@ -94,6 +94,7 @@ const requests = {
 
 const UserProfile = {
   login: (values: object) => requests.post("users/login/", values),
+  loginAdmin: (values: object) => requests.post("users/login-admin/", values),
   verifyOTP: (values: object) => requests.post("users/verify-otp/", values),
   refreshTokens: (values: object) => requests.post("auth/refresh-tokens", values),
   register: (values: object) => requests.post("users/register/", values),

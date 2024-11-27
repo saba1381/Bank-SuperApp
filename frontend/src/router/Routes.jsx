@@ -23,6 +23,8 @@ import AdminDashboard from "../features/private/Admin components/AdminDashboard"
 import UserList from "../features/private/Admin components/UserList";
 import Transfers from "../features/private/Admin components/Transfers";
 import Recharges from "../features/private/Admin components/Recharges";
+import SignInAdmin from "../features/auth/SignInAdmin";
+
 
 const adminOrCpPath = (base, path) => `${base}${path}`;
 
@@ -41,6 +43,10 @@ export const router = createBrowserRouter([
                     {
                         path: "register", 
                         element: <Register />
+                    },
+                    {
+                        path: "sign-in-admin", 
+                        element: <SignInAdmin />
                     },
                 ]
             },

@@ -22,7 +22,9 @@ import {
   fetchCurrentUser,
 } from "../features/account/accountSlice";
 import { useHeader } from "../components/contexts/HeaderContext";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { FaBell, FaCreditCard, FaUserCircle, FaCog } from "react-icons/fa";
+
 
 const Header = () => {
   const { user, isLoading } = useSelector((state) => state.account);
@@ -31,7 +33,9 @@ const Header = () => {
   const isSettingPage = window.location.pathname.startsWith("/cp/setting");
   const [openDialog, setOpenDialog] = React.useState(false);
   const { headerTitle, setHeaderTitle } = useHeader();
+  const navigate = useNavigate();
   const location = useLocation();
+  const isAdminPage = location.pathname.startsWith("/admin");
   const showLogoutIcon =
     (user &&
       !isLoading &&
@@ -52,6 +56,9 @@ const Header = () => {
     setOpenDialog(false);
     localStorage.removeItem("isNewUser");
   };
+  const handleNavigate = (path) => {
+    navigate(path);
+  };
 
   useEffect(() => {
     const path = location.pathname;
@@ -67,7 +74,7 @@ const Header = () => {
     } else if (path === "/cp/profile-view") {
       setHeaderTitle("پروفایل");
     } else if (path === "/admin") {
-      setHeaderTitle("پنل ادمین");
+      setHeaderTitle("پنل مدیر سیستم");
     } else {
       setHeaderTitle(" ");
     }
@@ -105,12 +112,68 @@ const Header = () => {
             {headerTitle}
           </Typography>
         </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.3 }}>
+          {isAdminPage && (
+  <>
+
+    <Box
+      sx={{
+        color: "white",
+        cursor: "pointer",
+        "&:hover": { color: "#a2a7ad" },
+        transition: "color 0.3s ease",
+        display:"flex",
+        alignItems:"center"
+      }}
+      onClick={() => handleNavigate("/admin/profile-view")}
+    >
+       <Typography 
+          variant="body3" 
+          sx={{ 
+            fontSize: '0.9rem', 
+            display: { xs: 'none', sm: 'block'},
+            mr:'6px' 
+          }}
+        >
+          پروفایل
+        </Typography>
+      <FaUserCircle style={{ fontSize: "20px" , marginLeft:9}} />
+    </Box>
+    <Box
+      sx={{
+        color: "white",
+        cursor: "pointer",
+        "&:hover": { color: "#a2a7ad" },
+        transition: "color 0.3s ease",
+         display:"flex",
+        alignItems:"center"
+      }}
+      onClick={() => handleNavigate("/admin/setting")}
+    >
+      <Typography 
+          variant="body3" 
+          sx={{ 
+            fontSize: '0.9rem', 
+            display: { xs: 'none', sm: 'block'},
+            mr:'6px' ,
+            ml:'5px'
+          }}
+        >
+          تنظیمات
+        </Typography>
+      <FaCog style={{ fontSize: "20px" , marginRight:{xs:10 , sm:0}}} />
+    </Box>
+
+  </>
+  
+)}
 
         {user && showLogoutIcon && !isLoading && (
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <LogoutIcon onClick={handleLogoutClick} />
           </Box>
         )}
+        </Box>
       </Toolbar>
 
       <Dialog
@@ -137,6 +200,20 @@ const Header = () => {
       </Dialog>
     </AppBar>
   );
+};
+
+const menuItemStyles = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  cursor: "pointer",
+  "&:hover svg": { color: "#6b7280" },
+};
+
+const iconStyles = {
+  color: "#333",
+  fontSize: "24px",
+  transition: "color 0.3s",
 };
 
 export default Header;

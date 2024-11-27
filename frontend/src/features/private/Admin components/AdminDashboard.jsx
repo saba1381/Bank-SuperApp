@@ -131,33 +131,33 @@ const AdminDashboard = () => {
 
   return (
     <motion.div initial="initial" animate="animate" variants={pageTransition}>
-      <Container maxWidth="lg" sx={{ pt: 5, pb: 13, paddingX: 4 }}>
+      <Container maxWidth="lg" sx={{ pt: 5, pb: 7 , paddingX:{xs:2,sm:12}}}>
         <Grid container spacing={3}>
           <Grid item xs={6} sm={6} md={4}>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Paper
                 elevation={5}
                 sx={{
-                  paddingX: 2,
-                  paddingY: 4,
+                  paddingX: 2.4,
+                  paddingY: 3,
                   display: "flex",
                   alignItems: "center",
                   flexDirection: "column",
                   textAlign: "center",
                   borderRadius: "15px",
                   flexDirection: "column",
-                  height: 175,
+                  height: 170,
                 }}
               >
                 <CalendarMonthIcon style={{ color: "#981eec", fontSize: 50 }} />
 
                 <Typography
-                  variant="h5"
-                  sx={{ marginTop: 1, marginBottom: 0.1 }}
+                  
+                  sx={{ marginTop: 1, marginBottom: 0.1 , fontSize:{xs:17 , sm:19} }}
                 >
                   {toPersianNumbers(date)}
                 </Typography>
-                <Typography variant="h5">{toPersianNumbers(time)}</Typography>
+                <Typography sx={{fontSize:18}}>{toPersianNumbers(time)}</Typography>
               </Paper>
             </motion.div>
           </Grid>
@@ -183,7 +183,7 @@ const AdminDashboard = () => {
                   color="#ec7f33"
                   style={{ marginTop: 8 }}
                 />
-                <Typography variant="h5" sx={{ mt: 2, fontWeight: "bold" }}>
+                <Typography  sx={{ mt: 2, fontWeight: "bold" , fontSize:{xs:16 , sm:18} }}>
                   لیست کاربران
                 </Typography>
               </Paper>
@@ -213,7 +213,7 @@ const AdminDashboard = () => {
                 />
                 <Typography
                   variant="h6"
-                  sx={{ mt: 2, fontWeight: "bold", fontSize: 18 }}
+                  sx={{ mt: 2, fontWeight: "bold", fontSize: {xs:16 , sm:18} }}
                 >
                   تراکنش های انتقال وجه
                 </Typography>
@@ -240,7 +240,7 @@ const AdminDashboard = () => {
                 <FaSimCard size={50} color="#7ab3f4" style={{ marginTop: 8 }} />
                 <Typography
                   variant="h6"
-                  sx={{ mt: 2, fontWeight: "bold", fontSize: 18 }}
+                  sx={{ mt: 2, fontWeight: "bold", fontSize: {xs:16 , sm:18} }}
                 >
                   تراکنش های خرید شارژ
                 </Typography>
@@ -281,10 +281,10 @@ const AdminDashboard = () => {
                   }}
                 >
                   {card.icon}
-                  <Typography variant="h5" sx={{ mt: 2, fontWeight: "bold" }}>
+                  <Typography sx={{ mt: 2, fontWeight: "bold", fontSize:{xs:16 , sm:18} }}>
                     {card.label}
                   </Typography>
-                  <Typography variant="h5" color="text.secondary">
+                  <Typography sx={{fontSize:20}} color="text.secondary">
                     {card.value}
                   </Typography>
                 </Paper>

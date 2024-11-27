@@ -111,6 +111,21 @@ export const signInUser = createAsyncThunk(
   }
 );
 
+
+export const signInSuperUser = createAsyncThunk(
+  "account/signInSuperUser",
+  async (data: object, thunkAPI) => {
+    try {
+      const userDto = await agent.UserProfile.loginAdmin(data);
+      const { ...user } = userDto;
+      localStorage.setItem("user", JSON.stringify(user));
+      return user;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue({ error: error.data });
+    }
+  }
+);
+
 export const fetchCurrentUser = createAsyncThunk(
   "account/fetchCurrentUser",
   async (_, thunkAPI) => {
@@ -528,7 +543,14 @@ export const accountSlice = createSlice({
         toast.dismiss(toastId);
       }, 4000);
 
-      router.navigate("/sign-in");
+      const currentPath = window.location.pathname;
+      if (currentPath.startsWith("/admin")) {
+        router.navigate("/sign-in-admin");
+      } else if (currentPath.startsWith("/cp")) {
+        router.navigate("/sign-in");
+      } else {
+        router.navigate("/sign-in");
+      }
     },
     setUser: (state, action) => {
       state.user = action.payload;
@@ -600,6 +622,9 @@ export const accountSlice = createSlice({
     });
     builder.addCase(verifyOTP.fulfilled, (state, action) => {
       state.user = action.payload;
+    });
+    builder.addCase(signInSuperUser.pending, (state) => {
+      state.isLoading = true;
     });
     builder
       .addCase(addCard.pending, (state) => {
