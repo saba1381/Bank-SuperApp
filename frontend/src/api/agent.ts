@@ -142,6 +142,7 @@ const Admin ={
     return requests.get(queryString ? `users/list-of-users/?${queryString}` : 'users/list-of-users/');
   },
   DeleteUser: (id: number) => requests.del(`users/delete-users/${id}/`, {}),
+  UserpasswordRecovery: (id:number,values: object) => requests.put(`users/change-password/${id}/`, values),
   TransfersList: (params: { limit?: string;  ate_filter?: string }) => {
     const queryString = new URLSearchParams(params).toString();
     return requests.get(queryString ? `card/all-transfers/?${queryString}` : 'card/all-transfers/');

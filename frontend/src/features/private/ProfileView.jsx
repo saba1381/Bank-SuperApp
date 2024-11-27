@@ -32,7 +32,12 @@ const isAdminPage = location.pathname === '/admin/profile-view';
 
   return (
     <Container maxWidth="md" sx={{ paddingTop: 3 , paddingBottom:12 }}>
-        <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
+        
+        {isLoading ? (
+              <Typography align="center">در حال بارگذاری...</Typography>
+            ) : (
+      <Paper elevation={4} sx={{display:'flex' , flexDirection:'column', textAlign: 'center', borderRadius: 5, width: { md: '60%', sx: '100%' }, mx: 'auto' , paddingX:{sm:5 , xs:4} , paddingY:4}}>
+        <Box sx={{ mb: 2,display: "flex", justifyContent: "flex-end" }}>
         <Button
           variant="contained"
           color="primary"
@@ -43,10 +48,6 @@ const isAdminPage = location.pathname === '/admin/profile-view';
           بازگشت
         </Button>
       </Box>
-        {isLoading ? (
-              <Typography align="center">در حال بارگذاری...</Typography>
-            ) : (
-      <Paper elevation={4} sx={{display:'flex' , flexDirection:'column', textAlign: 'center', borderRadius: 5, width: { md: '60%', sx: '100%' }, mx: 'auto' , paddingX:{sm:10 , xs:4} , paddingY:4}}>
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <Avatar
             src={profileImageURL}

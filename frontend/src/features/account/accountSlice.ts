@@ -522,6 +522,24 @@ export const fetchAllRecharges = createAsyncThunk(
   }
 );
 
+
+export const changeUserPassword = createAsyncThunk(
+  "account/changeUserPassword",
+  async (
+    data: {id:number, current_password: string; new_password: string },
+    thunkAPI
+  ) => {
+    try {
+      const { id, ...passwordData } = data;
+      const response = await agent.Admin.UserpasswordRecovery(id , passwordData);
+      //toast.success('رمز عبور با موفقیت تغییر کرد');
+      return response;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue({ error: error.data.detail });
+    }
+  }
+);
+
 export const accountSlice = createSlice({
   name: "account",
   initialState,
@@ -566,6 +584,16 @@ export const accountSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(changePassword.rejected, (state) => {
+        state.isLoading = false;
+      });
+      builder
+      .addCase(changeUserPassword.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(changeUserPassword.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(changeUserPassword.rejected, (state) => {
         state.isLoading = false;
       });
     builder.addCase(deleteCard.fulfilled, (state, action) => {

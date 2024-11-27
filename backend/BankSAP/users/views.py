@@ -373,3 +373,41 @@ class DeleteUserView(APIView):
 
         user.delete()
         return Response({"detail": "کاربر با موفقیت حذف شد."}, status=status.HTTP_200_OK)
+
+
+
+class AdminChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated] 
+    authentication_classes = [JWTAuthentication]
+
+    def put(self, request, user_id):
+        print(request.data)
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"detail": "کاربر یافت نشد."}, status=status.HTTP_404_NOT_FOUND)
+
+        current_password = request.data.get('current_password')
+        new_password = request.data.get('new_password')
+
+        if not current_password or not new_password:
+            return Response({"detail": "لطفاً هر دو فیلد رمز عبور فعلی و رمز عبور جدید را وارد کنید."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not user.check_password(current_password):
+            print("Current password is incorrect.")
+            return Response({"detail": "رمز عبور فعلی اشتباه است."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+        if current_password == new_password:
+            return Response({"detail": "رمز عبور جدید نمی‌تواند با رمز عبور فعلی یکسان باشد."}, status=status.HTTP_400_BAD_REQUEST)
+
+        validator = CustomPasswordValidator()
+        try:
+            validator.validate(new_password)
+        except ValidationError as e:
+            return Response({"detail": e.messages}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response({"detail": "رمز عبور با موفقیت تغییر کرد."}, status=status.HTTP_200_OK)

@@ -37,6 +37,7 @@ import { fetchUsers, DeleteUser } from "../../account/accountSlice";
 import { Formik, Form, Field } from "formik";
 import { useTheme } from "@mui/material/styles";
 import { RiErrorWarningLine } from "react-icons/ri";
+import { FaRegEdit } from "react-icons/fa";
 
 const UserList = () => {
   const navigate = useNavigate();
@@ -112,6 +113,12 @@ const UserList = () => {
     setSelectedUserId(id);
     setOpenDialog(true);
   };
+
+  const handleEditClick = (id , first_name , last_name, nationalCode) => {
+    setSelectedUserId(id);
+    navigate(`/admin/change-user-password/` , {state : {id , first_name , last_name, nationalCode }});
+  };
+  
 
   const handleConfirmDelete = () => {
     dispatch(DeleteUser(selectedUserId))
@@ -324,47 +331,47 @@ const UserList = () => {
                       <TableCell
                         sx={{
                           fontWeight: "bold",
-                          color: "#1976d2",
+                          color: "#6200ea",
                           px: 1,
                           textAlign: "center",
                         }}
                       >
                         نام کاربری
                       </TableCell>
-                      <TableCell sx={{ fontWeight: "bold", color: "#388e3c" }}>
+                      <TableCell sx={{ fontWeight: "bold", color: "#6200ea" }}>
                         کد ملی
                       </TableCell>
-                      <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>
+                      <TableCell sx={{ fontWeight: "bold", color: "#6200ea" }}>
                         نام و نام خانوادگی
                       </TableCell>
                       <TableCell
                         sx={{
                           fontWeight: "bold",
-                          color: "#388e3c",
+                          color: "#6200ea",
                           textAlign: "center",
                         }}
                       >
                         شماره موبایل
                       </TableCell>
-                      <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>
+                      <TableCell sx={{ fontWeight: "bold", color: "#6200ea" }}>
                         جنسیت
                       </TableCell>
-                      <TableCell sx={{ fontWeight: "bold", color: "#388e3c" }}>
+                      <TableCell sx={{ fontWeight: "bold", color: "#6200ea" }}>
                         ایمیل
                       </TableCell>
                       <TableCell
                         sx={{
                           fontWeight: "bold",
-                          color: "#1976d2",
+                          color: "#6200ea",
                           textAlign: "center",
                         }}
                       >
                         عکس پروفایل
                       </TableCell>
-                      <TableCell sx={{ fontWeight: "bold", color: "#388e3c" }}>
+                      <TableCell sx={{ fontWeight: "bold", color: "#6200ea" }}>
                         آخرین ورود
                       </TableCell>
-                      <TableCell sx={{ fontWeight: "bold", color: "#d32f2f" }}>
+                      <TableCell sx={{ fontWeight: "bold", color: "#6200ea" }}>
                         عملیات
                       </TableCell>
                     </TableRow>
@@ -413,7 +420,7 @@ const UserList = () => {
                           <TableCell sx={{ px: 1 }}>
                             {user.email || "ثبت نشده"}
                           </TableCell>
-                          <TableCell sx={{ px: 2 }}>
+                          <TableCell sx={{ px: 4 }}>
                             <Avatar src={profileImageURL} alt={user.username} />
                           </TableCell>
                           <TableCell>
@@ -422,12 +429,26 @@ const UserList = () => {
                                 "پس از ثبت نام وارد نشده"
                               : "نامشخص"}
                           </TableCell>
-                          <TableCell sx={{ px: 3 }}>
+                          <TableCell sx={{ px: 1, py:5, display:'flex' , justifyContent:'space-between' , gap:1}}>
+                          <MuiTooltip title="ویرایش رمز عبور">
+                              <IconButton
+                                onClick={() => handleEditClick(user.id , user.first_name ,user.last_name , user.national_code)}
+                                color="error"
+                                sx={{
+                                  color:'#8e56b5',
+                                  "&:hover": { color: "#d32f2f" },
+                                  fontSize: { xs: 25, sm: 20 },
+                                }}
+                              >
+                                <FaRegEdit />
+                              </IconButton>
+                            </MuiTooltip>
                             <MuiTooltip title="حذف">
                               <IconButton
                                 onClick={() => handleDeleteClick(user.id)}
                                 color="error"
                                 sx={{
+                                  color:'#9b93a0',
                                   "&:hover": { color: "#d32f2f" },
                                   fontSize: { xs: 25, sm: 20 },
                                 }}
