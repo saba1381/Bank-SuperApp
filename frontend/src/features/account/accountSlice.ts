@@ -21,6 +21,7 @@ interface AccountState {
   transactionCount: number | null;
   transactionStatus: number | null;
   users: Array<any> | [];
+  ads:Array<any> | [];
 }
 
 const initialState: AccountState = {
@@ -34,6 +35,7 @@ const initialState: AccountState = {
   transactionCount: null,
   transactionStatus: null,
   users: [],
+  ads : [],
 };
 
 export const verifyOTP = createAsyncThunk(
@@ -143,6 +145,19 @@ export const fetchUserProfile = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await agent.UserProfile.profileInfo();
+      return response;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue({ error: error.response?.data });
+    }
+  }
+);
+
+
+export const userAds = createAsyncThunk(
+  "account/userAds",
+  async (_, thunkAPI) => {
+    try {
+      const response = await agent.UserProfile.UserAds();
       return response;
     } catch (error: any) {
       return thunkAPI.rejectWithValue({ error: error.response?.data });
@@ -627,9 +642,19 @@ export const accountSlice = createSlice({
       .addCase(fetchUserProfile.rejected, (state) => {
         state.isLoading = false;
         const currentPath = window.location.pathname;
-        //if (currentPath === '/cp') {
-        //    toast.error('خطا در دریافت اطلاعات پروفایل');
-        //}
+      });
+      builder
+      .addCase(userAds.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(userAds.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.ads = action.payload;
+      })
+      .addCase(userAds.rejected, (state) => {
+        state.isLoading = false;
+        const currentPath = window.location.pathname;
+
       });
 
     builder.addCase(refreshTokensAsync.rejected, (state) => {

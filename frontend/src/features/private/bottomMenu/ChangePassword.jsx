@@ -441,7 +441,7 @@ const ChangePassword = ({ onBack }) => {
             type="submit"
             sx={{ fontSize: "16px", mt: 1 }}
           >
-            تغییر
+            ثبت
           </Button>
         </form>
         <Snackbar

@@ -103,6 +103,7 @@ const UserProfile = {
   passwordRecovery: (values: object) => requests.put("users/password/change/", values),
   completeInfo : (values: object) => requests.put("users/complete-info/", values),
   currentUser: () => requests.get("account/currentUser"),
+  UserAds :() => requests.get("ads/active/")
 };
 
 const Card = {

@@ -169,8 +169,8 @@ const ChangePasswordUser = () => {
         boxShadow: "0 -2px 2px rgba(0,0,0,0.1)",
         overflowY: "auto",
         width: "100%",
-        paddingX: { sm: 17, md: 30, lg: 46 },
-        paddingY: 4,
+        paddingX: {xs:2, sm: 17, md: 30, lg: 46 },
+        paddingY: 6,
         height: "100%",
       }}
     >

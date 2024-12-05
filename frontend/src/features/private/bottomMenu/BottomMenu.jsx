@@ -11,6 +11,7 @@ const BottomMenu = () => {
   const isSettingsPage = location.pathname.startsWith('/cp/setting');
   const isCPPageAdmin = location.pathname==='/cp'
   const isListCardPage = location.pathname.startsWith('/cp/user-cards');
+  const isAdsPage = location.pathname.startsWith('/cp/ads');
   const isProfilePage = location.pathname.startsWith('/cp/profile-view');
   const isAdminPage = location.pathname.startsWith('/admin');
   const [isNewUser, setIsNewUser] = useState(false);
@@ -69,10 +70,10 @@ const BottomMenu = () => {
         '&:hover svg': { color: '#6b7280' },
         '&:hover': { '& *': { color: '#6b7280' } }
       }}
-      onClick={() => navigate('/notifications')}
+      onClick={() => navigate('/cp/ads')}
       >
-        <FaBell style={{ color: '#3b82f6', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
-        <Typography variant="caption" sx={{ color: '#3b82f6', fontSize: '12px' }}>اعلانات</Typography>
+        <FaBell style={{ color: (isAdsPage) ? '#6b7280' : '#3b82f6', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: (isAdsPage) ? '#6b7280' : '#3b82f6', fontSize: '12px' }}>اعلانات</Typography>
       </Box>
 
       {/* Menu Item: کارت‌ها */}

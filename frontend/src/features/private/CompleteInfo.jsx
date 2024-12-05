@@ -537,7 +537,7 @@ export default function CompleteInfo() {
                     "&:hover": { bgcolor: "primary.dark" },
                   }}
                 >
-                  ادامه
+                  ثبت
                 </Button>
               </Box>
 

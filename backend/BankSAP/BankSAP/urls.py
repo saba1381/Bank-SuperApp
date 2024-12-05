@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/card/', include('cards.urls')),
     path('api/charge/' , include('charge.urls')),
     path('api/history/' , include('transaction_history.urls')),
+    path('api/ads/' , include('ads.urls')),
 ]
 
 if settings.DEBUG:
