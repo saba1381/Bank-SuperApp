@@ -75,6 +75,9 @@ const Header = () => {
       setHeaderTitle("پروفایل");
     } else if (path === "/admin") {
       setHeaderTitle("پنل مدیر سیستم");
+    }
+    else if (path === "/cp/ads") {
+      setHeaderTitle("اعلانات");
     } else {
       setHeaderTitle(" ");
     }
