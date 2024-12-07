@@ -227,7 +227,7 @@ const TransactionList = () => {
             maxHeight: "auto",
             minHeight: "auto",
             overflowY: "auto",
-            paddingBottom: { xs: "100%", sm: 11, md: 13 },
+            paddingBottom: { xs: "20%", sm: 11, md: 13 },
           }}
         >
           <Box
@@ -409,7 +409,7 @@ const TransactionList = () => {
             ) : filteredTransactions && filteredTransactions.length > 0 ? (
               transactions.map((transaction, index) => (
                 <React.Fragment key={transaction.id}>
-                  <ListItem sx={{ padding: "12px 10px" }}>
+                  <ListItem sx={{ padding: "10px 10px" }}>
                     <Grid
                       container
                       alignItems="center"
@@ -420,7 +420,7 @@ const TransactionList = () => {
                       <Grid item>
                         {transaction.status ? (
                           <Typography
-                            sx={{ color: "green", fontSize: "1.6rem" }}
+                            sx={{ color: "green", fontSize: "1.3rem" }}
                           >
                             <RxCheckCircled />
                           </Typography>
@@ -439,8 +439,8 @@ const TransactionList = () => {
                           justifyContent: "center",
                           flexDirection: "column",
                           alignItems: "flex-start",
-                          width: "50%",
-                          marginLeft: { xs: 0.5, sm: 1 },
+                          width: "60%",
+                          marginLeft: { xs: 0.1, sm: 1 },
                         }}
                       >
                         <Typography
@@ -463,7 +463,7 @@ const TransactionList = () => {
                         >
                           {transaction.initialCard &&
                             getBankInfo(transaction.initialCard)?.icon && (
-                              <Box sx={{ marginRight: "8px" }}>
+                              <Box sx={{ marginRight: "3px" }}>
                                 <img
                                   src={
                                     getBankInfo(transaction.initialCard).icon

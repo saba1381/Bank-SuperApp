@@ -49,7 +49,7 @@ const MessageBox = () => {
                 borderRadius: "8px",
                 direction: "rtl",
                 paddingX: 1,
-                paddingY: 0.1,
+                paddingY: -10,
               }}
             >
               <CardContent>
@@ -67,6 +67,7 @@ const MessageBox = () => {
                     sx={{
                       marginLeft: "10px",
                       width: "100%",
+                      fontSize:'16px'
                     }}
                   >
                     {ad.description}
@@ -78,7 +79,6 @@ const MessageBox = () => {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginBottom: 1,
                     mt: 1,
                   }}
                 >

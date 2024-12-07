@@ -179,7 +179,7 @@ const Charging = () => {
         <Box
           maxWidth="full"
           sx={{
-            paddingY: { xs: 8, sm: 0 },
+            paddingY: { xs: 18, sm: 0 },
             paddingX: { xs: 1.5, sm: 18, md:36},
             height: { sm: "90vh", xs: "70vh" },
             display: "flex",

@@ -152,7 +152,7 @@ export default function SignInAdmin() {
           justifyContent: "center",
           alignItems: "center",
           height: { xs: "80vh", md: "90vh" },
-          paddingTop: { sm: 2 },
+          paddingTop: { sm: 1 },
         }}
       >
         <Helmet>

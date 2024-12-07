@@ -240,7 +240,7 @@ const Transfers = () => {
             maxHeight: "auto",
             minHeight: "auto",
             overflowY: "auto",
-            paddingBottom: { xs: "100%", sm: 11, md: 13 },
+            paddingBottom: { xs: "100%", sm: 11, md: 5 },
           }}
         >
           <Box

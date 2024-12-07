@@ -170,7 +170,7 @@ const ChangePasswordUser = () => {
         overflowY: "auto",
         width: "100%",
         paddingX: {xs:2, sm: 17, md: 30, lg: 46 },
-        paddingY: 6,
+        paddingY: 10,
         height: "100%",
       }}
     >
@@ -180,7 +180,7 @@ const ChangePasswordUser = () => {
           justifyContent: "space-between",
           alignItems: "center",
           mb: 6,
-          backgroundColor: "#ffffff",
+          backgroundColor: "#f6f4f8",
           padding: "15px",
           color: "#fff",
         }}

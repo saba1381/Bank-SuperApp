@@ -41,7 +41,7 @@ const EditCard = () => {
     },
     589463: {
       name: "رفاه کارگران",
-      icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />, iconWidth: "38px",iconHeight: "38px",
+      icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />, iconWidth: "35px",iconHeight: "40px",
     },
     502229: {
       name: "پاسارگاد",
@@ -224,7 +224,7 @@ useEffect(() => {
 
 
   return (
-    <Box maxWidth="full" sx={{paddingY : 4 , paddingX:{xs:1,sm:2 , md:4} , height:'150vh'}}>
+    <Box maxWidth="full" sx={{paddingY : 2 , paddingX:{xs:1.5,sm:2 , md:4} , height:'150vh'}}>
       <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end'}}>
         <Button variant="contained" sx={{fontSize:'1.2rem'}} color="primary" onClick={() => navigate('/cp/user-cards/')} endIcon={<KeyboardBackspaceIcon />}>
           بازگشت

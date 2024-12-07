@@ -24,6 +24,7 @@ import {
 import { useHeader } from "../components/contexts/HeaderContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaBell, FaCreditCard, FaUserCircle, FaCog } from "react-icons/fa";
+import { FaArrowRight } from "react-icons/fa"; 
 
 
 const Header = () => {
@@ -36,6 +37,10 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isAdminPage = location.pathname.startsWith("/admin");
+  const isAdsPage = location.pathname === "/cp/ads";
+
+
+
   const showLogoutIcon =
     (user &&
       !isLoading &&
@@ -94,16 +99,29 @@ const Header = () => {
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Avatar
-            src={`${process.env.PUBLIC_URL}/logo.png`}
-            alt="App Icon"
-            variant="square"
-            sx={{
-              width: { xs: 60, md: 70 },
-              height: { xs: 60, md: 70 },
-              marginLeft: "0.1rem",
-            }}
-          />
+          {isAdsPage ? ( 
+            <FaArrowRight
+              style={{
+                fontSize: "19px",
+                color: "white",
+                cursor: "pointer",
+                marginLeft:3,
+                marginRight:4
+              }}
+              onClick={() => navigate('/cp/')} 
+            />
+          ) : (
+            <Avatar
+              src={`${process.env.PUBLIC_URL}/logo.png`}
+              alt="App Icon"
+              variant="square"
+              sx={{
+                width: { xs: 60, md: 70 },
+                height: { xs: 60, md: 70 },
+                marginLeft: "0.1rem",
+              }}
+            />
+          )}
           <Typography
             variant="h4"
             sx={{

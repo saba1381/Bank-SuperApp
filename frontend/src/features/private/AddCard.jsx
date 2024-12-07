@@ -47,7 +47,7 @@ const AddCard = () => {
     },
     589463: {
       name: "رفاه کارگران",
-      icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />, iconWidth: "38px",iconHeight: "38px",
+      icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />, iconWidth: "35px",iconHeight: "40px",
     },
     502229: {
       name: "پاسارگاد",
@@ -90,7 +90,7 @@ const AddCard = () => {
 
 
   const isValidCardNumber = (cardNumber) => {
-    const digits = cardNumber.replace(/\D/g, ''); // حذف همه کاراکترهای غیر عددی
+    const digits = cardNumber.replace(/\D/g, ''); 
     let sum = 0;
     let isSecond = false;
   
@@ -246,7 +246,7 @@ const AddCard = () => {
   return (
     <Box
       maxWidth="full"
-      sx={{ paddingY: 4, paddingX: { xs: 1, sm: 2, md: 4 } , height:{sm:'160vh' , xs:'105vh'} }}
+      sx={{ paddingY: 2, paddingX: { xs: 1, sm: 2, md: 4 } , height:{sm:'160vh' , xs:'105vh'} }}
     >
       <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
         <Button
@@ -370,7 +370,7 @@ const AddCard = () => {
                       '&.Mui-focused': {
                                     color: '#1C3AA9',
                                     fontSize: {xs: '1.3rem'},
-                                    transform: 'translate(-1px, -14px) scale(0.75)'
+                                    transform: 'translate(-1px, -10px) scale(0.75)'
                                 },
                                 '&.Mui-error': {
                                     color: 'pink',
@@ -496,7 +496,7 @@ const AddCard = () => {
     <Paper
       sx={{
         paddingX: 1.2,
-        paddingY: 3.2,
+        paddingY: 2.2,
         backgroundColor: bankColor,
         color: "white",
         borderRadius: 6,
@@ -528,14 +528,14 @@ const AddCard = () => {
   )}
   <Typography
 
-    sx={{ flexGrow: 1, textAlign: "left", color: textColor , width:'40%' , fontSize:{xs:'16px' , md:'20px'}}}
+    sx={{ flexGrow: 1, textAlign: "left", color: textColor , width:'43%' , fontSize:{xs:'16px' , md:'20px'}}}
   >
     {formik.values.name ? `کارت ${formik.values.name}` : ""}
   </Typography>
 </Box>
 
         <Typography
-          sx={{ color: textColor, textAlign: "center", justifyContent: "center", width:'50%' , fontSize:{xs:'18px' , sm:'21px'} }}
+          sx={{ color: textColor, textAlign: "center", justifyContent: "center", width:'52%' , fontSize:{xs:'18px' , sm:'21px'} }}
         >
           {formik.values.cardNumber
             ? toPersianDigits(formik.values.cardNumber)

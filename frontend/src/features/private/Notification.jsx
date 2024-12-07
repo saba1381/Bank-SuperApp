@@ -18,6 +18,7 @@ const Notification = ({ open, onClose }) => {
         <Button 
           color="primary" 
           onClick={handleCompleteProfile} 
+          sx={{}}
          
         >
           تکمیل پروفایل

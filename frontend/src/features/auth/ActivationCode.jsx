@@ -9,6 +9,7 @@ import { verifyOTP } from '../account/accountSlice';
 import Register from './Register';
 import { CircularProgress } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import {toPersianNumbers} from '../../util/util'
 
 
 const validationSchema = Yup.object({
@@ -172,9 +173,9 @@ export default function ActivationCode({ mobile }) {
                         </Typography>
                     )}
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: otpExpired ? 'red' : 'navy', mb: 2 }}>
-                    {!otpExpired && <AccessTimeIcon sx={{ ml: 1 }} />}
-                        <Typography variant="body2" sx={{alignItems:'center'}}>
-                            {otpExpired ? 'کد فعالسازی شما منقضی شد، دوباره تلاش کنید' : `${formatTime(timer)}`}
+                    {!otpExpired && <AccessTimeIcon sx={{ ml: 1 , fontSize:'20px'}} />}
+                        <Typography variant="h5" sx={{alignItems:'center'}}>
+                            {otpExpired ? 'کد فعالسازی شما منقضی شد، دوباره تلاش کنید' : `${toPersianNumbers(formatTime(timer))}`}
                         </Typography>
                     </Box>
 

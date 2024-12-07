@@ -165,7 +165,7 @@ const ChangePassword = ({ onBack }) => {
         boxShadow: "0 -2px 2px rgba(0,0,0,0.1)",
         overflowY: "auto",
         width: "100%",
-        paddingX: { sm: 20, md: 40 },
+        paddingX: { sm: 20, md: 45 },
         paddingY: 4,
         height:'100%'
 
@@ -184,8 +184,10 @@ const ChangePassword = ({ onBack }) => {
         }}
       ></Box>
 
-      <Container sx={{ paddingBottom: 4, paddingY: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 6, width: '100%' }}>
+      <Container sx={{ paddingBottom: 4, paddingY: 4,marginTop:10, backgroundColor: "#ffffff",
+          borderRadius: "20px",
+          boxShadow: 3,}}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 6, width: '100%' ,  }}>
   <Button
     onClick={handleSnackbarOpen}
     variant="outlined"

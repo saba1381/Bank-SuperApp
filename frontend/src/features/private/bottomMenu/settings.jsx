@@ -8,7 +8,7 @@ import {
   Container,
   Avatar,
 } from "@mui/material";
-import { FiSettings } from "react-icons/fi";
+import { TiMessages } from "react-icons/ti";
 import { MdLock, MdTextFields } from "react-icons/md";
 import { RiLogoutCircleRLine } from "react-icons/ri";
 import { FaChevronLeft } from "react-icons/fa";
@@ -204,10 +204,15 @@ const Settings = () => {
                     label: "تغییر رمز",
                     action: handleChangePasswordClick,
                   },
-                  {
-                    icon: <FiSettings size={20} />,
-                    label: "تنظیمات شیوه ورود",
-                  },
+                  ...(isSettingPage // فقط در صفحات `/admin/setting` نمایش داده شود
+                    ? [
+                        {
+                          icon: <TiMessages size={20} />,
+                          label: "مدیریت اعلانات",
+                          action: () => navigate("/admin/announcements"), // مسیر مدیریت اعلانات
+                        },
+                      ]
+                    : []),
                   { icon: <MdTextFields size={20} />, label: "تغییر سایز متن" },
                 ].map((item, index) => (
                   <Box

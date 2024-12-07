@@ -19,7 +19,7 @@ import { Helmet } from 'react-helmet';
 import Header from './components/Header'
 import { router } from "./router/Routes";
 import { HeaderProvider } from "./components/contexts/HeaderContext";
-
+import * as serviceWorker from './serviceWorker';
 
 
 

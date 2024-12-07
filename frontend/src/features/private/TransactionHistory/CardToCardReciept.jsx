@@ -133,7 +133,7 @@ const CardToCardReciept = ({
           justifyContent: "center",
           alignItems: "center",
           paddingBottom: { xs: 20, sm: 46 },
-          paddingTop: { xs: 10, sm: 38 },
+          paddingTop: { xs: 7, sm: 38 },
         }}
       >
         <Box

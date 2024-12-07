@@ -170,7 +170,7 @@ export default function SignIn() {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Typography variant="h4" align="start" gutterBottom>
+            <Typography variant="h5" align="start" gutterBottom>
               <GradientText>ورود به موبایل بانک</GradientText>
             </Typography>
             <Button

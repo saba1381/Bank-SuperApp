@@ -27,7 +27,6 @@ import SignInAdmin from "../features/auth/SignInAdmin";
 import ChangePasswordUser from "../features/private/Admin components/ChangePasswordUser";
 import MessageBox from "../features/private/ads";
 
-
 const adminOrCpPath = (base, path) => `${base}${path}`;
 
 export const router = createBrowserRouter([

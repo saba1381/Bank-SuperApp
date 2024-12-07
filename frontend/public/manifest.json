@@ -20,7 +20,7 @@
   ],
   "scope": "/",
   "id": "/?source=pwa",
-  "start_url": "/?source=pwa",
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#21409A",
   "background_color": "#F4F7FE"

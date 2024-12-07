@@ -38,6 +38,7 @@ import { Formik, Form, Field } from "formik";
 import { useTheme } from "@mui/material/styles";
 import { RiErrorWarningLine } from "react-icons/ri";
 import { FaRegEdit } from "react-icons/fa";
+import { TbPasswordUser } from "react-icons/tb";
 
 const UserList = () => {
   const navigate = useNavigate();
@@ -437,13 +438,13 @@ const UserList = () => {
                                 sx={{
                                   color:'#8e56b5',
                                   "&:hover": { color: "#d32f2f" },
-                                  fontSize: { xs: 25, sm: 20 },
+                                  fontSize: { xs: 25, sm: 24 },
                                 }}
                               >
-                                <FaRegEdit />
+                                <TbPasswordUser  />
                               </IconButton>
                             </MuiTooltip>
-                            <MuiTooltip title="حذف">
+                            <MuiTooltip title="حذف کاربر">
                               <IconButton
                                 onClick={() => handleDeleteClick(user.id)}
                                 color="error"

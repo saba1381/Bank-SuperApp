@@ -147,7 +147,7 @@ export default function CompleteInfo() {
         justifyContent: "center",
         alignItems: "center",
         paddingX: { sm: 3, md: 4 },
-        paddingTop: { md: 7, xs: 1 },
+        paddingTop: { md: 7, xs: '-30px' },
         paddingBottom: 12,
         maxHeight: "auto",
         minHeight: "auto",
