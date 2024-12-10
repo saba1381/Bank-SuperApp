@@ -31,13 +31,24 @@ const isAdminPage = location.pathname === '/admin/profile-view';
       : '/default-profile.png';
 
   return (
-    <Container maxWidth="md" sx={{ paddingTop: 3 , paddingBottom:12 }}>
+    <Container maxWidth="md" sx={{ paddingTop: 3 , paddingBottom:9 }}>
+      <Box sx={{ mb: 1,display:{xs:'flex',sm:'none' ,md:'none'}, justifyContent: "flex-end" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate("/cp/")}
+          endIcon={<KeyboardBackspaceIcon />}
+          sx={{fontSize:'1rem'}}
+        >
+          بازگشت
+        </Button>
+      </Box>
         
         {isLoading ? (
               <Typography align="center">در حال بارگذاری...</Typography>
             ) : (
       <Paper elevation={4} sx={{display:'flex' , flexDirection:'column', textAlign: 'center', borderRadius: 5, width: { md: '60%', sx: '100%' }, mx: 'auto' , paddingX:{sm:5 , xs:4} , paddingY:4}}>
-        <Box sx={{ mb: 2,display: "flex", justifyContent: "flex-end" }}>
+        <Box sx={{ mb: 2,display:{xs:'none',sm:'flex' , md:'flex'}, justifyContent: "flex-end" }}>
         <Button
           variant="contained"
           color="primary"

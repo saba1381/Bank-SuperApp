@@ -152,13 +152,18 @@ const ProfileEdit = () => {
 
 
   return (
-    <Container maxWidth="full" sx={{ height:{sm:'120vh' , xs:'90vh'} ,maxHeight:'auto' , paddingTop:1  , paddingBottom:10, overflowY:'auto'} } >
-      <Box sx={{  mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+    <Container maxWidth="full" sx={{ height:{sm:'120vh' , xs:'90vh'} ,maxHeight:'auto' , paddingTop:1  , paddingBottom:9, overflowY:'auto'} } >
+      <Box sx={{display:{xs:'flex',sm:'none' ,md:'none'},  mb: 1 , justifyContent: 'flex-end'}}>
+        <Button variant="contained" color="primary" onClick={handleBackClick} endIcon={<KeyboardBackspaceIcon />} sx={{fontSize:'1rem'}}>
+          بازگشت
+        </Button>
+      </Box>
+      <Paper elevation={4} sx={{ paddingY:4, borderRadius: 5, width: { md: '60%', sm: '80%' }, mx: 'auto' , paddingX:{sm:7 , xs:4}  }}>
+      <Box sx={{display:{xs:'none',sm:'flex' , md:'flex'},  mb: 3 , justifyContent: 'flex-end'}}>
         <Button variant="contained" color="primary" onClick={handleBackClick} endIcon={<KeyboardBackspaceIcon />}>
           بازگشت
         </Button>
       </Box>
-      <Paper elevation={4} sx={{ paddingY:4, borderRadius: 5, width: { md: '60%', sx: '100%' }, mx: 'auto' , paddingX:{sm:10 , xs:4}  }}>
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <Typography variant="h5" align="center" gutterBottom>
             ویرایش پروفایل
@@ -166,7 +171,7 @@ const ProfileEdit = () => {
           <form onSubmit={formik.handleSubmit}>
             <Grid container spacing={2} justifyContent="center">
               <Grid item xs={12} textAlign="center">
-                <Box sx={{ position: 'relative', display: 'inline-block' }}>
+                <Box sx={{ position: 'relative', display: 'inline-block' , mb:2 }}>
                   <Avatar
                     src={profileImage ||profileImageURL || '/default-profile.png'}
                     alt="Profile Image"
@@ -204,32 +209,7 @@ const ProfileEdit = () => {
                   </label>
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  id="username"
-                  name="username"
-                  label={
-                    <span>
-                       نام کاربری <span style={{ color: 'red' }}>*</span>
-                    </span>
-                  }
-                  variant="outlined"
-                  value={formik.values.username}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.username && Boolean(formik.errors.username)}
-                  helperText={formik.touched.username && formik.errors.username}
-                  InputLabelProps={{ sx: { color: 'gray' } }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '&:hover fieldset': { borderColor: '#FF1493' },
-                      '&.Mui-focused fieldset': { borderColor: '#FF1493' },
-                    },
-                    '& label.Mui-focused': { color: '#FF1493' },
-                  }}
-                />
-              </Grid>
+            
 
 
               <Grid item xs={12} sm={6}>
@@ -275,6 +255,32 @@ const ProfileEdit = () => {
                   onBlur={formik.handleBlur}
                   error={formik.touched.last_name && Boolean(formik.errors.last_name)}
                   helperText={formik.touched.last_name && formik.errors.last_name}
+                  InputLabelProps={{ sx: { color: 'gray' } }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '&:hover fieldset': { borderColor: '#FF1493' },
+                      '&.Mui-focused fieldset': { borderColor: '#FF1493' },
+                    },
+                    '& label.Mui-focused': { color: '#FF1493' },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  fullWidth
+                  id="username"
+                  name="username"
+                  label={
+                    <span>
+                       نام کاربری <span style={{ color: 'red' }}>*</span>
+                    </span>
+                  }
+                  variant="outlined"
+                  value={formik.values.username}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.username && Boolean(formik.errors.username)}
+                  helperText={formik.touched.username && formik.errors.username}
                   InputLabelProps={{ sx: { color: 'gray' } }}
                   sx={{
                     '& .MuiOutlinedInput-root': {

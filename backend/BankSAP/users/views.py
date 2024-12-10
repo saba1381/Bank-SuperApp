@@ -381,7 +381,6 @@ class AdminChangePasswordView(APIView):
     authentication_classes = [JWTAuthentication]
 
     def put(self, request, user_id):
-        print(request.data)
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
@@ -394,7 +393,6 @@ class AdminChangePasswordView(APIView):
             return Response({"detail": "لطفاً هر دو فیلد رمز عبور فعلی و رمز عبور جدید را وارد کنید."}, status=status.HTTP_400_BAD_REQUEST)
 
         if not user.check_password(current_password):
-            print("Current password is incorrect.")
             return Response({"detail": "رمز عبور فعلی اشتباه است."}, status=status.HTTP_400_BAD_REQUEST)
 
 

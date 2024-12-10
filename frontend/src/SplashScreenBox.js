@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography , Avatar } from '@mui/material';
 import { motion } from 'framer-motion';
 
 const SplashScreenBox = () => {
@@ -25,7 +25,7 @@ const SplashScreenBox = () => {
       >
        
 
-        <Typography
+        {/* <Typography
           component="span"
           variant="h3"
           sx={{
@@ -34,9 +34,19 @@ const SplashScreenBox = () => {
             color: 'white',
             textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
           }}
-        >
-           همراه بانک   
-        </Typography>
+        > */}
+          <Avatar
+              src={`${process.env.PUBLIC_URL}/logo.png`}
+              alt="App Icon"
+              variant="square"
+              sx={{
+                width: { xs: 130, md: 130 },
+                height: { xs: 140, md: 130 },
+                marginLeft: "0.1rem",
+              }}
+            />
+            
+        {/* </Typography> */}
       </motion.div>
     </Box>
   );

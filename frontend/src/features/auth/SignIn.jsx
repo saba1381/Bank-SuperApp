@@ -116,7 +116,7 @@ export default function SignIn() {
           localStorage.setItem("refresh_token", result.payload.refresh);
           window.location.assign("/cp");
         } else {
-          setFieldError("general", "کدملی یا رمز عبور اشتباه است.");
+          setFieldError("general", "نام کاربری یا رمز عبور اشتباه است.");
         }
       } catch (error) {
         setFieldError("general", "خطایی رخ داده است. لطفاً دوباره تلاش کنید.");

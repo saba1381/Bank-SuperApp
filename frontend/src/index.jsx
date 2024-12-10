@@ -41,11 +41,11 @@ function App() {
   
 
   useEffect(() => {
-    const hasVisited = localStorage.getItem('hasVisited');
+    const hasVisited = sessionStorage.getItem('hasVisited');
     if (!hasVisited) {
       setTimeout(() => {
         setShowSplash(false);
-        localStorage.setItem('hasVisited', true);
+        sessionStorage.setItem('hasVisited', true);
       }, 3000);
     } else {
       setShowSplash(false);

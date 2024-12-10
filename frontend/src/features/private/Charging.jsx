@@ -63,24 +63,24 @@ const Charging = () => {
     setSnackbarOpen(false);
   };
 
-  useEffect(() => {
-    const fetchUserCards = async () => {
-      try {
-        const cards = await dispatch(fetchCards()).unwrap();
+  // useEffect(() => {
+  //   const fetchUserCards = async () => {
+  //     try {
+  //       const cards = await dispatch(fetchCards()).unwrap();
 
-        if (Array.isArray(cards)) {
-          setUserCards(cards);
-        } else {
-          setUserCards([]);
-        }
-      } catch (error) {
-        console.error("Error fetching cards:", error);
-        setUserCards([]);
-      }
-    };
+  //       if (Array.isArray(cards)) {
+  //         setUserCards(cards);
+  //       } else {
+  //         setUserCards([]);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching cards:", error);
+  //       setUserCards([]);
+  //     }
+  //   };
 
-    fetchUserCards();
-  }, [dispatch]);
+  //   fetchUserCards();
+  // }, [dispatch]);
 
 
 
