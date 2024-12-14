@@ -82,10 +82,10 @@ const MessageBox = () => {
                     mt: 1,
                   }}
                 >
-                  <Typography variant="body2" sx={{ color: "#5d6d7e" }}>
+                  <Typography variant="body2" sx={{  }}>
                     {toPersianNumbers(formatDate(ad.start_date))}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: "#5d6d7e" }}>
+                  <Typography variant="body2" sx={{  }}>
                     {ad.start_time
                       ? toPersianNumbers(
                           ad.start_time.split(":").slice(0, 2).join(":")

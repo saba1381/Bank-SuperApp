@@ -1,12 +1,13 @@
 import React , {useState , useEffect} from 'react';
 import { FaHome, FaBell, FaCreditCard, FaUserCircle, FaCog } from 'react-icons/fa';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography , useTheme  } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Notification from "../Notification";
 
 const BottomMenu = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useTheme();
 
   const isSettingsPage = location.pathname.startsWith('/cp/setting');
   const isCPPageAdmin = location.pathname==='/cp'
@@ -51,7 +52,7 @@ const BottomMenu = () => {
       position: 'fixed',
       bottom: 0,
       width: '100%',
-      backgroundColor: '#fff',
+      backgroundColor: theme.palette.background.paper,
       boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)',
       borderTop: '1px solid #ddd',
       display: 'flex',

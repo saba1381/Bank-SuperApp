@@ -27,6 +27,7 @@ import { FaBell, FaCreditCard, FaUserCircle, FaCog } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa"; 
 
 
+
 const Header = () => {
   const { user, isLoading } = useSelector((state) => state.account);
   const dispatch = UseAppDispatch();
@@ -188,6 +189,7 @@ const Header = () => {
   </>
   
 )}
+
 
         {user && showLogoutIcon && !isLoading && (
           <Box sx={{ display: "flex", alignItems: "center" }}>

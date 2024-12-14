@@ -3,6 +3,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 import { accountSlice } from "../features/account/accountSlice";
 import appSlice from "../layout/appSlice";
+import themeReducer from '../features/theme/themeSlice'
 
 
 
@@ -10,6 +11,7 @@ export const store = configureStore({
     reducer:{
         app:appSlice,
         account:accountSlice.reducer,
+        theme: themeReducer,
     }
 })
 

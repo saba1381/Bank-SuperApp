@@ -12,7 +12,7 @@ import rtlPlugin from "stylis-plugin-rtl";
 import { prefixer } from "stylis";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
-import { theme } from "./theme";
+import { theme , darkTheme } from "./theme";
 import * as serviceWorkerRegistration from "./serviceWorkerResgistration";
 import SplashScreenBox from './SplashScreenBox';
 import { Helmet } from 'react-helmet';
@@ -20,7 +20,7 @@ import Header from './components/Header'
 import { router } from "./router/Routes";
 import { HeaderProvider } from "./components/contexts/HeaderContext";
 import * as serviceWorker from './serviceWorker';
-
+import { useSelector } from "react-redux";
 
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -37,6 +37,7 @@ serviceWorkerRegistration.unregister();
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
+  const mode = useSelector((state) => state.theme.mode);
 
   
 
@@ -58,7 +59,7 @@ function App() {
       <Provider store={store}>
       <HeaderProvider>
         <CacheProvider value={cacheRtl}>
-          <ThemeProvider theme={theme}>
+          <ThemeProvider theme={mode === "light" ? theme : darkTheme}>
             <Box component="div" dir="rtl" sx={{ display: "flex", flexDirection: "column", maxHeight: '100vh' }}>
               <CssBaseline />
             
@@ -87,4 +88,9 @@ function App() {
   );
 }
 
-root.render(<App />);
+
+root.render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+);

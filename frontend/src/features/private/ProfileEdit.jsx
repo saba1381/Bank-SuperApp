@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, TextField, Avatar, Grid, Container, Paper, Typography, Select, MenuItem, Snackbar, Alert } from '@mui/material';
+import { Box, Button, TextField, Avatar, Grid, Container, Paper, Typography, Select, MenuItem, Snackbar, Alert, useTheme } from '@mui/material';
 import { useFormik } from 'formik';
 import { motion } from 'framer-motion';
 import * as yup from 'yup';
@@ -47,6 +47,7 @@ const ProfileEdit = () => {
   const [hasFetchedOnce, setHasFetchedOnce] = useState(false);  
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useTheme();
 
 
 
@@ -154,7 +155,7 @@ const ProfileEdit = () => {
   return (
     <Container maxWidth="full" sx={{ height:{sm:'120vh' , xs:'90vh'} ,maxHeight:'auto' , paddingTop:1  , paddingBottom:9, overflowY:'auto'} } >
       <Box sx={{display:{xs:'flex',sm:'none' ,md:'none'},  mb: 1 , justifyContent: 'flex-end'}}>
-        <Button variant="contained" color="primary" onClick={handleBackClick} endIcon={<KeyboardBackspaceIcon />} sx={{fontSize:'1rem'}}>
+        <Button variant="contained" color="primary" onClick={handleBackClick} endIcon={<KeyboardBackspaceIcon />} sx={{fontSize:'0.9rem'}}>
           بازگشت
         </Button>
       </Box>
@@ -255,7 +256,7 @@ const ProfileEdit = () => {
                   onBlur={formik.handleBlur}
                   error={formik.touched.last_name && Boolean(formik.errors.last_name)}
                   helperText={formik.touched.last_name && formik.errors.last_name}
-                  InputLabelProps={{ sx: { color: 'gray' } }}
+                  InputLabelProps={{ sx: { color: theme.palette.grey } }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       '&:hover fieldset': { borderColor: '#FF1493' },

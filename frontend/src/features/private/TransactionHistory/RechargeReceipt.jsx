@@ -157,7 +157,8 @@ const RechargeReciept = ({
             paddingX: 0,
             borderRadius: 2,
             boxShadow: 3,
-            bgcolor: "white",
+            bgcolor: (theme) =>
+              theme.palette.mode === "dark" ? "#d0d0d0 " : "white",
           }}
         >
           <Box sx={{ textAlign: "center", mb: 1 }}>
@@ -167,14 +168,15 @@ const RechargeReciept = ({
                 fontWeight: "bold",
                 color: transactionStatus === true ? "green" : "red",
                 border: `1.4px solid ${
-                  transactionStatus === true ? "#b6e9d2" : "red"
+                  transactionStatus === true ? "#569f4b" : "red"
                 }`,
                 borderRadius: "4px",
                 p: 2,
               }}
             >
               {transactionStatus === true ? (
-                <CheckCircleIcon sx={{ color: "green", marginRight: "8px" }} />
+                <CheckCircleIcon sx={{ color: (theme) =>
+                  theme.palette.mode === "dark" ? "#356d2d" : "green", marginRight: "8px" }} />
               ) : (
                 <CancelIcon sx={{ color: "red", marginRight: "8px" }} />
               )}

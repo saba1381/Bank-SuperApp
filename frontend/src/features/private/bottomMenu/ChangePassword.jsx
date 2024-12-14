@@ -9,7 +9,7 @@ import {
   Container,
   Snackbar,
   InputAdornment,
-
+  useTheme
 } from "@mui/material";
 import { FaChevronLeft } from "react-icons/fa";
 import { styled } from "@mui/system";
@@ -22,6 +22,7 @@ import { unwrapResult, unwrap } from "@reduxjs/toolkit";
 import { motion } from "framer-motion";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { useNavigate ,useLocation  } from 'react-router-dom';
+
 
 const ChangePassword = ({ onBack }) => {
   const [showHelp, setShowHelp] = useState(false);
@@ -37,6 +38,7 @@ const ChangePassword = ({ onBack }) => {
   const passwordRef = useRef(null);
   const newpasswordRef = useRef(null)
   const confirmPasswordRef = useRef(null);
+  const theme = useTheme();
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleClickShowNewPassword = () => setShowNewPassword(!showNewPassword);
@@ -160,13 +162,14 @@ const ChangePassword = ({ onBack }) => {
         left: 0,
         right: 0,
         bottom: 72,
-        backgroundColor: "#F5F5F9",
+        // backgroundColor: theme.palette.background.paper,
         zIndex: 1,
         boxShadow: "0 -2px 2px rgba(0,0,0,0.1)",
         overflowY: "auto",
         width: "100%",
-        paddingX: { sm: 20, md: 45 },
-        paddingY: 4,
+        paddingX: {xs:2, sm: 20, md: 45 },
+        paddingTop: 1,
+        paddingBottom: 4,
         height:'100%'
 
       }}
@@ -184,7 +187,7 @@ const ChangePassword = ({ onBack }) => {
         }}
       ></Box>
 
-      <Container sx={{ paddingBottom: 4, paddingY: 4,marginTop:10, backgroundColor: "#ffffff",
+      <Container sx={{ paddingBottom: 4, paddingY: 4,marginTop:10, backgroundColor: theme.palette.background.paper,
           borderRadius: "20px",
           boxShadow: 3,}}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 6, width: '100%' ,  }}>
@@ -270,6 +273,7 @@ const ChangePassword = ({ onBack }) => {
                 style: { textAlign: "right" },
                 sx: {
                   "& .MuiOutlinedInput-root": {
+                    
                     "& fieldset": {
                       borderColor: "lightgrey",
                     },
@@ -290,8 +294,9 @@ const ChangePassword = ({ onBack }) => {
                       aria-label="toggle password visibility"
                       onClick={handleClickShowPassword}
                       edge="end"
+                      sx={{color: theme.palette.text.primary}}
                     >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                      {showPassword ? <VisibilityOff style={{fontSize:'20px'}} /> : <Visibility style={{fontSize:'20px'}} />}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -353,8 +358,10 @@ const ChangePassword = ({ onBack }) => {
                       aria-label="toggle confirm password visibility"
                       onClick={handleClickShowNewPassword}
                       edge="end"
+                      sx={{color: theme.palette.text.primary}}
+
                     >
-                      {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                      {showNewPassword ? <VisibilityOff style={{fontSize:'20px'}} /> : <Visibility style={{fontSize:'20px'}} />}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -416,8 +423,10 @@ const ChangePassword = ({ onBack }) => {
                       aria-label="toggle confirm password visibility"
                       onClick={handleClickShowConfirmPassword}
                       edge="end"
+                      sx={{color: theme.palette.text.primary}}
+                      
                     >
-                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                      {showConfirmPassword ? <VisibilityOff style={{fontSize:'20px'}}/> : <Visibility style={{fontSize:'20px'}} />}
                     </IconButton>
                   </InputAdornment>
                 ),

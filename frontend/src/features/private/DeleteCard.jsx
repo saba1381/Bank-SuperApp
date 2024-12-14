@@ -69,7 +69,7 @@ const DeleteCardButton = ({ cardNumber, onDelete }) => {
           {"حذف کارت بانکی"}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description" color="primary">
+          <DialogContentText id="alert-dialog-description" variant="h6">
             آیا از حذف کارت بانکی خود مطمئن هستید؟
           </DialogContentText>
         </DialogContent>
@@ -81,15 +81,17 @@ const DeleteCardButton = ({ cardNumber, onDelete }) => {
               handleDelete();
             }}
             autoFocus
-            color="primary"
+            variant="h5"
           >
             بله
           </Button>
           <Button onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              handleClose();
-            }} sx={{ color: "red" }}>
+              handleClose(); 
+            }} 
+            variant="h5"
+            sx={{  }}>
             خیر
           </Button>
         </DialogActions>

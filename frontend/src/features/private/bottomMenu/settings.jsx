@@ -7,6 +7,7 @@ import {
   Button,
   Container,
   Avatar,
+  useTheme
 } from "@mui/material";
 import { TiMessages } from "react-icons/ti";
 import { MdLock, MdTextFields } from "react-icons/md";
@@ -23,6 +24,8 @@ import { motion } from "framer-motion";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { MdEdit } from "react-icons/md";
 import Notification from "../Notification";
+import ThemeSwitcher from "../../../themeSwitch";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
 
 const Settings = () => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -32,12 +35,13 @@ const Settings = () => {
   const isCPPage = window.location.pathname === "/cp/setting";
   const isSettingPage = window.location.pathname === "/admin/setting";
   const navigate = useNavigate();
-  const [hasFetchedOnce, setHasFetchedOnce] = useState(false);  
+  const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
   const [isNewUser, setIsNewUser] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const mode = useSelector((state) => state.theme.mode);
+  const theme = useTheme();
 
   useEffect(() => {
-    
     if (user && !isLoading && !hasFetchedOnce) {
       dispatch(fetchUserProfile());
       setHasFetchedOnce(true);
@@ -48,8 +52,6 @@ const Settings = () => {
     const newUser = localStorage.getItem("isNewUser") === "true";
     setIsNewUser(newUser);
   }, []);
-
-
 
   const profileImageURL =
     user?.profile_image && user.profile_image.startsWith("/media/")
@@ -73,9 +75,12 @@ const Settings = () => {
 
   const handleChangePasswordClick = () => {
     if (isNewUser) {
-      setNotificationOpen(true); 
-    }else{navigate( isCPPage ? "/cp/setting/edit-password" : "/admin/setting/edit-password")}
-    
+      setNotificationOpen(true);
+    } else {
+      navigate(
+        isCPPage ? "/cp/setting/edit-password" : "/admin/setting/edit-password"
+      );
+    }
   };
 
   const handleBackToSettings = () => {
@@ -86,10 +91,10 @@ const Settings = () => {
     if (isNewUser) {
       setNotificationOpen(true);
     } else {
-      if(isCPPage){
-        navigate('/cp/edit-profile' , {state:{from : '/cp/setting'}});
-      }else if(isSettingPage){
-        navigate('/admin/edit-profile' , {state:{from : '/admin/setting'}});
+      if (isCPPage) {
+        navigate("/cp/edit-profile", { state: { from: "/cp/setting" } });
+      } else if (isSettingPage) {
+        navigate("/admin/edit-profile", { state: { from: "/admin/setting" } });
       }
     }
   };
@@ -97,7 +102,6 @@ const Settings = () => {
   const handleNotificationClose = () => {
     setNotificationOpen(false);
   };
-
 
   return (
     <>
@@ -115,7 +119,7 @@ const Settings = () => {
             position: "fixed",
             top: 0,
             left: 0,
-            backgroundColor: "#F5F5F9",
+            // backgroundColor: "#F5F5F9",
             zIndex: 1,
             overflowY: "auto",
           }}
@@ -127,7 +131,7 @@ const Settings = () => {
               left: 0,
               right: 0,
               bottom: 72,
-              backgroundColor: "#F5F5F9",
+              backgroundColor: theme.palette.background.paper,
               zIndex: 1,
               boxShadow: "0 -2px 2px rgba(0,0,0,0.1)",
               overflowY: "auto",
@@ -148,20 +152,23 @@ const Settings = () => {
                 </Button>
               </Box>
 
-
               {user && !isLoading && (isCPPage || isSettingPage) && (
                 <Box
                   sx={{
                     display: "flex",
                     alignItems: "center",
                     padding: 2,
-                    backgroundColor: "white",
+                    backgroundColor: theme.palette.background.paper,
                     justifyContent: "space-between",
                     borderRadius: "10px",
+                    border: "1px solid #ffffff",
                     boxShadow: "0 -2px 5px rgba(0,0,0,0.1)",
                   }}
                 >
-                  <Notification open={notificationOpen} onClose={handleNotificationClose} />
+                  <Notification
+                    open={notificationOpen}
+                    onClose={handleNotificationClose}
+                  />
                   <Box sx={{ display: "flex", alignItems: "center" }}>
                     <Avatar
                       src={profileImageURL || ""}
@@ -176,16 +183,19 @@ const Settings = () => {
                       sx={{
                         marginLeft: { xs: "0.4rem", md: "0.7rem" },
                         fontWeight: "bold",
-                        color: "black",
                         alignItems: "start",
-                        marginLeft:2
+                        marginLeft: 2,
                       }}
                     >
-                      {user.first_name} {user.last_name} 
+                      {user.first_name} {user.last_name}
                     </Typography>
                   </Box>
-                  <IconButton onClick={handleEditProfileClick} sx={{ ml: 1 , '&:hover' : {color:'pink'} }}>
-                    <MdEdit size={20}  />
+                  <IconButton
+                    onClick={handleEditProfileClick}
+                    
+                    sx={{ ml: 1, "&:hover": { color: "pink" } , color: theme.palette.text.secondary }}
+                  >
+                    <MdEdit size={20} />
                   </IconButton>
                 </Box>
               )}
@@ -196,6 +206,7 @@ const Settings = () => {
                   marginTop: "35px",
                   boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
                   overflow: "hidden",
+                  border: "1px solid #ffffff",
                 }}
               >
                 {[
@@ -204,59 +215,87 @@ const Settings = () => {
                     label: "تغییر رمز",
                     action: handleChangePasswordClick,
                   },
-                  ...(isSettingPage // فقط در صفحات `/admin/setting` نمایش داده شود
+                  ...(isSettingPage
                     ? [
                         {
                           icon: <TiMessages size={20} />,
                           label: "مدیریت اعلانات",
-                          action: () => navigate("/admin/announcements"), // مسیر مدیریت اعلانات
+                          action: () => navigate("/admin/announcements"),
                         },
                       ]
                     : []),
-                  { icon: <MdTextFields size={20} />, label: "تغییر سایز متن" },
                 ].map((item, index) => (
                   <Box
                     key={index}
                     sx={{
-                      backgroundColor: "white",
+                      backgroundColor: theme.palette.background.paper,
                       display: "flex",
                       alignItems: "center",
                       padding: 2,
                       marginBottom: "5px",
                       cursor: "pointer",
+                      border: "1px solid #ffffff",
                       "&:hover": { "& *": { color: "#6b7280" } },
                     }}
                     onClick={item.action}
                   >
-                    <IconButton sx={{ color:'#9711df ' }}>{item.icon}</IconButton>
+                    <IconButton sx={{ color: "#9711df " }}>
+                      {item.icon}
+                    </IconButton>
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
                       {item.label}
                     </Typography>
-                    <IconButton>
-                      <FaChevronLeft size={20} />
+                    <IconButton sx={{color: theme.palette.text.primary}}>
+                      <FaChevronLeft  size={17} />
                     </IconButton>
                   </Box>
                 ))}
+                <Box
+                  sx={{
+                    backgroundColor: theme.palette.background.paper,
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "5px",
+                    paddingLeft: 2,
+                    paddingRight: 0,
+                    paddingY: 0.8,
+                    cursor: "pointer",
+                    border: "1px solid #ffffff",
+                    "&:hover": { "& *": { color: "#6b7280" } },
+                  }}
+                >
+                  <IconButton sx={{ color: "#9711df " }}>
+                    <Brightness4Icon style={{ fontSize: "20px", color: "#9711df"}} />
+                  </IconButton>
+
+                  <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                    {mode === "dark" ? "حالت روشن" : "حالت تاریک"}
+                  </Typography>
+                  <IconButton >
+                    <ThemeSwitcher size={20} />
+                  </IconButton>
+                </Box>
 
                 <Box
                   sx={{
-                    backgroundColor: "white",
+                    backgroundColor: theme.palette.background.paper,
                     display: "flex",
                     alignItems: "center",
                     padding: 2,
                     cursor: "pointer",
+                    border: "1px solid #ffffff",
                     "&:hover": { "& *": { color: "#6b7280" } },
                   }}
                   onClick={handleLogoutClick}
                 >
-                  <IconButton sx={{color:'#9711df ' }}>
-                    <RiLogoutCircleRLine size={20} />
+                  <IconButton sx={{ color: "#9711df " }}>
+                    <RiLogoutCircleRLine size={20} sx={{ color: "#9711df " }} />
                   </IconButton>
                   <Typography variant="h6" sx={{ flexGrow: 1 }}>
                     خروج
                   </Typography>
-                  <IconButton>
-                    <FaChevronLeft size={20} />
+                  <IconButton sx={{color: theme.palette.text.primary}}>
+                    <FaChevronLeft size={17} />
                   </IconButton>
                 </Box>
               </Box>

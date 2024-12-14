@@ -16,6 +16,7 @@ import {
   Snackbar,
   Alert,
   InputAdornment,
+  useTheme
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { useFormik } from "formik";
@@ -73,6 +74,7 @@ export default function SignIn() {
   const userNameRef = useRef(null);
   const passwordRef = useRef(null);
   const [loading, setLoading] = useState(false);
+  const theme = useTheme();
 
   useEffect(() => {
     const accessToken = localStorage.getItem("access_token");
@@ -305,11 +307,12 @@ export default function SignIn() {
                       aria-label="toggle password visibility"
                       onClick={handleClickShowPassword}
                       edge="end"
+                      sx={{color: theme.palette.text.primary}}
                     >
                       {showPassword ? (
-                        <VisibilityOff sx={{ fontSize: "1.5rem" }} />
+                        <VisibilityOff sx={{ fontSize: "1.3rem" }} />
                       ) : (
-                        <Visibility sx={{ fontSize: "1.5rem" }} />
+                        <Visibility sx={{ fontSize: "1.3rem" }} />
                       )}
                     </IconButton>
                   </InputAdornment>

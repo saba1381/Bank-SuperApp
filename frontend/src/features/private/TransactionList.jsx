@@ -234,7 +234,8 @@ const TransactionList = () => {
             sx={{
               display: "flex",
               alignItems: "center",
-              backgroundColor: "#6200ea",
+              backgroundColor: (theme) =>
+                theme.palette.mode === "dark" ? "#3e0b9c" : "#6200ea",
               padding: "16px",
               borderRadius: "8px 8px 0 0",
             }}
@@ -258,9 +259,9 @@ const TransactionList = () => {
 
           <Card
             sx={{
-              marginTop: 2,
+              marginTop: 1,
               padding: 2,
-              borderRadius: "8px",
+              borderRadius: "0px 0px 8px 8px",
               boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
             }}
           >
@@ -283,41 +284,6 @@ const TransactionList = () => {
               justifyContent: "center",
             }}
           >
-            {/* <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-
-              width: "20%",
-              bgcolor: "#ebebeb",
-              borderRadius: "20px",
-              "&:hover": {
-                bgcolor: "#d3d3d3",
-              },
-              cursor: "pointer",
-              border: "1px solid #d6d6d6",
-            }}
-          >
-            <IconButton
-              onClick={handleSettingsClick}
-              sx={{
-                color: "#6200ea",
-                "&:hover": {
-                  color: "grey",
-                },
-                height: "40px",
-                width: "40px",
-                borderColor: "grey",
-              }}
-            >
-              <VscSettings
-                style={{
-                  color: "#6200ea",
-                  fontSize: "1.38rem",
-                }}
-              />
-            </IconButton>
-          </Box> */}
             <Box
               sx={{
                 display: "flex",
@@ -325,18 +291,13 @@ const TransactionList = () => {
                 justifyContent: "center",
               }}
             >
-              {/* <Typography
-                variant="body1"
-                sx={{ mb: 0.6 }}
-                style={{ color: "#858585" }}
-              >
-                نوع تراکنش
-              </Typography> */}
               <ToggleButtonGroup
                 value={transactionType}
                 exclusive
                 onChange={handleTransactionTypeChange}
                 sx={{
+                  color: (theme) =>
+                    theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
                   marginBottom: 0.5,
                   height: "48px",
                   "& .MuiToggleButton-root": {
@@ -344,9 +305,69 @@ const TransactionList = () => {
                   },
                 }}
               >
-                <ToggleButton value="both">هر دو</ToggleButton>
-                <ToggleButton value="cardToCard">انتقال وجه</ToggleButton>
-                <ToggleButton value="recharge">خرید شارژ</ToggleButton>
+                <ToggleButton
+                  sx={{
+                    color: (theme) =>
+                      theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                    borderColor: (theme) =>
+                      theme.palette.mode === "dark" ? "#ffffff" : "grey",
+                    "&.Mui-selected": {
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === "dark" ? "#333a4b" : "#dceffa",
+                      color: (theme) =>
+                        theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                    },
+                    "&:hover": {
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === "dark" ? "#444c5e" : "#dceffa",
+                    },
+                  }}
+                  value="both"
+                >
+                  هر دو
+                </ToggleButton>
+                <ToggleButton
+                   sx={{
+                    color: (theme) =>
+                      theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                    borderColor: (theme) =>
+                      theme.palette.mode === "dark" ? "#ffffff" : "grey",
+                    "&.Mui-selected": {
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === "dark" ? "#333a4b" : "#dceffa",
+                      color: (theme) =>
+                        theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                    },
+                    "&:hover": {
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === "dark" ? "#444c5e" : "#dceffa",
+                    },
+                  }}
+                  value="cardToCard"
+                >
+                  انتقال وجه
+                </ToggleButton>
+                <ToggleButton
+                   sx={{
+                    color: (theme) =>
+                      theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                    borderColor: (theme) =>
+                      theme.palette.mode === "dark" ? "#ffffff" : "grey",
+                    "&.Mui-selected": {
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === "dark" ? "#333a4b" : "#dceffa",
+                      color: (theme) =>
+                        theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                    },
+                    "&:hover": {
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === "dark" ? "#444c5e" : "#dceffa",
+                    },
+                  }}
+                  value="recharge"
+                >
+                  خرید شارژ
+                </ToggleButton>
               </ToggleButtonGroup>
             </Box>
 
@@ -357,11 +378,34 @@ const TransactionList = () => {
               sx={{
                 borderRadius: "10px",
                 marginRight: "8px",
+                borderRadius: "2px",
+
                 width: "30%",
                 height: "40px",
                 "& .MuiOutlinedInput-root": {
                   height: "100%",
+                  "& fieldset": {
+                    borderColor: (theme) =>
+                      theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f", // رنگ border در حالت عادی
+                  },
+                  "&:hover fieldset": {
+                    borderColor: (theme) =>
+                      theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: (theme) =>
+                      theme.palette.mode === "dark" ? "#ffffff" : "#3b82f6",
+                  },
                 },
+                "& .MuiInputLabel-root": {
+                  color: (theme) =>
+                    theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: (theme) =>
+                    theme.palette.mode === "dark" ? "#ffffff" : "#3b82f6",
+                },
+
                 "& input[type=number]": {
                   MozAppearance: "textfield",
                 },
@@ -398,7 +442,8 @@ const TransactionList = () => {
 
           <List
             sx={{
-              backgroundColor: "#fff",
+              backgroundColor: (theme) =>
+                theme.palette.mode === "dark" ? "#d4d3d3" : "#fff",
               borderRadius: "8px",
               boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
               marginTop: 2,
@@ -454,7 +499,10 @@ const TransactionList = () => {
                         </Typography>
                         <Typography
                           sx={{
-                            color: "grey",
+                            color: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "#6a6a6a"
+                                : "grey",
                             fontSize: "0.8rem",
                             display: "flex",
                             justifyContent: "space-between",
@@ -612,9 +660,13 @@ const TransactionList = () => {
                       جزئیات
                     </Button>
                   </Box>
-                  {index < filteredTransactions.length -1 && (
+                  {index < filteredTransactions.length - 1 && (
                     <Divider
-                      sx={{ borderWidth: "7px", borderColor: "#f8f8f8" }}
+                      sx={{
+                        borderWidth: "7px",
+                        borderColor: (theme) =>
+                          theme.palette.mode === "dark" ? "#121212" : "#f8f8f8",
+                      }}
                     />
                   )}
                 </React.Fragment>

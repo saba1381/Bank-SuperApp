@@ -7,6 +7,7 @@ import {
   Typography,
   Snackbar,
   Alert,
+  useTheme,
 } from "@mui/material";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { motion } from "framer-motion";
@@ -15,8 +16,8 @@ import * as Yup from "yup";
 import { UseAppDispatch } from "../../store/configureStore";
 import { addCard, fetchCards } from "../account/accountSlice";
 import { useNavigate } from "react-router-dom";
-import InputAdornment from '@mui/material/InputAdornment';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
+import InputAdornment from "@mui/material/InputAdornment";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
 
 const AddCard = () => {
   const [bankName, setBankName] = useState("");
@@ -32,28 +33,51 @@ const AddCard = () => {
   const cardNum = useRef(null);
   const yourName = useRef(null);
   const exDate = useRef(null);
-
+  const theme = useTheme();
 
   const banks = {
-    603799: { name: "ملی", icon: <img src="/BankIcons/meli.png" alt="ملی" />, iconWidth: "53px",iconHeight: "55px",},
-    589210: { name: "سپه", icon: <img src="/BankIcons/sepah.png" alt="سپه" />, iconWidth: "48px",iconHeight: "48px", },
+    603799: {
+      name: "ملی",
+      icon: <img src="/BankIcons/meli.png" alt="ملی" />,
+      iconWidth: "53px",
+      iconHeight: "55px",
+    },
+    589210: {
+      name: "سپه",
+      icon: <img src="/BankIcons/sepah.png" alt="سپه" />,
+      iconWidth: "48px",
+      iconHeight: "48px",
+    },
     621986: {
       name: "سامان",
-      icon: <img src="/BankIcons/saman.png" alt="سامان" />, iconWidth: "40px",iconHeight: "40px",
+      icon: <img src="/BankIcons/saman.png" alt="سامان" />,
+      iconWidth: "40px",
+      iconHeight: "40px",
     },
     622106: {
       name: "پارسیان",
-      icon: <img src="/BankIcons/parsian.png" alt="پارسیان" />, iconWidth: "70px",iconHeight: "70px",
+      icon: <img src="/BankIcons/parsian.png" alt="پارسیان" />,
+      iconWidth: "70px",
+      iconHeight: "70px",
     },
     589463: {
       name: "رفاه کارگران",
-      icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />, iconWidth: "35px",iconHeight: "40px",
+      icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />,
+      iconWidth: "35px",
+      iconHeight: "40px",
     },
     502229: {
       name: "پاسارگاد",
-      icon: <img src="/BankIcons/pasargad.png" alt="پاسارگاد" />, iconWidth: "30px",iconHeight: "38px",
+      icon: <img src="/BankIcons/pasargad.png" alt="پاسارگاد" />,
+      iconWidth: "30px",
+      iconHeight: "38px",
     },
-    610433: { name: "ملت", icon: <img src="/BankIcons/melat.png" alt="ملت" />, iconWidth: "35px",iconHeight: "35px", },
+    610433: {
+      name: "ملت",
+      icon: <img src="/BankIcons/melat.png" alt="ملت" />,
+      iconWidth: "35px",
+      iconHeight: "35px",
+    },
   };
 
   const bankColors = {
@@ -88,39 +112,38 @@ const AddCard = () => {
     return number.replace(/\d/g, (d) => persianDigits[d]);
   };
 
-
   const isValidCardNumber = (cardNumber) => {
-    const digits = cardNumber.replace(/\D/g, ''); 
+    const digits = cardNumber.replace(/\D/g, "");
     let sum = 0;
     let isSecond = false;
-  
+
     for (let i = digits.length - 1; i >= 0; i--) {
       let d = parseInt(digits[i], 10);
-  
+
       if (isSecond) {
         d = d * 2;
         if (d > 9) {
           d -= 9;
         }
       }
-  
+
       sum += d;
       isSecond = !isSecond;
     }
-  
+
     return sum % 10 === 0;
   };
 
   const handleCardNumberChange = (e) => {
     const inputValue = e.target.value.replace(/\D/g, "");
     if (inputValue.length > 16) return;
-  
+
     const formattedNumber = formatCardNumber(inputValue);
     formik.setFieldValue("cardNumber", formattedNumber);
-  
+
     const firstSixDigits = inputValue.substring(0, 6);
     const bank = banks[firstSixDigits];
-  
+
     if (inputValue.length >= 6) {
       if (bank) {
         if (bankName !== bank.name) {
@@ -147,16 +170,14 @@ const AddCard = () => {
         }
       }
     }
-  
+
     // چک کردن معتبر بودن کارت
     if (inputValue.length === 16) {
       if (!isValidCardNumber(inputValue)) {
-        
         setIsInvalidCard(true);
       }
     }
   };
-  
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -171,18 +192,24 @@ const AddCard = () => {
     },
     validationSchema: Yup.object({
       cardNumber: Yup.string()
-        .matches(/^\d{4}-\d{4}-\d{4}-\d{4}$/, "شماره کارت خود را کامل وارد کنید.")
+        .matches(
+          /^\d{4}-\d{4}-\d{4}-\d{4}$/,
+          "شماره کارت خود را کامل وارد کنید."
+        )
         .required("شماره کارت الزامی است"),
       name: Yup.string()
         .matches(/^[\u0600-\u06FF\s]+$/, "نام کارت باید فارسی باشد")
         .required("نام کارت الزامی است"),
       cardMonth: Yup.string()
         .matches(/^\d{1,2}$/, "ماه باید یک یا دو رقمی باشد")
-        .test("month", "ماه معتبر نیست", (val) => !val || (parseInt(val, 10) >= 1 && parseInt(val, 10) <= 12)),
-      cardYear: Yup.string()
-        .matches(/^\d{2}$/, "سال معتبر نیست")
+        .test(
+          "month",
+          "ماه معتبر نیست",
+          (val) => !val || (parseInt(val, 10) >= 1 && parseInt(val, 10) <= 12)
+        ),
+      cardYear: Yup.string().matches(/^\d{2}$/, "سال معتبر نیست"),
     }),
-    
+
     onSubmit: async (values) => {
       try {
         const cardData = {
@@ -225,10 +252,10 @@ const AddCard = () => {
     if (!formik.values.cardMonth || !formik.values.cardYear) {
       return null; // اگر تاریخ انقضا وارد نشده است، چیزی نمایش ندهد
     }
-    return `تاریخ انقضا: ${toPersianDigits(formik.values.cardYear)}/${toPersianDigits(formik.values.cardMonth)}`;
+    return `تاریخ انقضا: ${toPersianDigits(
+      formik.values.cardYear
+    )}/${toPersianDigits(formik.values.cardMonth)}`;
   };
-  
-  
 
   const animationProps = {
     initial: { opacity: 0, y: 20 },
@@ -237,16 +264,20 @@ const AddCard = () => {
   };
 
   const handleKeyDown = (event, nextFieldRef) => {
-    if (event.key === 'Enter') {
-        event.preventDefault();
-        nextFieldRef.current.focus();
+    if (event.key === "Enter") {
+      event.preventDefault();
+      nextFieldRef.current.focus();
     }
-};
+  };
 
   return (
     <Box
       maxWidth="full"
-      sx={{ paddingY: 2, paddingX: { xs: 1, sm: 2, md: 4 } , height:{sm:'160vh' , xs:'105vh'} }}
+      sx={{
+        paddingY: 2,
+        paddingX: { xs: 1, sm: 2, md: 4 },
+        height: { sm: "160vh", xs: "105vh" },
+      }}
     >
       <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
         <Button
@@ -254,7 +285,7 @@ const AddCard = () => {
           color="primary"
           onClick={() => navigate("/cp/user-cards")}
           endIcon={<KeyboardBackspaceIcon />}
-          sx={{fontSize:'1.1rem'}}
+          sx={{ fontSize: "0.9rem" }}
         >
           بازگشت
         </Button>
@@ -282,7 +313,6 @@ const AddCard = () => {
                   sm: "2rem",
                   md: "1.7rem",
                 },
-                color: "black",
               }}
             >
               ثبت کارت جدید
@@ -293,12 +323,13 @@ const AddCard = () => {
                 mb: 2,
                 textAlign: "center",
                 fontSize: "0.9rem",
-                color: "gray",
+                color: (theme) =>
+                  theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
               }}
             >
               برای تعریف کارت جدید در موبایل بانک، اطلاعات زیر را وارد کنید.
             </Typography>
-            <Box sx={{ display: "grid", gap: 4, mb: 4  }}>
+            <Box sx={{ display: "grid", gap: 4, mb: 4 }}>
               <motion.div {...animationProps}>
                 <TextField
                   label="شماره کارت"
@@ -308,19 +339,43 @@ const AddCard = () => {
                   onChange={handleCardNumberChange}
                   onKeyDown={(e) => handleKeyDown(e, yourName)}
                   inputRef={cardNum}
-                  slotProps={{input:{ startAdornment: (
-                    <InputAdornment position="start">
-                      {banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)] && (
-    React.cloneElement(banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].icon, {
-      style: {
-        width: banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].iconWidth,
-        height: banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].iconHeight,
-      },
-    })
-  )}
-                    </InputAdornment>
-                  ), }}}
-                  inputProps={{maxLength: 19, style:{direction:'rtl'}}}
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          {banks[
+                            formik.values.cardNumber
+                              .replace(/\D/g, "")
+                              .substring(0, 6)
+                          ] &&
+                            React.cloneElement(
+                              banks[
+                                formik.values.cardNumber
+                                  .replace(/\D/g, "")
+                                  .substring(0, 6)
+                              ].icon,
+                              {
+                                style: {
+                                  width:
+                                    banks[
+                                      formik.values.cardNumber
+                                        .replace(/\D/g, "")
+                                        .substring(0, 6)
+                                    ].iconWidth,
+                                  height:
+                                    banks[
+                                      formik.values.cardNumber
+                                        .replace(/\D/g, "")
+                                        .substring(0, 6)
+                                    ].iconHeight,
+                                },
+                              }
+                            )}
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                  inputProps={{ maxLength: 19, style: { direction: "rtl" } }}
                   error={
                     isInvalidCard ||
                     (formik.touched.cardNumber &&
@@ -333,15 +388,16 @@ const AddCard = () => {
                   InputLabelProps={{
                     sx: {
                       color: isInvalidCard ? "red" : "grey",
-                      '&.Mui-focused': {
-                                    color: '#1C3AA9',
-                                    fontSize: {xs: '1.3rem'},
-                                    transform: 'translate(-3px, -18px) scale(0.75)'
-                                },
-                                '&.Mui-error': {
-                                    color: 'pink',
-                                },
-                                 fontSize:'1rem'
+                      "&.Mui-focused": {
+                        color: (theme) =>
+                          theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                        fontSize: { xs: "1.3rem" },
+                        transform: "translate(-3px, -18px) scale(0.75)",
+                      },
+                      "&.Mui-error": {
+                        color: "pink",
+                      },
+                      fontSize: "1rem",
                     },
                   }}
                   sx={{
@@ -354,7 +410,6 @@ const AddCard = () => {
                     justifyContent: "center",
                   }}
                 />
-              
               </motion.div>
               <motion.div {...animationProps}>
                 <TextField
@@ -363,19 +418,19 @@ const AddCard = () => {
                   value={bankName}
                   InputProps={{ readOnly: true }}
                   error={isInvalidCard}
-                  
                   InputLabelProps={{
                     sx: {
                       color: isInvalidCard ? "red" : "grey",
-                      '&.Mui-focused': {
-                                    color: '#1C3AA9',
-                                    fontSize: {xs: '1.3rem'},
-                                    transform: 'translate(-1px, -10px) scale(0.75)'
-                                },
-                                '&.Mui-error': {
-                                    color: 'pink',
-                                },
-                                 fontSize:'1rem'
+                      "&.Mui-focused": {
+                        color: (theme) =>
+                          theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                        fontSize: { xs: "1.3rem" },
+                        transform: "translate(-1px, -10px) scale(0.75)",
+                      },
+                      "&.Mui-error": {
+                        color: "pink",
+                      },
+                      fontSize: "1rem",
                     },
                   }}
                   sx={{
@@ -384,7 +439,6 @@ const AddCard = () => {
                         borderColor: isInvalidCard ? "red" : "",
                       },
                     },
-                 
                   }}
                 />
               </motion.div>
@@ -402,17 +456,17 @@ const AddCard = () => {
                   helperText={formik.touched.name && formik.errors.name}
                   InputLabelProps={{
                     sx: {
-                      color: "grey",
-                      '&.Mui-focused': {
-                                    color: '#1C3AA9',
-                                    fontSize: {xs: '1.3rem'},
-                                    transform: 'translate(-3px, -14px) scale(0.75)'
-                                },
-                                '&.Mui-error': {
-                                    color: 'pink',
-                                },
-                                fontSize:'1rem'
-                               
+                      color: 'grey',
+                      "&.Mui-focused": {
+                        color: (theme) =>
+                          theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                        fontSize: { xs: "1.3rem" },
+                        transform: "translate(-3px, -14px) scale(0.75)",
+                      },
+                      "&.Mui-error": {
+                        color: "pink",
+                      },
+                      fontSize: "1rem",
                     },
                   }}
                 />
@@ -420,7 +474,13 @@ const AddCard = () => {
               <motion.div {...animationProps}>
                 <Box sx={{}}>
                   <Typography
-                    sx={{ fontSize: "16px", mb: 1, ml: 2, color: "grey" }}
+                    sx={{
+                      fontSize: "16px",
+                      mb: 1,
+                      ml: 2,
+                      color: (theme) =>
+                        theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                    }}
                   >
                     تاریخ انقضا:
                   </Typography>
@@ -443,19 +503,24 @@ const AddCard = () => {
                       InputLabelProps={{
                         sx: {
                           color: "grey",
-                          '&.Mui-focused': {
-                                    color: '#1C3AA9',
-                                    fontSize: {xs: '1.3rem'},
-                                    transform: 'translate(6px, -14px) scale(0.75)'
-                                },
-                                '&.Mui-error': {
-                                    color: 'pink',
-                                },
-                                 fontSize:'1rem'
+                          "&.Mui-focused": {
+                            color: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "#ffffff"
+                                : "#4f4f4f",
+                            fontSize: { xs: "1.3rem" },
+                            transform: "translate(6px, -14px) scale(0.75)",
+                          },
+                          "&.Mui-error": {
+                            color: "pink",
+                          },
+                          fontSize: "1rem",
                         },
                       }}
                     />
-                    <Typography sx={{ fontSize: {sm:'30px' , xs:'25px'} }}>/</Typography>
+                    <Typography sx={{ fontSize: { sm: "30px", xs: "25px" } }}>
+                      /
+                    </Typography>
                     <TextField
                       label="سال"
                       fullWidth
@@ -474,15 +539,18 @@ const AddCard = () => {
                       InputLabelProps={{
                         sx: {
                           color: "grey",
-                          '&.Mui-focused': {
-                                    color: '#1C3AA9',
-                                    fontSize: {xs: '1.3rem'},
-                                    transform: 'translate(6px, -14px) scale(0.75)'
-                                },
-                                '&.Mui-error': {
-                                    color: 'pink',
-                                },
-                                 fontSize:'1rem'
+                          "&.Mui-focused": {
+                            color: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "#ffffff"
+                                : "#4f4f4f",
+                            fontSize: { xs: "1.3rem" },
+                            transform: "translate(6px, -14px) scale(0.75)",
+                          },
+                          "&.Mui-error": {
+                            color: "pink",
+                          },
+                          fontSize: "1rem",
                         },
                       }}
                     />
@@ -491,66 +559,97 @@ const AddCard = () => {
               </motion.div>
             </Box>
             {bankName &&
-  formik.values.cardNumber.replace(/\D/g, "").length >= 6 &&
-  !isInvalidCard && (
-    <Paper
-      sx={{
-        paddingX: 1.2,
-        paddingY: 2.2,
-        backgroundColor: bankColor,
-        color: "white",
-        borderRadius: 6,
-        boxShadow: 3,
-        display: "flex",
-        flexDirection: "row",
-        gap: 1,
-        mb: 2,
-        position: "relative",
-      }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          width: "100%",
-          alignItems: "center",
-          gap: 6,
-        }}
-      >
-<Box sx={{ display: "flex", alignItems: "center", gap: 1  }}>
-  {banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)] && (
-    React.cloneElement(banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].icon, {
-      style: {
-        width: banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].iconWidth,
-        height: banks[formik.values.cardNumber.replace(/\D/g, "").substring(0, 6)].iconHeight,
-      },
-    })
-  )}
-  <Typography
+              formik.values.cardNumber.replace(/\D/g, "").length >= 6 &&
+              !isInvalidCard && (
+                <Paper
+                  sx={{
+                    paddingX: 1.2,
+                    paddingY: 2.2,
+                    backgroundColor: bankColor,
+                    color: "white",
+                    borderRadius: 6,
+                    boxShadow: 3,
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: 1,
+                    mb: 2,
+                    position: "relative",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      {banks[
+                        formik.values.cardNumber
+                          .replace(/\D/g, "")
+                          .substring(0, 6)
+                      ] &&
+                        React.cloneElement(
+                          banks[
+                            formik.values.cardNumber
+                              .replace(/\D/g, "")
+                              .substring(0, 6)
+                          ].icon,
+                          {
+                            style: {
+                              width:
+                                banks[
+                                  formik.values.cardNumber
+                                    .replace(/\D/g, "")
+                                    .substring(0, 6)
+                                ].iconWidth,
+                              height:
+                                banks[
+                                  formik.values.cardNumber
+                                    .replace(/\D/g, "")
+                                    .substring(0, 6)
+                                ].iconHeight,
+                            },
+                          }
+                        )}
+                      <Typography
+                        sx={{
+                          flexGrow: 1,
+                          textAlign: "left",
+                          color: textColor,
+                          width: "43%",
+                          fontSize: { xs: "16px", md: "20px" },
+                        }}
+                      >
+                        {formik.values.name ? `کارت ${formik.values.name}` : ""}
+                      </Typography>
+                    </Box>
 
-    sx={{ flexGrow: 1, textAlign: "left", color: textColor , width:'43%' , fontSize:{xs:'16px' , md:'20px'}}}
-  >
-    {formik.values.name ? `کارت ${formik.values.name}` : ""}
-  </Typography>
-</Box>
-
-        <Typography
-          sx={{ color: textColor, textAlign: "center", justifyContent: "center", width:'52%' , fontSize:{xs:'18px' , sm:'21px'} }}
-        >
-          {formik.values.cardNumber
-            ? toPersianDigits(formik.values.cardNumber)
-            : "•••• •••• •••• ••••"}
-        </Typography>
-      </Box>
-    </Paper>
-  )}
+                    <Typography
+                      sx={{
+                        color: textColor,
+                        textAlign: "center",
+                        justifyContent: "center",
+                        width: "52%",
+                        fontSize: { xs: "18px", sm: "21px" },
+                      }}
+                    >
+                      {formik.values.cardNumber
+                        ? toPersianDigits(formik.values.cardNumber)
+                        : "•••• •••• •••• ••••"}
+                    </Typography>
+                  </Box>
+                </Paper>
+              )}
 
             <Button
               variant="contained"
               color="primary"
               type="submit"
               fullWidth
-              sx={{ p: 3 }}
+              sx={{ p: 3, fontSize: "15px" }}
             >
               ثبت کارت جدید
             </Button>
