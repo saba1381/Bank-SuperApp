@@ -30,6 +30,7 @@ import Notification from "../Notification";
 import ThemeSwitcher from "../../../themeSwitch";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import { RiErrorWarningLine } from "react-icons/ri";
+import { useLocation } from "react-router-dom";
 
 
 const Settings = () => {
@@ -108,6 +109,11 @@ const Settings = () => {
     setNotificationOpen(false);
   };
 
+  const location = useLocation(); 
+
+  const isAdminPath = location.pathname.startsWith("/admin");
+  const bottomValue = isAdminPath ? 0 : 72;
+
   return (
     <>
       {showChangePassword ? (
@@ -135,7 +141,7 @@ const Settings = () => {
               top: 0,
               left: 0,
               right: 0,
-              bottom: 72,
+              bottom: bottomValue,
               backgroundColor: theme.palette.background.paper,
               zIndex: 1,
               boxShadow: "0 -2px 2px rgba(0,0,0,0.1)",
@@ -166,7 +172,7 @@ const Settings = () => {
                     backgroundColor: theme.palette.background.paper,
                     justifyContent: "space-between",
                     borderRadius: "10px",
-                    border: "1px solid #ffffff",
+                    border: "0.6px solid #d5d5d5",
                     boxShadow: "0 -2px 5px rgba(0,0,0,0.1)",
                   }}
                 >
@@ -211,7 +217,7 @@ const Settings = () => {
                   marginTop: "35px",
                   boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
                   overflow: "hidden",
-                  border: "1px solid #ffffff",
+                  //border: "0.6px solid #d5d5d5",
                 }}
               >
                 {[
@@ -220,15 +226,15 @@ const Settings = () => {
                     label: "تغییر رمز",
                     action: handleChangePasswordClick,
                   },
-                  ...(isSettingPage
-                    ? [
-                        {
-                          icon: <TiMessages size={20} />,
-                          label: "مدیریت اعلانات",
-                          action: () => navigate("/admin/announcements"),
-                        },
-                      ]
-                    : []),
+                  // ...(isSettingPage
+                  //   ? [
+                  //       {
+                  //         icon: <TiMessages size={20} />,
+                  //         label: "مدیریت اعلانات",
+                  //         action: () => navigate("/admin/announcements"),
+                  //       },
+                  //     ]
+                  //   : []),
                 ].map((item, index) => (
                   <Box
                     key={index}
@@ -238,8 +244,9 @@ const Settings = () => {
                       alignItems: "center",
                       padding: 2,
                       marginBottom: "5px",
+                      borderRadius:'12px 12px 0 0',
                       cursor: "pointer",
-                      border: "1px solid #ffffff",
+                      border: "0.6px solid #d5d5d5",
                       "&:hover": { "& *": { color: "#6b7280" } },
                     }}
                     onClick={item.action}
@@ -263,9 +270,10 @@ const Settings = () => {
                     marginBottom: "5px",
                     paddingLeft: 2,
                     paddingRight: 0,
+                    
                     paddingY: 0.8,
                     cursor: "pointer",
-                    border: "1px solid #ffffff",
+                    border: "0.6px solid #d5d5d5",
                     "&:hover": { "& *": { color: "#6b7280" } },
                   }}
                 >
@@ -288,7 +296,8 @@ const Settings = () => {
                     alignItems: "center",
                     padding: 2,
                     cursor: "pointer",
-                    border: "1px solid #ffffff",
+                    border: "0.6px solid #d5d5d5",
+                    borderRadius:'0 0 12px 12px',
                     "&:hover": { "& *": { color: "#6b7280" } },
                   }}
                   onClick={handleLogoutClick}

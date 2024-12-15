@@ -256,13 +256,13 @@ const ProfileEdit = () => {
                   onBlur={formik.handleBlur}
                   error={formik.touched.last_name && Boolean(formik.errors.last_name)}
                   helperText={formik.touched.last_name && formik.errors.last_name}
-                  InputLabelProps={{ sx: { color: theme.palette.grey } }}
+                  InputLabelProps={{ sx: { color: 'gray' } }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       '&:hover fieldset': { borderColor: '#FF1493' },
                       '&.Mui-focused fieldset': { borderColor: '#FF1493' },
                     },
-                    '& label.Mui-focused': { color: '#FF1493' },
+                    '& label.Mui-focused': { color: 'grey' },
                   }}
                 />
               </Grid>

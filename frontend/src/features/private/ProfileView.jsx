@@ -31,7 +31,7 @@ const isAdminPage = location.pathname === '/admin/profile-view';
       : '/default-profile.png';
 
   return (
-    <Container maxWidth="md" sx={{ paddingTop: 2 , paddingBottom:11 }}>
+    <Container maxWidth="md" sx={{ paddingTop: 2 , paddingBottom:{xs:11 , sm:5} }}>
       <Box sx={{ mb: 1,display:{xs:'flex',sm:'none' ,md:'none'}, justifyContent: "flex-end" }}>
         <Button
           variant="contained"
@@ -70,7 +70,7 @@ const isAdminPage = location.pathname === '/admin/profile-view';
           </Typography>
         </motion.div>
         <Grid container spacing={2} sx={{ textAlign: { xs: 'center', sm: 'left' },mt:2 }}>
-          <Grid item xs={12} sm={12} sx={{mb: 1,
+          <Grid item xs={12} sm={12} sx={{mb: 0,
                 display: "flex",
                 justifyContent: "space-between",
                 borderBottom: "1px dashed gray",
@@ -80,7 +80,7 @@ const isAdminPage = location.pathname === '/admin/profile-view';
             <Typography variant="h6" fontWeight="bold"  sx={{fontSize:'1.1rem' }}>نام کاربری:</Typography>
             <Typography variant="h6" sx={{fontSize:'0.98rem'}} >{user?.username || 'نامشخص'}</Typography>
           </Grid>
-          <Grid item xs={12} sm={12} sx={{mb: 1,
+          <Grid item xs={12} sm={12} sx={{mb: 0.2,
                 display: "flex",
                 justifyContent: "space-between",
                 borderBottom: "1px dashed gray",
@@ -90,7 +90,7 @@ const isAdminPage = location.pathname === '/admin/profile-view';
             <Typography variant="h6" fontWeight="bold"  sx={{fontSize:'1.1rem'}}>نام:</Typography>
             <Typography variant="h6" sx={{fontSize:'0.98rem' }}>{user?.first_name || 'نامشخص'}</Typography>
           </Grid>
-          <Grid item xs={12} sm={12} sx={{mb: 1,
+          <Grid item xs={12} sm={12} sx={{mb: 0.2,
                 display: "flex",
                 justifyContent: "space-between",
                 borderBottom: "1px dashed gray",
@@ -100,15 +100,16 @@ const isAdminPage = location.pathname === '/admin/profile-view';
             <Typography variant="h6" fontWeight="bold"  sx={{fontSize:'1.1rem'}}>نام خانوادگی:</Typography>
             <Typography variant="h6" sx={{fontSize:'0.98rem'}}>{user?.last_name || 'نامشخص'}</Typography>
           </Grid>
-          <Grid item xs={12} sm={12} sx={{mb: 1,
+          <Grid item xs={12} sm={12} sx={{mb: 0.2,
                 display: "flex",
                 justifyContent: "space-between",
                 borderBottom: "1px dashed gray",
-                paddingY: 1,
+                paddingTop: 0,
+                paddingBottom:1.1,
                 // color: "#56575b",
                 paddingX: 1,}}>
-            <Typography variant="h6" fontWeight="bold"  sx={{fontSize:'1.1rem'}}>شماره موبایل:</Typography>
-            <Typography variant="h4" sx={{fontSize:'1.1rem'}}>{user?.phone_number ? toPersianNumbers(user.phone_number) : 'نامشخص'}</Typography>
+            <Typography variant="h6"   sx={{fontSize:'1.1rem'}}>شماره موبایل:</Typography>
+            <Typography variant="h5" sx={{fontSize:'1.1rem'}}>{user?.phone_number ? toPersianNumbers(user.phone_number) : 'نامشخص'}</Typography>
           </Grid>
           <Grid item xs={12} sm={12} sx={{
                 display: "flex",
