@@ -16,7 +16,7 @@ import {
   Snackbar,
   Alert,
   InputAdornment,
-  useTheme
+  useTheme,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { useFormik } from "formik";
@@ -26,7 +26,6 @@ import { signInUser } from "../account/accountSlice";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
-
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   maxWidth: "600px",
@@ -185,6 +184,9 @@ export default function SignIn() {
                 padding: (0, 0, 0, 2),
                 display: "flex",
                 height: "5px",
+                color: theme.palette.mode === "dark" ? "#abd4f6" : "primary",
+                borderColor:
+                  theme.palette.mode === "dark" ? "#abd4f6" : "primary",
               }}
             >
               راهنما
@@ -307,7 +309,7 @@ export default function SignIn() {
                       aria-label="toggle password visibility"
                       onClick={handleClickShowPassword}
                       edge="end"
-                      sx={{color: theme.palette.text.primary}}
+                      sx={{ color: theme.palette.text.primary }}
                     >
                       {showPassword ? (
                         <VisibilityOff sx={{ fontSize: "1.3rem" }} />
@@ -382,7 +384,6 @@ export default function SignIn() {
                 )}
               </Button>
             </Box>
-
 
             <Box
               display="flex"

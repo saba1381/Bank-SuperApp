@@ -194,7 +194,8 @@ const ChangePassword = ({ onBack }) => {
   <Button
     onClick={handleSnackbarOpen}
     variant="outlined"
-    sx={{ paddingX: 3, paddingY: 1, fontSize: 14, height: '40px' }}
+    sx={{ paddingX: 3, paddingY: 1, fontSize: 14, height: '40px' , color: theme.palette.mode === "dark" ? "#abd4f6" : "primary",
+      borderColor: theme.palette.mode === "dark" ? "#abd4f6" : "primary", }}
   >
     راهنما
   </Button>

@@ -9,6 +9,7 @@ import {
   DialogActions,
   DialogContent,
   Button,
+  useTheme,
 } from "@mui/material";
 import AssuredWorkloadIcon from "@mui/icons-material/AssuredWorkload";
 import NotificationIcon from "./icons/NotificationIcon";
@@ -25,7 +26,7 @@ import { useHeader } from "../components/contexts/HeaderContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaBell, FaCreditCard, FaUserCircle, FaCog } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa"; 
-
+import { RiErrorWarningLine } from "react-icons/ri";
 
 
 const Header = () => {
@@ -39,6 +40,8 @@ const Header = () => {
   const location = useLocation();
   const isAdminPage = location.pathname.startsWith("/admin");
   const isAdsPage = location.pathname === "/cp/ads";
+  const theme = useTheme();
+
 
 
 
@@ -93,7 +96,7 @@ const Header = () => {
     <AppBar
       position="sticky"
       sx={{
-        background: "linear-gradient(to right, #7c33ed, #2460eb)",
+        background:theme.palette.mode === "dark" ?  "linear-gradient(to right, #5a1bbc, #1248c6)" : 'linear-gradient(to right, #7c33ed, #2460eb)',
         boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.1)",
         paddingY: 0.2,
       }}
@@ -209,14 +212,33 @@ const Header = () => {
           },
         }}
       >
-        <DialogContent>
+        <DialogContent sx={{display:'flex' , textAlign:'left' , justifyContent:'center' , alignItems:'center' , gap:1}}>
+          <RiErrorWarningLine size={18}/>
           <Typography>آیا برای خروج از موبایل بانک مطمئن هستید؟</Typography>
         </DialogContent>
         <DialogActions sx={{ justifyContent: "start" }}>
-          <Button onClick={handleConfirmLogout} color="secondary">
+          <Button onClick={handleConfirmLogout} variant="h5" sx={{
+          color: "white",
+          height:'35px',
+          borderRadius:'10px',
+          backgroundColor: "#7c33ed",
+          "&:hover": {
+            backgroundColor: "#5a23b5",
+          },
+          transition: "background-color 0.3s ease",
+        }}>
             بله
           </Button>
-          <Button onClick={handleCloseDialog} color="primary">
+          <Button onClick={handleCloseDialog} variant="h5" sx={{
+          color: "white",
+          height:'35px',
+          borderRadius:'10px',
+          backgroundColor: "#7c33ed",
+          "&:hover": {
+            backgroundColor: "#5a23b5",
+          },
+          transition: "background-color 0.3s ease",
+        }}>
             انصراف
           </Button>
         </DialogActions>

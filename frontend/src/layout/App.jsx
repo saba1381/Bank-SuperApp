@@ -11,6 +11,11 @@ import { sleep } from "../util/util";
 import BottomMenu from '../features/private/bottomMenu/BottomMenu';
 import { useSelector } from 'react-redux';
 import Header from '../components/Header';
+import { theme, darkTheme } from "./../theme";
+import { RouterProvider } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { toggleTheme , setTheme } from "../features/theme/themeSlice";
+
 
 export default function App() {
   const dispatch = UseAppDispatch();
@@ -22,6 +27,18 @@ export default function App() {
   const [showServices, setShowServices] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const isCPPageAdmin = window.location.pathname.startsWith('/cp') || window.location.pathname.startsWith('/admin'); 
+  const location = useLocation(); 
+  const mode = useSelector((state) => state.theme.mode);
+
+  useEffect(() => {
+    if (location.pathname === '/sign-in' || location.pathname === '/sign-in-admin') {
+
+      dispatch(setTheme("light"));
+    } else {
+      const savedTheme = localStorage.getItem("theme") || "light";
+      dispatch(setTheme(savedTheme));
+    }
+  }, [dispatch, location.pathname]); 
 
   const handleProfileClick = () => setShowProfile(true);
   const handleHistoryClick = () => setShowHistory(true);

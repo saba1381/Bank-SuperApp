@@ -7,7 +7,10 @@ import {
   Button,
   Container,
   Avatar,
-  useTheme
+  useTheme,
+  Dialog,
+  DialogActions,
+  DialogContent,
 } from "@mui/material";
 import { TiMessages } from "react-icons/ti";
 import { MdLock, MdTextFields } from "react-icons/md";
@@ -26,6 +29,8 @@ import { MdEdit } from "react-icons/md";
 import Notification from "../Notification";
 import ThemeSwitcher from "../../../themeSwitch";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
+import { RiErrorWarningLine } from "react-icons/ri";
+
 
 const Settings = () => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -301,45 +306,47 @@ const Settings = () => {
               </Box>
             </Container>
 
-            <Modal
-              open={openDialog}
-              onClose={handleCloseDialog}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 4000,
-              }}
-            >
-              <Box
-                sx={{
-                  borderRadius: "16px",
-                  backgroundColor: "white",
-                  padding: 2,
-                  width: "300px",
-                  boxShadow: 24,
-                  outline: "none",
-                }}
-              >
-                <Typography>
-                  آیا برای خروج از موبایل بانک مطمئن هستید؟
-                </Typography>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "start",
-                    marginTop: 2,
-                  }}
-                >
-                  <Button onClick={handleConfirmLogout} color="secondary">
-                    بله
-                  </Button>
-                  <Button onClick={handleCloseDialog} color="primary">
-                    انصراف
-                  </Button>
-                </Box>
-              </Box>
-            </Modal>
+             <Dialog
+                   open={openDialog}
+                   onClose={handleCloseDialog}
+                   PaperProps={{
+                     sx: {
+                       borderRadius: "16px",
+                       zIndex: 1000,
+                     },
+                   }}
+                 >
+                   <DialogContent sx={{display:'flex' , textAlign:'left' , justifyContent:'center' , alignItems:'center' , gap:1}}>
+                     <RiErrorWarningLine size={18}/>
+                     <Typography>آیا برای خروج از موبایل بانک مطمئن هستید؟</Typography>
+                   </DialogContent>
+                   <DialogActions sx={{ justifyContent: "start" }}>
+                     <Button onClick={handleConfirmLogout} variant="h5" sx={{
+                     color: "white",
+                     height:'35px',
+                     borderRadius:'10px',
+                     backgroundColor: "#7c33ed",
+                     "&:hover": {
+                       backgroundColor: "#5a23b5",
+                     },
+                     transition: "background-color 0.3s ease",
+                   }}>
+                       بله
+                     </Button>
+                     <Button onClick={handleCloseDialog} variant="h5" sx={{
+                     color: "white",
+                     height:'35px',
+                     borderRadius:'10px',
+                     backgroundColor: "#7c33ed",
+                     "&:hover": {
+                       backgroundColor: "#5a23b5",
+                     },
+                     transition: "background-color 0.3s ease",
+                   }}>
+                       انصراف
+                     </Button>
+                   </DialogActions>
+                 </Dialog>
           </Box>
         </motion.div>
       )}

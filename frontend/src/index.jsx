@@ -21,7 +21,9 @@ import { router } from "./router/Routes";
 import { HeaderProvider } from "./components/contexts/HeaderContext";
 import * as serviceWorker from './serviceWorker';
 import { useSelector } from "react-redux";
-
+import { toggleTheme , setTheme } from "../src/features/theme/themeSlice";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 if (process.env.NODE_ENV === 'production') {
@@ -37,7 +39,16 @@ serviceWorkerRegistration.unregister();
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
+  const dispatch = useDispatch();
   const mode = useSelector((state) => state.theme.mode);
+
+
+
+  useEffect(() => {
+
+    const savedTheme = localStorage.getItem("theme") || "light";
+    dispatch(setTheme(savedTheme));
+  }, [dispatch]);
 
   
 

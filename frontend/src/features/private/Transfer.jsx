@@ -15,6 +15,7 @@ import {
   Checkbox,
   Menu,
   MenuItem,
+  useTheme,
 } from "@mui/material";
 import { purple } from "@mui/material/colors";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -70,6 +71,7 @@ const Transfer = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [ownersName, setOwnersName] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
+  const theme = useTheme();
 
   const handleOpenMenu = (event) => {
     if (userCards.length > 0) {
@@ -149,8 +151,8 @@ const Transfer = () => {
     589463: {
       name: "رفاه کارگران",
       icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />,
-      iconWidth: "32px",
-      iconHeight: "32px",
+      iconWidth: "28px",
+      iconHeight: "34px",
     },
     502229: {
       name: "پاسارگاد",
@@ -556,6 +558,10 @@ const Transfer = () => {
                     sx={{
                       ml: 2,
                       fontSize: "13px",
+                      color:
+                        theme.palette.mode === "dark" ? "#abd4f6" : "primary",
+                      borderColor:
+                        theme.palette.mode === "dark" ? "#abd4f6" : "primary",
                       padding: (0, 0, 0, 2),
                       display: "flex",
                       height: "5px",
@@ -607,9 +613,14 @@ const Transfer = () => {
                             formik.touched.initialCard &&
                             (formik.errors.initialCard || isInvalidCard)
                               ? "red"
+                              : theme.palette.mode === "dark"
+                              ? "#ffffff"
                               : "grey",
                           "&.Mui-focused": {
-                            color: "#1C3AA9",
+                            color: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "#ffffff"
+                                : "#4f4f4f",
                             fontSize: {
                               xs: "1.01rem",
                               sm: "1.3rem",
@@ -668,7 +679,11 @@ const Transfer = () => {
                               handleSelectSourceCard(card.card_number)
                             }
                             style={{
-                              backgroundColor: "#f3f4f9",
+                              backgroundColor:
+                                theme.palette.mode === "dark"
+                                  ? "#474646"
+                                  : "#f3f4f9",
+
                               paddingY: 0.1,
                               boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.01)",
                               fontSize: "0.9rem",
@@ -676,11 +691,15 @@ const Transfer = () => {
                             }}
                             onMouseEnter={(e) =>
                               (e.currentTarget.style.backgroundColor =
-                                "#ececec")
+                                theme.palette.mode === "dark"
+                                  ? "#818181"
+                                  : "#e7ecec")
                             }
                             onMouseLeave={(e) =>
                               (e.currentTarget.style.backgroundColor =
-                                "#f7f7f7")
+                                theme.palette.mode === "dark"
+                                  ? "#474646"
+                                  : "white")
                             }
                           >
                             {bank && (
@@ -745,9 +764,14 @@ const Transfer = () => {
                             formik.touched.desCard &&
                             (formik.errors.desCard || isInvalidDesCard)
                               ? "red"
+                              : theme.palette.mode === "dark"
+                              ? "#ffffff"
                               : "grey",
                           "&.Mui-focused": {
-                            color: "#1C3AA9",
+                            color: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "#ffffff"
+                                : "#4f4f4f",
                             fontSize: {
                               xs: "1.01rem",
                               sm: "1.3rem",
@@ -805,7 +829,10 @@ const Transfer = () => {
                               key={card.des_card}
                               onClick={() => handleSelectCard(card.des_card)}
                               style={{
-                                backgroundColor: "#f3f4f9",
+                                backgroundColor:
+                                  theme.palette.mode === "dark"
+                                    ? "#474646"
+                                    : "#f3f4f9",
                                 paddingY: 0.1,
                                 boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.01)",
                                 fontSize: "0.9rem",
@@ -813,11 +840,15 @@ const Transfer = () => {
                               }}
                               onMouseEnter={(e) =>
                                 (e.currentTarget.style.backgroundColor =
-                                  "#ececec")
+                                  theme.palette.mode === "dark"
+                                    ? "#818181"
+                                    : "#e7ecec")
                               }
                               onMouseLeave={(e) =>
                                 (e.currentTarget.style.backgroundColor =
-                                  "#f7f7f7")
+                                  theme.palette.mode === "dark"
+                                    ? "#474646"
+                                    : "white")
                               }
                             >
                               <div
@@ -828,7 +859,14 @@ const Transfer = () => {
                                   justifyContent: "space-between",
                                 }}
                               >
-                                <div style={{ display: "flex" }}>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    width: "100%",
+                                 
+                                  }}
+                                >
                                   {bank && (
                                     <img
                                       src={bank.icon.props.src}
@@ -851,9 +889,18 @@ const Transfer = () => {
                                   }}
                                   style={{
                                     cursor: "pointer",
-                                    color: "gray",
+                                    marginRight:4,
+                                    marginBottom:2,
+                                    fontSize:17,
+                                    color: (theme) =>
+                                      theme.palette.mode === "dark"
+                                        ? "#ffffff"
+                                        : "#4f4f4f",
                                     "&:hover": {
-                                      color: "red",
+                                      color: (theme) =>
+                                        theme.palette.mode === "dark"
+                                          ? "#ffffff"
+                                          : "red",
                                     },
                                   }}
                                 />
@@ -887,19 +934,22 @@ const Transfer = () => {
                         formik.touched.amount && Boolean(formik.errors.amount)
                       }
                       helperText={formik.touched.amount && formik.errors.amount}
-                      
                       InputLabelProps={{
                         sx: {
-                          color: "grey",
+                          color: (theme) =>
+                            theme.palette.mode === "dark" ? "#ffffff" : "grey",
                           textAlign: "center",
 
                           "&.Mui-focused": {
-                            color: "#1C3AA9",
+                            color: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "#ffffff"
+                                : "#4f4f4f",
                             fontSize: {
-                              xs: "1.01rem", // تغییر اندازه در کوچکترین صفحه
-                              sm: "1.3rem", // برای صفحه کوچک
-                              md: "1.4rem", // برای صفحه متوسط
-                              lg: "1.5rem", // برای صفحه بزرگ
+                              xs: "1.01rem",
+                              sm: "1.3rem",
+                              md: "1.4rem",
+                              lg: "1.5rem",
                             },
                             transform: {
                               xs: "translate(10px, -15px) scale(0.85)",
@@ -948,8 +998,6 @@ const Transfer = () => {
                       value={formik.values.cvv2}
                       onBlur={formik.handleBlur}
                       onChange={formik.handleChange}
-                      
-                      
                       onKeyDown={(e) => {
                         handleKeyDown(e, exDate);
                         if (e.key.length === 1 && !/[0-9]/.test(e.key)) {
@@ -966,20 +1014,24 @@ const Transfer = () => {
                       helperText={formik.touched.cvv2 && formik.errors.cvv2}
                       InputLabelProps={{
                         sx: {
-                          color: "grey",
+                          color: (theme) =>
+                            theme.palette.mode === "dark" ? "#ffffff" : "grey",
                           "&.Mui-focused": {
-                            color: "#1C3AA9",
+                            color: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "#ffffff"
+                                : "#4f4f4f",
                             fontSize: {
-                              xs: "1.01rem", // تغییر اندازه در کوچکترین صفحه
-                              sm: "1.3rem", // برای صفحه کوچک
-                              md: "1.4rem", // برای صفحه متوسط
-                              lg: "1.5rem", // برای صفحه بزرگ
+                              xs: "1.01rem",
+                              sm: "1.3rem",
+                              md: "1.4rem",
+                              lg: "1.5rem",
                             },
                             transform: {
                               xs: "translate(10px, -15px) scale(0.85)",
                               sm: "translate(13px, -14px) scale(0.75)",
-                              md: "translate(12px, -14px) scale(0.70)", // برای صفحه متوسط
-                              lg: "translate(10px, -22px) scale(0.65)", // برای صفحه بزرگ
+                              md: "translate(12px, -14px) scale(0.70)",
+                              lg: "translate(10px, -22px) scale(0.65)",
                             },
                           },
                           fontSize: "0.9rem",
@@ -993,7 +1045,8 @@ const Transfer = () => {
                           <InputAdornment position="end">
                             <IconButton
                               onClick={handleTogglePassword}
-                              style={{ fontSize: "1.2rem", color: "navy" }}
+                              style={{ fontSize: "1.2rem" }}
+                              sx={{ color: theme.palette.text.primary }}
                             >
                               {showPassword ? (
                                 <VisibilityOff />
@@ -1010,7 +1063,13 @@ const Transfer = () => {
                   <motion.div {...animationProps}>
                     <Box sx={{}}>
                       <Typography
-                        sx={{ fontSize: "13px", mb: 1, ml: 2, color: "gray" }}
+                        sx={{
+                          fontSize: "13px",
+                          mb: 1,
+                          ml: 2,
+                          color: (theme) =>
+                            theme.palette.mode === "dark" ? "white" : "grey",
+                        }}
                       >
                         تاریخ انقضا: <span style={{ color: "red" }}>*</span>
                       </Typography>
@@ -1037,9 +1096,15 @@ const Transfer = () => {
                           }
                           InputLabelProps={{
                             sx: {
-                              color: "grey",
+                              color: (theme) =>
+                                theme.palette.mode === "dark"
+                                  ? "#ffffff"
+                                  : "grey",
                               "&.Mui-focused": {
-                                color: "#1C3AA9",
+                                color: (theme) =>
+                                  theme.palette.mode === "dark"
+                                    ? "#ffffff"
+                                    : "grey",
                                 fontSize: {
                                   xs: "1.01rem", // تغییر اندازه در کوچکترین صفحه
                                   sm: "1.3rem", // برای صفحه کوچک
@@ -1092,9 +1157,15 @@ const Transfer = () => {
                           }
                           InputLabelProps={{
                             sx: {
-                              color: "grey",
+                              color: (theme) =>
+                                theme.palette.mode === "dark"
+                                  ? "#ffffff"
+                                  : "grey",
                               "&.Mui-focused": {
-                                color: "#1C3AA9",
+                                color: (theme) =>
+                                  theme.palette.mode === "dark"
+                                    ? "#ffffff"
+                                    : "grey",
                                 fontSize: {
                                   xs: "1.01rem", // تغییر اندازه در کوچکترین صفحه
                                   sm: "1.3rem", // برای صفحه کوچک
@@ -1133,9 +1204,14 @@ const Transfer = () => {
                       }
                       name="saveCard"
                       sx={{
-                        color: purple[500],
+                        color:
+                          theme.palette.mode === "dark" ? "white" : purple[500],
+                        mr: -0.5,
                         "&.Mui-checked": {
-                          color: purple[700],
+                          color:
+                            theme.palette.mode === "dark"
+                              ? "#e7ecec"
+                              : purple[700],
                         },
                       }}
                     />
@@ -1154,16 +1230,25 @@ const Transfer = () => {
                   }}
                 >
                   <Button
-                    color="primary"
                     type="submit"
                     fullWidth
                     sx={{
                       width: "50%",
-                      bgcolor: "navy",
-                      "&:hover": { bgcolor: "primary.dark" },
+                      bgcolor: theme.palette.mode === "dark" ? "white" : "navy",
+                      "&:hover": {
+                        bgcolor:
+                          theme.palette.mode === "dark"
+                            ? theme.palette.primary.dark
+                            : theme.palette.primary.main,
+                        color:
+                          theme.palette.mode === "dark"
+                            ? "primary.400"
+                            : "white",
+                      },
                       whiteSpace: "nowrap",
                       fontSize: "0.9rem",
-                      color: "white",
+                      color:
+                        theme.palette.mode === "dark" ? "primary" : "white",
                     }}
                     onClick={formik.handleSubmit}
                   >
@@ -1171,7 +1256,6 @@ const Transfer = () => {
                   </Button>
 
                   <Button
-                    color="primary"
                     onClick={handleBackClick}
                     endIcon={<KeyboardBackspaceIcon />}
                     sx={{
@@ -1180,13 +1264,21 @@ const Transfer = () => {
                       py: 1,
                       borderRadius: 7,
                       border: 1,
-                      borderColor: "grey.700",
+                      borderColor:
+                        theme.palette.mode === "dark" ? "grey.400" : "grey.700",
                       justifyContent: "center",
                       display: "flex",
                       alignItems: "center",
                       gap: 1,
-                      ":hover": { color: "grey.600" },
+                      ":hover": {
+                        color:
+                          theme.palette.mode === "dark"
+                            ? "grey.400"
+                            : "grey.600",
+                      },
                       fontSize: "0.9rem",
+                      color:
+                        theme.palette.mode === "dark" ? "white" : "primary",
                     }}
                   >
                     بازگشت
@@ -1213,7 +1305,7 @@ const Transfer = () => {
               sx={{
                 zIndex: (theme) => theme.zIndex.modal - 1,
                 bgcolor: "rgba(0, 0, 0, 0.5)",
-              }} // تیره کردن پس‌زمینه
+              }}
             />
             <Snackbar
               open={helpSnackbarOpen}

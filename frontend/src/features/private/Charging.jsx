@@ -13,6 +13,7 @@ import {
   FormControl,
   FormControlLabel,
   Checkbox,
+  useTheme,
 } from "@mui/material";
 import { purple } from "@mui/material/colors";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -57,30 +58,13 @@ const Charging = () => {
   const [ownersName, setOwnersName] = useState(null);
   const [selectedOperator, setSelectedOperator] = useState("");
   const amountOptions = ["50000", "100000", "200000", "500000", "1000000"];
+  const theme = useTheme();
 
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
 
-  // useEffect(() => {
-  //   const fetchUserCards = async () => {
-  //     try {
-  //       const cards = await dispatch(fetchCards()).unwrap();
-
-  //       if (Array.isArray(cards)) {
-  //         setUserCards(cards);
-  //       } else {
-  //         setUserCards([]);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching cards:", error);
-  //       setUserCards([]);
-  //     }
-  //   };
-
-  //   fetchUserCards();
-  // }, [dispatch]);
 
 
 
@@ -179,7 +163,7 @@ const Charging = () => {
         <Box
           maxWidth="full"
           sx={{
-            paddingY: { xs: 18, sm: 0 },
+            paddingY: { xs: 14, sm: 0 },
             paddingX: { xs: 1.5, sm: 18, md:36},
             height: { sm: "90vh", xs: "70vh" },
             display: "flex",
@@ -263,22 +247,26 @@ const Charging = () => {
                       helperText={formik.touched.mobile && formik.errors.mobile}
                       InputLabelProps={{
                         sx: {
-                          color: "grey",
+                          color: (theme) =>
+                            theme.palette.mode === "dark" ? "#ffffff" : "grey",
                           textAlign: "center",
 
                           "&.Mui-focused": {
-                            color: "#1C3AA9",
+                            color: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "#ffffff"
+                                : "#4f4f4f",
                             fontSize: {
-                              xs: "1.01rem",
+                              xs: "1rem",
                               sm: "1.3rem",
                               md: "1.4rem",
                               lg: "1.5rem",
                             },
                             transform: {
-                              xs: "translate(4px, -20px) scale(0.85)",
-                              sm: "translate(6px, -18px) scale(0.75)",
-                              md: "translate(6px, -18px) scale(0.70)",
-                              lg: "translate(10px, -22px) scale(0.65)",
+                              xs: "translate(10px, -15px) scale(0.75)",
+                              sm: "translate(13px, -14px) scale(0.75)",
+                              md: "translate(12px, -14px) scale(0.70)", // برای صفحه متوسط
+                              lg: "translate(10px, -22px) scale(0.65)", // برای صفحه بزرگ
                             },
                           },
                           fontSize: "1.1rem",
@@ -295,12 +283,16 @@ const Charging = () => {
                                 color:
                                   formik.touched.mobile && formik.errors.mobile
                                     ? "red"
-                                    : "gray",
+                                    :  theme.palette.mode === 'dark' 
+                                    ? 'white' 
+                                    : 'primary',
                                 fontSize: "1.2rem",
                                
                               }}
+                              
+                              
                             >
-                              <RiSimCard2Fill />
+                              <RiSimCard2Fill  />
                             </span>
                           </InputAdornment>
                         ),
@@ -343,21 +335,26 @@ const Charging = () => {
             helperText={formik.touched.amount && formik.errors.amount}
             InputLabelProps={{
               sx: {
-                color: "grey",
+                color: (theme) =>
+                  theme.palette.mode === "dark" ? "#ffffff" : "grey",
                 textAlign: "center",
+
                 "&.Mui-focused": {
-                  color: "#1C3AA9",
+                  color: (theme) =>
+                    theme.palette.mode === "dark"
+                      ? "#ffffff"
+                      : "#4f4f4f",
                   fontSize: {
-                    xs: "1.01rem",
+                    xs: "1rem",
                     sm: "1.3rem",
                     md: "1.4rem",
                     lg: "1.5rem",
                   },
                   transform: {
-                    xs: "translate(10px, -15px) scale(0.85)",
+                    xs: "translate(10px, -15px) scale(0.75)",
                     sm: "translate(13px, -14px) scale(0.75)",
-                    md: "translate(12px, -14px) scale(0.70)",
-                    lg: "translate(10px, -22px) scale(0.65)",
+                    md: "translate(12px, -14px) scale(0.70)", 
+                    lg: "translate(10px, -22px) scale(0.65)", 
                   },
                 },
                 fontSize: "1.1rem",
@@ -372,12 +369,16 @@ const Charging = () => {
                 <InputAdornment position="end">
                   <span
                     style={{
-                      color: formik.touched.amount && formik.errors.amount ? "red" : "gray", marginLeft:-15
+                      color: formik.touched.amount && formik.errors.amount ? "red" : theme.palette.mode === 'dark' 
+                      ? 'white' 
+                      : 'grey', marginLeft:-15
                     }}
                   >
                     ریال
                   </span>
-                  <MdOutlineKeyboardArrowDown style={{ marginLeft: -30,marginRight:15 ,color: "gray" , fontSize:'1.7rem'}} />
+                  <MdOutlineKeyboardArrowDown style={{ marginLeft: -30,marginRight:15 ,color:theme.palette.mode === 'dark' 
+                                    ? 'white' 
+                                    : 'grey' , fontSize:'1.7rem'}} />
                 </InputAdornment>
               ),
               sx: { borderRadius: "10px" },
@@ -404,11 +405,21 @@ const Charging = () => {
                     fullWidth
                     sx={{
                       width: "50%",
-                      bgcolor: "navy",
-                      "&:hover": { bgcolor: "primary.dark" },
+                      bgcolor: theme.palette.mode === "dark" ? "white" : "navy",
+                      "&:hover": {
+                        bgcolor:
+                          theme.palette.mode === "dark"
+                            ? theme.palette.primary.dark
+                            : theme.palette.primary.main,
+                        color:
+                          theme.palette.mode === "dark"
+                            ? "primary.400"
+                            : "white",
+                      },
                       whiteSpace: "nowrap",
                       fontSize: "0.9rem",
-                      color: "white",
+                      color:
+                        theme.palette.mode === "dark" ? "primary" : "white",
                     }}
                     onClick={formik.handleSubmit}
                   >
@@ -416,7 +427,6 @@ const Charging = () => {
                   </Button>
 
                   <Button
-                    color="primary"
                     onClick={handleBackClick}
                     endIcon={<KeyboardBackspaceIcon />}
                     sx={{
@@ -425,13 +435,21 @@ const Charging = () => {
                       py: 1,
                       borderRadius: 7,
                       border: 1,
-                      borderColor: "grey.700",
+                      borderColor:
+                        theme.palette.mode === "dark" ? "grey.400" : "grey.700",
                       justifyContent: "center",
                       display: "flex",
                       alignItems: "center",
                       gap: 1,
-                      ":hover": { color: "grey.600" },
+                      ":hover": {
+                        color:
+                          theme.palette.mode === "dark"
+                            ? "grey.400"
+                            : "grey.600",
+                      },
                       fontSize: "0.9rem",
+                      color:
+                        theme.palette.mode === "dark" ? "white" : "primary",
                     }}
                   >
                     بازگشت

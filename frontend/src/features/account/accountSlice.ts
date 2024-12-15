@@ -567,6 +567,7 @@ export const accountSlice = createSlice({
       localStorage.removeItem("isNewUser");
 
       localStorage.setItem("isManualSignOut", "true");
+      localStorage.setItem("theme", "light");
 
       const toastId = toast.info("شما با موفقیت خارج شدید", {
         autoClose: false,

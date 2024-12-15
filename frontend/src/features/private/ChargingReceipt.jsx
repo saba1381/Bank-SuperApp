@@ -89,7 +89,8 @@ const ChargingReciept = ({initailCard , amount ,transactionDate, transactionStat
   >
     <Container sx={{ height: {xs:'70vh' , sm:'100vh'},display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom:{sm:10} }}>
 
-    <Box sx={{ maxWidth: 500,width:{xs:500 , sm:400} ,mx: 'auto', paddingY: 0, paddingX: 0, borderRadius: 2, boxShadow: 3, bgcolor: 'white' }}>
+    <Box sx={{ maxWidth: 500,width:{xs:500 , sm:400} ,mx: 'auto', paddingY: 0, paddingX: 0, borderRadius: 2, boxShadow: 3, bgcolor: (theme) =>
+              theme.palette.mode === "dark" ? "#dddddd" : "white" }}>
       <Box sx={{ textAlign: 'center', mb: 1 }}>
         <Typography variant="h5" sx={{ fontWeight: 'bold', color: transactionStatus === 'success' ? 'green' : 'white' , bgcolor: transactionStatus === 'success' ? '#b6e9d2' : 'red' , p:2}}>
         {transactionStatus === 'success' ? (

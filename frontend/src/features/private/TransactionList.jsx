@@ -627,9 +627,15 @@ const TransactionList = () => {
                         borderTop: "none",
                         borderBottom: "none",
                         "&:hover": {
-                          bgcolor: "#d6d6d6",
+                          bgcolor: (theme) =>
+                            theme.palette.mode === "dark"
+                              ? "#686a6b "
+                              : "#d6d6d6",
                           borderColor: "#d6d6d6",
-                          color: "#0e5ec4",
+                          color: (theme) =>
+                            theme.palette.mode === "dark"
+                              ? "white"
+                              : "#48479d",
                           borderLeft: "none",
                           borderTop: "none",
                           borderBottom: "none",
@@ -653,7 +659,14 @@ const TransactionList = () => {
                         color: "#0e5ec4",
                         borderColor: "#717070",
                         "&:hover": {
-                          bgcolor: "#d6d6d6",
+                          bgcolor: (theme) =>
+                            theme.palette.mode === "dark"
+                              ? "#686a6b"
+                              : "#d6d6d6",
+                              color: (theme) =>
+                                theme.palette.mode === "dark"
+                                  ? "white"
+                                  : "#48479d",
                         },
                       }}
                     >

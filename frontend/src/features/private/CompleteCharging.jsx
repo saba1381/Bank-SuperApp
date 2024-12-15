@@ -11,6 +11,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  useTheme,
 } from "@mui/material";
 import { purple } from "@mui/material/colors";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -65,6 +66,7 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
   const [transactionStatus, setTransactionStatus] = useState(null);
   const [transactionDate, setTransactionDate] = useState(null);
   const [anchorElSource, setAnchorElSource] = useState(null);
+  const theme = useTheme();
 
   const handleOpenMenuSource = (event) => {
     if (userCards.length > 0) {
@@ -181,8 +183,8 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
     589463: {
       name: "رفاه کارگران",
       icon: <img src="/BankIcons/refah.png" alt="رفاه کارگران" />,
-      iconWidth: "32px",
-      iconHeight: "32px",
+      iconWidth: "28px",
+      iconHeight: "34px",
     },
     502229: {
       name: "پاسارگاد",
@@ -324,13 +326,10 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
       cardMonth: "",
       cardYear: "",
     },
-    validateOnBlur:false,
+    validateOnBlur: false,
     validationSchema: Yup.object({
       initialCard: Yup.string()
-        .matches(
-          /^\d{4}-\d{4}-\d{4}-\d{4}$/,
-          "شماره کارت را کامل وارد کنید."
-        )
+        .matches(/^\d{4}-\d{4}-\d{4}-\d{4}$/, "شماره کارت را کامل وارد کنید.")
         .required("شماره کارت الزامی است"),
       dynamicPassword: Yup.string()
         .matches(/^\d{1,5}$/, "رمز پویای معتبر وارد کنید")
@@ -351,12 +350,13 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
         .matches(/^\d{2}$/, "سال معتبر نیست")
         .required("سال الزامی است"),
     }),
-    
+
     onSubmit: async (values) => {
       try {
-        const formattedCard = values.initialCard.replace(/-/g, '');
-        const result = await dispatch(verifyChargeInfo({...values,
-          initialCard: formattedCard, })).unwrap();
+        const formattedCard = values.initialCard.replace(/-/g, "");
+        const result = await dispatch(
+          verifyChargeInfo({ ...values, initialCard: formattedCard })
+        ).unwrap();
         setTransactionStatus("success");
         setShowReceipt(true);
         setAmount(chargeAmount);
@@ -490,7 +490,7 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                   paddingY: { xs: 3.6, md: 4 },
                   borderRadius: 3,
                   width: "100%",
-                  paddingX: { xs: 2.9, sm: 4 , md:10},
+                  paddingX: { xs: 2.9, sm: 4, md: 10 },
                 }}
               >
                 <Box
@@ -563,7 +563,7 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.5 }}
                   >
-                      <TextField
+                    <TextField
                       label="شماره کارت"
                       fullWidth
                       name="initialCard"
@@ -595,9 +595,14 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                             formik.touched.initialCard &&
                             (formik.errors.initialCard || isInvalidCard)
                               ? "red"
+                              : theme.palette.mode === "dark"
+                              ? "#ffffff"
                               : "grey",
                           "&.Mui-focused": {
-                            color: "#1C3AA9",
+                            color: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "#ffffff"
+                                : "#4f4f4f",
                             fontSize: {
                               xs: "1.01rem",
                               sm: "1.3rem",
@@ -656,7 +661,10 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                               handleSelectSourceCard(card.card_number)
                             }
                             style={{
-                              backgroundColor: "#f3f4f9",
+                              backgroundColor:
+                                theme.palette.mode === "dark"
+                                  ? "#474646"
+                                  : "#f3f4f9",
                               paddingY: 0.1,
                               boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.01)",
                               fontSize: "0.9rem",
@@ -664,11 +672,15 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                             }}
                             onMouseEnter={(e) =>
                               (e.currentTarget.style.backgroundColor =
-                                "#ececec")
+                                theme.palette.mode === "dark"
+                                  ? "#818181"
+                                  : "#e7ecec")
                             }
                             onMouseLeave={(e) =>
                               (e.currentTarget.style.backgroundColor =
-                                "#f7f7f7")
+                                theme.palette.mode === "dark"
+                                  ? "#474646"
+                                  : "white")
                             }
                           >
                             {bank && (
@@ -722,7 +734,12 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                           <InputAdornment position="end">
                             <IconButton
                               onClick={handleTogglePasswordPooya}
-                              style={{ fontSize: "1.2rem", color: "navy" , marginRight:-10 }}
+                              style={{
+                                fontSize: "1.2rem",
+                                color: "navy",
+                                marginRight: -10,
+                              }}
+                              sx={{ color: theme.palette.text.primary }}
                             >
                               {showPasswordPooya ? (
                                 <VisibilityOff />
@@ -732,36 +749,92 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                             </IconButton>
                           </InputAdornment>
                         ),
-                        sx: { borderRadius: "10px" },
+                        sx: {
+                          borderRadius: "10px",
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            borderColor: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "grey.300 !important"
+                                : "grey.300 !important",
+                          },
+                          "&:hover .MuiOutlinedInput-notchedOutline": {
+                            borderColor: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "white !important"
+                                : "grey.400 !important",
+                          },
+                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                            borderColor: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "white !important"
+                                : "#1C3AA9 !important",
+                          },
+                          "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+                            borderColor: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "red !important"
+                                : "pink !important",
+                          },
+                          "& .MuiInputBase-input": {
+                            color: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "white !important"
+                                : "inherit",
+                            fontSize: "1rem",
+                          },
+                          "&.Mui-error .MuiInputBase-input": {
+                            color: "red !important",
+                          },
+                        },
                       }}
                       InputLabelProps={{
                         sx: {
-                          color: "gray",
+                          color: (theme) =>
+                            theme.palette.mode === "dark" ? "white" : "grey",
+                          "&.Mui-error": {
+                            color: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "red !important"
+                                : "pink !important",
+                          },
                           "&.Mui-focused": {
-                            color: "#1C3AA9",
-                            fontSize: {
-                              xs: "1.01rem",
-                              sm: "1.3rem",
-                              md: "1.4rem",
-                              lg: "1.5rem",
-                            },
-                            transform: {
-                              xs: "translate(10px, -15px) scale(0.85)",
-                              sm: "translate(13px, -14px) scale(0.75)",
-                              md: "translate(12px, -14px) scale(0.70)",
-                              lg: "translate(10px, -22px) scale(0.65)",
-                            },
+                            color: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "white !important"
+                                : "grey !important",
+                            fontSize: { xs: "0.96rem" },
                             "&.Mui-error": {
                               color: "pink",
+                              "&.Mui-focused": {
+                                color: (theme) =>
+                                  theme.palette.mode === "dark"
+                                    ? "white"
+                                    : "#4f4f4f",
+                                fontSize: {
+                                  xs: "1.01rem",
+                                  sm: "1.3rem",
+                                  md: "1.4rem",
+                                  lg: "1.5rem",
+                                },
+                                transform: {
+                                  xs: "translate(10px, -15px) scale(0.85)",
+                                  sm: "translate(13px, -14px) scale(0.75)",
+                                  md: "translate(12px, -14px) scale(0.70)",
+                                  lg: "translate(10px, -22px) scale(0.65)",
+                                },
+                              },
                             },
                           },
-                          fontSize: "1rem",
-                        },
-                      }}
-                      FormHelperTextProps={{
-                        sx: {
-                          height: "1.5rem",
-                          marginTop: "0.5rem",
+                          borderColor: (theme) =>
+                            theme.palette.mode === "dark"
+                              ? "white"
+                              : "grey.300",
+                          "&:hover": {
+                            borderColor: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "white"
+                                : "grey.400",
+                          },
                         },
                       }}
                       sx={{
@@ -781,7 +854,8 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                     />
                     <Box
                       sx={{
-                        bgcolor: "navy",
+                        bgcolor:
+                          theme.palette.mode === "dark" ? "white" : "navy",
                         borderRadius: "10px",
                         paddingY: 0.2,
                         transition: "opacity 0.3s ease",
@@ -796,11 +870,21 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                     >
                       <Button
                         sx={{
-                          color: isTimerActive ? "white" : "white",
+                          color: isTimerActive
+                            ? theme.palette.mode === "dark"
+                              ? "navy"
+                              : "white"
+                            : theme.palette.mode === "dark"
+                            ? "navy"
+                            : "white",
                           borderRadius: "10px",
                           paddingY: 2,
                           whiteSpace: "nowrap",
-                          bgcolor: isTimerActive ? "navy" : "transparent",
+                          bgcolor: isTimerActive
+                            ? theme.palette.mode === "dark"
+                              ? "white"
+                              : "navy"
+                            : "transparent",
                           transition: "background-color 0.3s ease",
                           cursor: isTimerActive ? "not-allowed" : "pointer",
                         }}
@@ -809,7 +893,13 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                       >
                         <span
                           style={{
-                            color: "white",
+                            color: isTimerActive
+                            ? theme.palette.mode === "dark"
+                              ? "navy"
+                              : "white"
+                            : theme.palette.mode === "dark"
+                            ? "navy"
+                            : "white",
                             fontSize: isTimerActive ? "1.2rem" : "0.9rem",
                           }}
                         >
@@ -846,25 +936,51 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                       helperText={formik.touched.cvv2 && formik.errors.cvv2}
                       InputLabelProps={{
                         sx: {
-                          color: "grey",
+                          color: (theme) =>
+                            theme.palette.mode === "dark" ? "white" : "grey",
+                          "&.Mui-error": {
+                            color: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "red !important"
+                                : "pink !important",
+                          },
                           "&.Mui-focused": {
-                            color: "#1C3AA9",
-                            fontSize: {
-                              xs: "1.01rem", // تغییر اندازه در کوچکترین صفحه
-                              sm: "1.3rem", // برای صفحه کوچک
-                              md: "1.4rem", // برای صفحه متوسط
-                              lg: "1.5rem", // برای صفحه بزرگ
-                            },
-                            transform: {
-                              xs: "translate(10px, -15px) scale(0.85)",
-                              sm: "translate(13px, -14px) scale(0.75)",
-                              md: "translate(12px, -14px) scale(0.70)", // برای صفحه متوسط
-                              lg: "translate(10px, -22px) scale(0.65)", // برای صفحه بزرگ
+                            color: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "white !important"
+                                : "grey !important",
+                            fontSize: { xs: "0.96rem" },
+                            "&.Mui-error": {
+                              color: "pink",
+                              "&.Mui-focused": {
+                                color: (theme) =>
+                                  theme.palette.mode === "dark"
+                                    ? "white"
+                                    : "#4f4f4f",
+                                fontSize: {
+                                  xs: "1.01rem",
+                                  sm: "1.3rem",
+                                  md: "1.4rem",
+                                  lg: "1.5rem",
+                                },
+                                transform: {
+                                  xs: "translate(10px, -15px) scale(0.85)",
+                                  sm: "translate(13px, -14px) scale(0.75)",
+                                  md: "translate(12px, -14px) scale(0.70)",
+                                  lg: "translate(10px, -22px) scale(0.65)",
+                                },
+                              },
                             },
                           },
-                          fontSize: "0.9rem",
-                          "&.Mui-error": {
-                            color: "pink",
+                          borderColor: (theme) =>
+                            theme.palette.mode === "dark"
+                              ? "white"
+                              : "grey.300",
+                          "&:hover": {
+                            borderColor: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "white"
+                                : "grey.400",
                           },
                         },
                       }}
@@ -874,6 +990,7 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                             <IconButton
                               onClick={handleTogglePassword}
                               style={{ fontSize: "1.2rem", color: "navy" }}
+                              sx={{ color: theme.palette.text.primary }}
                             >
                               {showPassword ? (
                                 <VisibilityOff />
@@ -883,18 +1000,60 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                             </IconButton>
                           </InputAdornment>
                         ),
-                        sx: { borderRadius: "10px" },
+                        sx: {
+                          borderRadius: "10px",
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            borderColor: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "grey.300 !important"
+                                : "grey.300 !important",
+                          },
+                          "&:hover .MuiOutlinedInput-notchedOutline": {
+                            borderColor: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "white !important"
+                                : "grey.400 !important",
+                          },
+                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                            borderColor: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "white !important"
+                                : "#1C3AA9 !important",
+                          },
+                          "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+                            borderColor: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "red !important"
+                                : "pink !important",
+                          },
+                          "& .MuiInputBase-input": {
+                            color: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "white !important"
+                                : "inherit",
+                            fontSize: "1rem",
+                          },
+                          "&.Mui-error .MuiInputBase-input": {
+                            color: "red !important",
+                          },
+                        },
                       }}
                     />
                   </motion.div>
                   <motion.div {...animationProps}>
                     <Box sx={{}}>
                       <Typography
-                        sx={{ fontSize: "13px", mb: 1, ml: 2, color: "gray" }}
+                        sx={{
+                          fontSize: "13px",
+                          mt: 1,
+                          ml: 2,
+                          color: (theme) =>
+                            theme.palette.mode === "dark" ? "white" : "grey",
+                        }}
                       >
                         تاریخ انقضا:
                       </Typography>
-                      <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
+                      <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
                         <TextField
                           label="ماه"
                           fullWidth
@@ -917,20 +1076,26 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                           }
                           InputLabelProps={{
                             sx: {
-                              color: "grey",
+                              color: (theme) =>
+                                theme.palette.mode === "dark"
+                                  ? "#ffffff"
+                                  : "grey",
                               "&.Mui-focused": {
-                                color: "#1C3AA9",
+                                color: (theme) =>
+                                  theme.palette.mode === "dark"
+                                    ? "#ffffff"
+                                    : "grey",
                                 fontSize: {
-                                  xs: "1.01rem", // تغییر اندازه در کوچکترین صفحه
-                                  sm: "1.3rem", // برای صفحه کوچک
-                                  md: "1.4rem", // برای صفحه متوسط
-                                  lg: "1.5rem", // برای صفحه بزرگ
+                                  xs: "1.01rem",
+                                  sm: "1.3rem",
+                                  md: "1.4rem",
+                                  lg: "1.5rem",
                                 },
                                 transform: {
                                   xs: "translate(10px, -15px) scale(0.85)",
                                   sm: "translate(13px, -14px) scale(0.75)",
-                                  md: "translate(12px, -14px) scale(0.70)", // برای صفحه متوسط
-                                  lg: "translate(10px, -22px) scale(0.65)", // برای صفحه بزرگ
+                                  md: "translate(12px, -14px) scale(0.70)",
+                                  lg: "translate(10px, -22px) scale(0.65)",
                                 },
                               },
                               fontSize: "0.9rem",
@@ -972,9 +1137,15 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                           }
                           InputLabelProps={{
                             sx: {
-                              color: "grey",
+                              color: (theme) =>
+                                theme.palette.mode === "dark"
+                                  ? "#ffffff"
+                                  : "grey",
                               "&.Mui-focused": {
-                                color: "#1C3AA9",
+                                color: (theme) =>
+                                  theme.palette.mode === "dark"
+                                    ? "#ffffff"
+                                    : "grey",
                                 fontSize: {
                                   xs: "1.01rem", // تغییر اندازه در کوچکترین صفحه
                                   sm: "1.3rem", // برای صفحه کوچک
@@ -984,8 +1155,8 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                                 transform: {
                                   xs: "translate(10px, -15px) scale(0.85)",
                                   sm: "translate(13px, -14px) scale(0.75)",
-                                  md: "translate(12px, -14px) scale(0.70)", // برای صفحه متوسط
-                                  lg: "translate(10px, -22px) scale(0.65)", // برای صفحه بزرگ
+                                  md: "translate(12px, -14px) scale(0.70)",
+                                  lg: "translate(10px, -22px) scale(0.65)",
                                 },
                               },
                               fontSize: "0.9rem",
@@ -1020,11 +1191,21 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                     fullWidth
                     sx={{
                       width: "50%",
-                      bgcolor: "navy",
-                      "&:hover": { bgcolor: "primary.dark" },
+                      bgcolor: theme.palette.mode === "dark" ? "white" : "navy",
+                      "&:hover": {
+                        bgcolor:
+                          theme.palette.mode === "dark"
+                            ? theme.palette.primary.dark
+                            : theme.palette.primary.main,
+                        color:
+                          theme.palette.mode === "dark"
+                            ? "primary.400"
+                            : "white",
+                      },
                       whiteSpace: "nowrap",
                       fontSize: "0.9rem",
-                      color: "white",
+                      color:
+                        theme.palette.mode === "dark" ? "primary" : "white",
                     }}
                     onClick={formik.handleSubmit}
                   >
@@ -1041,13 +1222,21 @@ const CompleteCharging = ({ mobile, chargeAmount }) => {
                       py: 1,
                       borderRadius: 7,
                       border: 1,
-                      borderColor: "grey.700",
+                      borderColor:
+                        theme.palette.mode === "dark" ? "grey.400" : "grey.700",
                       justifyContent: "center",
                       display: "flex",
                       alignItems: "center",
                       gap: 1,
-                      ":hover": { color: "grey.600" },
+                      ":hover": {
+                        color:
+                          theme.palette.mode === "dark"
+                            ? "grey.400"
+                            : "grey.600",
+                      },
                       fontSize: "0.9rem",
+                      color:
+                        theme.palette.mode === "dark" ? "white" : "primary",
                     }}
                   >
                     بازگشت
