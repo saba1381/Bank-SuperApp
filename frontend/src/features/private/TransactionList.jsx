@@ -405,6 +405,12 @@ const TransactionList = () => {
                   color: (theme) =>
                     theme.palette.mode === "dark" ? "#ffffff" : "#3b82f6",
                 },
+                borderColor: (theme) =>
+                  theme.palette.mode === "dark" ? "white" : "grey", 
+                "& fieldset": {
+                  borderColor: (theme) =>
+                    theme.palette.mode === "dark" ? "white" : "grey", 
+                },
 
                 "& input[type=number]": {
                   MozAppearance: "textfield",

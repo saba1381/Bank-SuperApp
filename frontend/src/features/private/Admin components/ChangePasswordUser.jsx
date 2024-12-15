@@ -9,6 +9,7 @@ import {
   Container,
   Snackbar,
   InputAdornment,
+  useTheme
 } from "@mui/material";
 import { FaChevronLeft } from "react-icons/fa";
 import { styled } from "@mui/system";
@@ -40,6 +41,7 @@ const ChangePasswordUser = () => {
   const passwordRef = useRef(null);
   const newpasswordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
+  const theme = useTheme();
 
 
 
@@ -164,13 +166,12 @@ const ChangePasswordUser = () => {
         left: 0,
         right: 0,
         bottom: 72,
-        backgroundColor: "#f6f4f8",
         zIndex: 1,
         boxShadow: "0 -2px 2px rgba(0,0,0,0.1)",
         overflowY: "auto",
         width: "100%",
         paddingX: {xs:2, sm: 17, md: 30, lg: 46 },
-        paddingY: 10,
+        paddingY: 4,
         height: "100%",
       }}
     >
@@ -190,7 +191,7 @@ const ChangePasswordUser = () => {
         sx={{
           paddingBottom: 4,
           paddingY: 4,
-          backgroundColor: "#ffffff",
+          backgroundColor: theme.palette.background.paper,
           borderRadius: "20px",
           boxShadow: 3,
         }}
@@ -276,6 +277,7 @@ const ChangePasswordUser = () => {
                       aria-label="toggle password visibility"
                       onClick={handleClickShowPassword}
                       edge="end"
+                      sx={{color: theme.palette.text.primary}}
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
@@ -339,6 +341,7 @@ const ChangePasswordUser = () => {
                       aria-label="toggle confirm password visibility"
                       onClick={handleClickShowNewPassword}
                       edge="end"
+                      sx={{color: theme.palette.text.primary}}
                     >
                       {showNewPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
@@ -402,6 +405,7 @@ const ChangePasswordUser = () => {
                       aria-label="toggle confirm password visibility"
                       onClick={handleClickShowConfirmPassword}
                       edge="end"
+                      sx={{color: theme.palette.text.primary}}
                     >
                       {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>

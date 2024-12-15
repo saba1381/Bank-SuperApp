@@ -152,7 +152,8 @@ const UserList = () => {
           sx={{
             display: "flex",
             alignItems: "center",
-            backgroundColor: "#6200ea",
+            backgroundColor: (theme) =>
+              theme.palette.mode === "dark" ? "#3e0b9c" : "#6200ea",
             padding: "16px",
             borderRadius: "8px 8px 0 0",
           }}
@@ -182,11 +183,12 @@ const UserList = () => {
             justifyContent: "space-between", 
             alignItems: "center", 
             gap: 1, 
-            marginTop: 2,
+            marginTop: 1,
             padding: 2,
-            borderRadius: "8px",
+            borderRadius: "0 0 8px 8px",
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#f5f5f5",
+            backgroundColor: (theme) =>
+              theme.palette.mode === "dark" ? "#3e0b9c" : "#f5f5f5",
             overflowX: "auto", 
           }}
         >
@@ -200,13 +202,61 @@ const UserList = () => {
               direction: "ltr",
             }}
           >
-            <ToggleButton value="all" sx={{ paddingX: 2 }}>
+            <ToggleButton value="all" sx={{color: (theme) =>
+                      theme.palette.mode === "dark" ? "#dcdcdc" : "#4f4f4f",
+                    borderColor: (theme) =>
+                      theme.palette.mode === "dark" ? "#ceb6e1" : "grey",
+                    "&.Mui-selected": {
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === "dark" ? "#444c5e" : "#dceffa",
+                      color: (theme) =>
+                        theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                      borderColor: (theme) =>
+                        theme.palette.mode === "dark" ? "grey" : "grey",
+                    },
+                    "&:hover": {
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === "dark" ? "#444c5e" : "#dceffa",
+                    },
+                     paddingX: 2 }}>
               همه
             </ToggleButton>
-            <ToggleButton value="male" sx={{ paddingX: 2 }}>
+            <ToggleButton value="male"  sx={{color: (theme) =>
+                      theme.palette.mode === "dark" ? "#dcdcdc" : "#4f4f4f",
+                    borderColor: (theme) =>
+                      theme.palette.mode === "dark" ? "#9f9da0" : "grey",
+                    "&.Mui-selected": {
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === "dark" ? "#444c5e" : "#dceffa",
+                      color: (theme) =>
+                        theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                      borderColor: (theme) =>
+                        theme.palette.mode === "dark" ? "grey" : "grey",
+                    },
+                    "&:hover": {
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === "dark" ? "#444c5e" : "#dceffa",
+                    },
+                     paddingX: 2 }}>
               مرد
             </ToggleButton>
-            <ToggleButton value="female" sx={{ paddingX: 2 }}>
+            <ToggleButton value="female"  sx={{color: (theme) =>
+                      theme.palette.mode === "dark" ? "#dcdcdc" : "#4f4f4f",
+                    borderColor: (theme) =>
+                      theme.palette.mode === "dark" ? "#9f9da0" : "grey",
+                    "&.Mui-selected": {
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === "dark" ? "#444c5e" : "#dceffa",
+                      color: (theme) =>
+                        theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                      borderColor: (theme) =>
+                        theme.palette.mode === "dark" ? "grey" : "grey",
+                    },
+                    "&:hover": {
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === "dark" ? "#444c5e" : "#dceffa",
+                    },
+                     paddingX: 2 }}>
               زن
             </ToggleButton>
           </ToggleButtonGroup>
@@ -218,6 +268,12 @@ const UserList = () => {
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
+              borderColor: (theme) =>
+                theme.palette.mode === "dark" ? "white" : "grey", 
+              "& fieldset": {
+                borderColor: (theme) =>
+                  theme.palette.mode === "dark" ? "white" : "grey", 
+              },
               flexShrink: 0,
             }}
           >
@@ -226,7 +282,9 @@ const UserList = () => {
               onChange={handleDateChange}
               displayEmpty
               renderValue={(selected) => dateFilterLabels[selected] || "انتخاب بازه زمانی"}
-              sx={{ color: "gray" }}
+              sx={{ color:theme.palette.mode === "dark" ? "white" : "grey",  "& .MuiSelect-icon": {
+                color: theme.palette.mode === "dark" ? "white" : "grey", 
+              }, }}
             >
               <MenuItem value="">همه</MenuItem>
               <MenuItem value="today">امروز</MenuItem>
@@ -257,9 +315,21 @@ const UserList = () => {
                   marginRight: "4px",
                   width: "30%",
                   height: "40px",
-                  "& .MuiOutlinedInput-root": {
-                    height: "100%",
+                   "& .MuiOutlinedInput-root": {
+                  height: "100%",
+                  "& fieldset": {
+                    borderColor: (theme) =>
+                      theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f", // رنگ border در حالت عادی
                   },
+                  "&:hover fieldset": {
+                    borderColor: (theme) =>
+                      theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: (theme) =>
+                      theme.palette.mode === "dark" ? "#ffffff" : "#3b82f6",
+                  },
+                },
                   "& input[type=number]": {
                     MozAppearance: "textfield",
                   },
@@ -290,13 +360,35 @@ const UserList = () => {
                   error={touched.count && Boolean(errors.count)}
                   helperText={touched.count && errors.count}
                   sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: "100%",
+                      "& fieldset": {
+                        borderColor: (theme) =>
+                          theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f", // رنگ border در حالت عادی
+                      },
+                      "&:hover fieldset": {
+                        borderColor: (theme) =>
+                          theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: (theme) =>
+                          theme.palette.mode === "dark" ? "#ffffff" : "#3b82f6",
+                      },
+                    },
+                    borderColor: (theme) =>
+                      theme.palette.mode === "dark" ? "white" : "grey", // حالت دارک
+                    "& fieldset": {
+                      borderColor: (theme) =>
+                        theme.palette.mode === "dark" ? "white" : "grey", // برای حالت فوکوس
+                    },
                     "& .MuiInputLabel-root": {
-                      color: "gray",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "navy",
-                    },
-
+                  color: (theme) =>
+                    theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: (theme) =>
+                    theme.palette.mode === "dark" ? "#ffffff" : "#3b82f6",
+                },
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "12px",
                     },
@@ -321,7 +413,7 @@ const UserList = () => {
               component={Paper}
               sx={{
                 borderRadius: "15px",
-                mt: 2,
+                mt: 3.5,
                 boxShadow: "0px 8px 16px rgba(0,0,0,0.2)",
               }}
             >

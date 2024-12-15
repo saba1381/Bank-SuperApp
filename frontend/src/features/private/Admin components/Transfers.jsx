@@ -234,7 +234,7 @@ const Transfers = () => {
         <Box
           sx={{
             padding: 2,
-            maxWidth: 600,
+            maxWidth: 850,
             margin: "0 auto",
             //backgroundColor: "#f8f9fa",
             maxHeight: "auto",
@@ -311,10 +311,16 @@ const Transfers = () => {
                 <ToggleButton value="recharge">خرید شارژ</ToggleButton>
               </ToggleButtonGroup> */}
               <FormControl
-                sx={{
-                  minWidth: { xs: 200, sm: 200 },
+                 sx={{
+                  minWidth: { xs: "30%", sm: 200 },
                   "& .MuiOutlinedInput-root": {
-                    borderRadius: "9px",
+                    borderRadius: "12px",
+                  },
+                  borderColor: (theme) =>
+                    theme.palette.mode === "dark" ? "white" : "grey", 
+                  "& fieldset": {
+                    borderColor: (theme) =>
+                      theme.palette.mode === "dark" ? "white" : "grey", 
                   },
                   flexShrink: 0,
                 }}
@@ -322,9 +328,11 @@ const Transfers = () => {
                 <Select
                   value={dateFilter}
                   onChange={handleDateChange}
-                  sx={{ color: "#70a5e2" }}
                   displayEmpty
                   renderValue={(selected) => dateFilterLabels[selected] || "انتخاب بازه زمانی"}
+                  sx={{ color: (theme) => theme.palette.mode === "dark" ? "white" : "grey",  "& .MuiSelect-icon": {
+                    color: (theme) => theme.palette.mode === "dark" ? "white" : "grey", 
+                  }, }}
                 >
                   <MenuItem value="">همه</MenuItem>
                   <MenuItem value="today">امروز</MenuItem>
@@ -386,13 +394,35 @@ const Transfers = () => {
                   error={touched.count && Boolean(errors.count)}
                   helperText={touched.count && errors.count}
                   sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: "100%",
+                      "& fieldset": {
+                        borderColor: (theme) =>
+                          theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f", // رنگ border در حالت عادی
+                      },
+                      "&:hover fieldset": {
+                        borderColor: (theme) =>
+                          theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: (theme) =>
+                          theme.palette.mode === "dark" ? "#ffffff" : "#3b82f6",
+                      },
+                    },
+                    borderColor: (theme) =>
+                      theme.palette.mode === "dark" ? "white" : "grey", // حالت دارک
+                    "& fieldset": {
+                      borderColor: (theme) =>
+                        theme.palette.mode === "dark" ? "white" : "grey", // برای حالت فوکوس
+                    },
                     "& .MuiInputLabel-root": {
-                      color: "gray",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "navy",
-                    },
-
+                  color: (theme) =>
+                    theme.palette.mode === "dark" ? "#ffffff" : "#70a5e2",
+                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: (theme) =>
+                    theme.palette.mode === "dark" ? "#ffffff" : "#70a5e2",
+                },
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "12px",
                     },
@@ -411,7 +441,9 @@ const Transfers = () => {
 
           <List
             sx={{
-              backgroundColor: "#fff",
+              backgroundColor: (theme) =>
+                theme.palette.mode === "dark" ? "#d4d4d4" : "white", 
+            
               borderRadius: "8px",
               boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
               marginTop: 2,
@@ -627,7 +659,8 @@ const Transfers = () => {
                   </Box> */}
                   {index < filteredTransactions.length - 1 && (
                     <Divider
-                      sx={{ borderWidth: "7px", borderColor: "#f8f8f8" }}
+                      sx={{ borderWidth: "7px", borderColor: (theme) =>
+                        theme.palette.mode === "dark" ? "#121212" : "#f8f8f8",  }}
                     />
                   )}
                 </React.Fragment>
