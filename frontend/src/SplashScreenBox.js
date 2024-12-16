@@ -18,23 +18,20 @@ const SplashScreenBox = () => {
       }}
     >
       <motion.div
-        style={{ display: 'flex', gap: '8px', fontWeight: '600' }}
-        initial={{ opacity: 0, y: -80 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        initial={{ opacity: 0, scale: 0.8, rotate: -15 }}
+        animate={{ opacity: 1, scale: 1, rotate: 0 }}
+        transition={{
+          duration: 1.5, 
+          ease: [0.25, 0.8, 0.5, 1], 
+        }}
       >
        
 
-        {/* <Typography
-          component="span"
-          variant="h3"
-          sx={{
-            fontSize: { xs: '2rem', sm: '3rem' },
-            
-            color: 'white',
-            textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
-          }}
-        > */}
           <Avatar
               src={`${process.env.PUBLIC_URL}/logo.png`}
               alt="App Icon"

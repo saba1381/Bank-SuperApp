@@ -59,7 +59,7 @@ export default function App() {
 
 
 
-  if (loading) return <LoadingComponent message="لطفا منتظر باشید ..." />;
+  // if (loading) return <LoadingComponent message="لطفا منتظر باشید ..." />;
 
   return (
     <Box sx={{display:"flex",flexDirection:"column",maxHeight:"100vh",width:"100%"}}>
