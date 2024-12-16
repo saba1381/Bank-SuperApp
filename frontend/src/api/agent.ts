@@ -39,25 +39,40 @@ axios.interceptors.response.use(
           toast.error(data.Title);
           break;
 
-        case 401:
-          if (data.message === "Token is expired" || data.message === "Unauthorized" ) {
-            if (!isTokenExpiredNotificationShown) {
-              toast.error('دسترسی شما قطع شد، لطفاً مجدد وارد شوید');
-              isTokenExpiredNotificationShown = true;
-              store.dispatch(signOut());
+          case 401:
+            if (data.message === "Token is expired" || data.message === "Unauthorized") {
+              if (!isTokenExpiredNotificationShown) {
+                toast.error("دسترسی شما قطع شد، لطفاً مجدد وارد شوید");
+                isTokenExpiredNotificationShown = true;
+  
+                // Sign out user
+                store.dispatch(signOut());
+  
+                // Redirect based on current path
+                const currentPath = window.location.pathname;
+                if (currentPath.startsWith("/admin")) {
+                  window.location.href = "/sign-in-admin";
+                } else if (currentPath.startsWith("/cp")) {
+                  window.location.href = "/sign-in";
+                }
+  
+                setTimeout(() => {
+                  isTokenExpiredNotificationShown = false;
+                }, 3000);
+              }
+            } else {
+              store.dispatch(refreshTokensAsync());
+              if (!isTokenExpiredNotificationShown) {
+                const currentPath = window.location.pathname;
+                if (currentPath.startsWith("/admin")) {
+                  window.location.href = "/sign-in-admin";
+                } else if (currentPath.startsWith("/cp")) {
+                  window.location.href = "/sign-in";
+                }
+                toast.error("زمان توکن شما به پایان رسیده است. لطفاً مجدداً وارد شوید.");
+              }
             }
-          } else {
-            store.dispatch(refreshTokensAsync());
-            if (!isTokenExpiredNotificationShown) {
-              toast.error('زمان توکن شما به پایان رسیده است. لطفاً مجدداً وارد شوید.');
-              
-            }
-            setTimeout(() => {
-              isTokenExpiredNotificationShown = false;
-            }, 3000); 
-          }
-          break;
-
+            break;
 
         case 406:
           toast.error("متاسفانه پاسخ شما قابل قبول نیست.");

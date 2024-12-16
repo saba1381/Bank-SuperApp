@@ -153,7 +153,7 @@ const ProfileEdit = () => {
 
 
   return (
-    <Container maxWidth="full" sx={{ height:{sm:'120vh' , xs:'90vh'} ,maxHeight:'auto' , paddingTop:1  , paddingBottom:9, overflowY:'auto'} } >
+    <Container maxWidth="full" sx={{ height:{sm:'120vh' , xs:'90vh'} ,maxHeight:'auto' , paddingTop:{xs:1 , sm:8}  , paddingBottom:9, overflowY:'auto'} } >
       <Box sx={{display:{xs:'flex',sm:'none' ,md:'none'},  mb: 1 , justifyContent: 'flex-end'}}>
         <Button variant="contained" color="primary" onClick={handleBackClick} endIcon={<KeyboardBackspaceIcon />} sx={{fontSize:'0.9rem'}}>
           بازگشت

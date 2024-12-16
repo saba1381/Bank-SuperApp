@@ -204,9 +204,9 @@ const Settings = () => {
                   <IconButton
                     onClick={handleEditProfileClick}
                     
-                    sx={{ ml: 1, "&:hover": { color: "pink" } , color: theme.palette.text.secondary }}
+                    sx={{ ml: 1, "&:hover": { color: "#da8ff0" } , color: theme.palette.text.secondary }}
                   >
-                    <MdEdit size={20} />
+                    <MdEdit size={24} style={{color:'#c561e3'}} />
                   </IconButton>
                 </Box>
               )}

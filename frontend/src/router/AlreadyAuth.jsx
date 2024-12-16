@@ -6,14 +6,11 @@ export default function AlreadyAuth() {
 
     if (accessToken && user) {
         if (user.is_superuser) {
-            // اگر کاربر سوپر یوزر باشد، به صفحه ادمین هدایت شود
             return <Navigate to="/admin" />;
         } else {
-            // در غیر این صورت، به صفحه مشتری هدایت شود
             return <Navigate to="/cp" />;
         }
     }
 
-    // در صورت عدم وجود کاربر، اجازه دسترسی به سایر صفحات
     return <Outlet />;
 }

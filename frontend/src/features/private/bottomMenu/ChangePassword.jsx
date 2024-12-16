@@ -183,11 +183,12 @@ const ChangePassword = ({ onBack }) => {
           mb: 3,
           backgroundColor: "#6B20B1",
           padding: "15px",
+          paddingTop:{md:4},
           color: "#fff",
         }}
       ></Box>
 
-      <Container sx={{ paddingBottom: 4, paddingY: 4,marginTop:10, backgroundColor: theme.palette.background.paper,
+      <Container sx={{ paddingBottom: 4, paddingY:4,marginTop:10, backgroundColor: theme.palette.background.paper,
           borderRadius: "20px",
           boxShadow: 3,}}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 6, width: '100%' ,  }}>

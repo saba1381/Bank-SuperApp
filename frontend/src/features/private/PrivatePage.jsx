@@ -215,7 +215,7 @@ const PrivatePage = () => {
                           href="#"
                           underline="none"
                           color="inherit"
-                          sx={{ color: "white" }} // Change color to white for better contrast
+                          sx={{ color: "white" }} 
                         >
                           {React.createElement(system.icon, {
                             size: getIconSize(),

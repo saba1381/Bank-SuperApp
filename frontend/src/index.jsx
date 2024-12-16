@@ -23,7 +23,7 @@ import * as serviceWorker from './serviceWorker';
 import { useSelector } from "react-redux";
 import { toggleTheme , setTheme } from "../src/features/theme/themeSlice";
 import { useDispatch } from "react-redux";
-import { useLocation } from "react-router-dom";
+import LoadingComponent from "../src/components/LoadingComponent";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 if (process.env.NODE_ENV === 'production') {
@@ -41,6 +41,7 @@ function App() {
   const [showSplash, setShowSplash] = useState(true);
   const dispatch = useDispatch();
   const mode = useSelector((state) => state.theme.mode);
+  const [loading, setLoading] = useState(true); 
 
 
 
@@ -64,6 +65,13 @@ function App() {
     }
   }, []);
 
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000); 
+  }, []);
+
   return (
     <StrictMode>
       
@@ -75,7 +83,7 @@ function App() {
               <CssBaseline />
             
 
-              {showSplash ? (
+              {showSplash  ? (
                 <SplashScreenBox />
               ) : (
                 

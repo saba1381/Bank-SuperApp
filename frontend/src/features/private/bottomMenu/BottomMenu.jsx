@@ -73,8 +73,8 @@ const BottomMenu = () => {
       }}
       onClick={() => navigate('/cp/ads')}
       >
-        <FaBell style={{ color: (isAdsPage) ? '#6b7280' : '#3b82f6', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
-        <Typography variant="caption" sx={{ color: (isAdsPage) ? '#6b7280' : '#3b82f6', fontSize: '12px' }}>اعلانات</Typography>
+        <FaBell style={{ color: (isAdsPage) ? '#6b7280' :"text.primary", fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: (isAdsPage) ? '#6b7280' : "text.primary", fontSize: '12px' }}>اعلانات</Typography>
       </Box>
 
       {/* Menu Item: کارت‌ها */}
@@ -88,8 +88,8 @@ const BottomMenu = () => {
       }}
       onClick={handleCardListClick}
       >
-        <FaCreditCard style={{ color: (isListCardPage) ? '#6b7280' : '#3b82f6',fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
-        <Typography variant="caption" sx={{ color: (isListCardPage) ? '#6b7280' : '#3b82f6', fontSize: '12px' }}>{isAdminPage ? "لیست کاربران" : "کارت‌ها"}</Typography>
+        <FaCreditCard style={{ color: (isListCardPage) ? '#6b7280' : "text.primary",fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: (isListCardPage) ? '#6b7280' : "text.primary", fontSize: '12px' }}>{isAdminPage ? "لیست کاربران" : "کارت‌ها"}</Typography>
       </Box>
       
       {/* Menu Item: خانه */}
@@ -103,8 +103,8 @@ const BottomMenu = () => {
       }}
       onClick={() => navigate('/cp')}
       >
-        <FaHome style={{ color: isCPPageAdmin ? '#6b7280' : '#3b82f6',fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
-        <Typography variant="caption" sx={{ color: isCPPageAdmin ? '#6b7280' : '#3b82f6', fontSize: '12px' }}>خانه</Typography>
+        <FaHome style={{ color: isCPPageAdmin ? '#6b7280' : "text.primary",fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: isCPPageAdmin ? '#6b7280' : "text.primary", fontSize: '12px' }}>خانه</Typography>
       </Box>
 
       {/* Menu Item: پروفایل */}
@@ -118,8 +118,8 @@ const BottomMenu = () => {
       }}
       onClick={() => navigate('/cp/profile-view')}
       >
-        <FaUserCircle style={{ color:(isProfilePage) ? '#6b7280' : '#3b82f6', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
-        <Typography variant="caption" sx={{ color: (isProfilePage) ? '#6b7280' : '#3b82f6', fontSize: '12px' }}>پروفایل</Typography>
+        <FaUserCircle style={{ color:(isProfilePage) ? '#6b7280' : "text.primary", fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: (isProfilePage) ? '#6b7280' : "text.primary", fontSize: '12px' }}>پروفایل</Typography>
       </Box>
 
       {/* Menu Item: تنظیمات */}
@@ -134,12 +134,12 @@ const BottomMenu = () => {
       onClick={() => navigate('/cp/setting')}
       >
         <FaCog style={{
-          color: isSettingsPage ? '#6b7280' : '#3b82f6',
+          color: (isSettingsPage) ? '#6b7280' : theme.palette.text.primary,
           fontSize: '24px',
           transition: 'color 0.3s',
           marginBottom: '4px'
         }} />
-        <Typography variant="caption" sx={{ color: isSettingsPage ? '#6b7280' : '#3b82f6',fontSize: '12px' }}>تنظیمات</Typography>
+        <Typography variant="caption" sx={{ color: isSettingsPage ? '#6b7280' : "text.primary",fontSize: '12px' }}>تنظیمات</Typography>
       </Box>
     </Box>
   );

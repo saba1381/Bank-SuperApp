@@ -165,13 +165,13 @@ const ChangePasswordUser = () => {
         top: 0,
         left: 0,
         right: 0,
-        bottom: 72,
+        bottom: 62,
         zIndex: 1,
         boxShadow: "0 -2px 2px rgba(0,0,0,0.1)",
         overflowY: "auto",
         width: "100%",
         paddingX: {xs:2, sm: 17, md: 30, lg: 46 },
-        paddingY: 4,
+        paddingY: {xs:4 , sm:14},
         height: "100%",
       }}
     >

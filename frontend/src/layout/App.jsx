@@ -20,7 +20,6 @@ import { toggleTheme , setTheme } from "../features/theme/themeSlice";
 export default function App() {
   const dispatch = UseAppDispatch();
   const { user, isLoading } = useSelector((state) => state.account);
-  const [loading, setLoading] = useState(true);
   const [step, setStep] = useState('register');
   const [showProfile, setShowProfile] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -40,10 +39,8 @@ export default function App() {
     }
   }, [dispatch, location.pathname]); 
 
-  const handleProfileClick = () => setShowProfile(true);
-  const handleHistoryClick = () => setShowHistory(true);
-  const handleServicesClick = () => setShowServices(true);
-  const handleSettingsClick = () => setShowSettings(true);
+
+  const [loading, setLoading] = useState(true);
 
 
   const initApp = useCallback(async () => {
