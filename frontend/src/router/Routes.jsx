@@ -26,6 +26,8 @@ import Recharges from "../features/private/Admin components/Recharges";
 import SignInAdmin from "../features/auth/SignInAdmin";
 import ChangePasswordUser from "../features/private/Admin components/ChangePasswordUser";
 import MessageBox from "../features/private/ads";
+import NFCComponent from "../features/private/NfcComponents/NFCComponent ";
+
 
 const adminOrCpPath = (base, path) => `${base}${path}`;
 
@@ -76,6 +78,7 @@ export const router = createBrowserRouter([
                             { path: adminOrCpPath("/cp", "/charge"), element: <Charging /> },
                             { path: adminOrCpPath("/cp", "/profile-view"), element: <ProfileView /> },
                             { path: adminOrCpPath("/cp", "/ads"), element: <MessageBox /> },
+                            { path: adminOrCpPath("/cp", "/NFC-payment"), element: <NFCComponent /> },
                         ]
                     },
 

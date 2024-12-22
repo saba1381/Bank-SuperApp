@@ -409,3 +409,19 @@ class AdminChangePasswordView(APIView):
         user.save()
 
         return Response({"detail": "رمز عبور با موفقیت تغییر کرد."}, status=status.HTTP_200_OK)
+
+
+class RegisterPublicKeyView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        public_key = request.data.get('public_key')
+
+        if not public_key:
+            return Response({"error": "کلید عمومی ارسال نشده است."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user
+        user.public_key = public_key
+        user.save()
+
+        return Response({"message": "کلید عمومی با موفقیت ثبت شد."}, status=status.HTTP_200_OK)

@@ -3,6 +3,7 @@ import { FaHome, FaBell, FaCreditCard, FaUserCircle, FaCog } from 'react-icons/f
 import { Box, Typography , useTheme  } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Notification from "../Notification";
+import { IoSettings } from "react-icons/io5";
 
 const BottomMenu = () => {
   const navigate = useNavigate();
@@ -10,14 +11,12 @@ const BottomMenu = () => {
   const theme = useTheme();
 
   const isSettingsPage = location.pathname.startsWith('/cp/setting');
-  const isCPPageAdmin = location.pathname==='/cp'
-  const isListCardPage = location.pathname.startsWith('/cp/user-cards');
+  const isCPPageAdmin = location.pathname==='/cp';
+  const isListCardPage = location.pathname==='/cp/user-cards';
   const isAdsPage = location.pathname.startsWith('/cp/ads');
   const isProfilePage = location.pathname.startsWith('/cp/profile-view');
   const isAdminPage = location.pathname.startsWith('/admin');
   const [isNewUser, setIsNewUser] = useState(false);
-  const isAdminUserListPage = location.pathname === '/admin/user-list';
-  const isAdminUserProfilePage = location.pathname === '/admin/profile-view';
   const [notificationOpen, setNotificationOpen] = useState(false);
 
   const isCPPage = location.pathname.startsWith('/cp');
@@ -43,8 +42,6 @@ const BottomMenu = () => {
   const handleNotificationClose = () => {
     setNotificationOpen(false);
   };
-
-  
 
 
   return (
@@ -73,7 +70,11 @@ const BottomMenu = () => {
       }}
       onClick={() => navigate('/cp/ads')}
       >
-        <FaBell style={{ color: (isAdsPage) ? '#6b7280' :"text.primary", fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <FaBell style={{ color: isAdsPage
+      ? '#6b7280' 
+      : theme.palette.mode === 'dark' 
+      ? '#ffffff' 
+      : '#004e92', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
         <Typography variant="caption" sx={{ color: (isAdsPage) ? '#6b7280' : "text.primary", fontSize: '12px' }}>اعلانات</Typography>
       </Box>
 
@@ -88,7 +89,10 @@ const BottomMenu = () => {
       }}
       onClick={handleCardListClick}
       >
-        <FaCreditCard style={{ color: (isListCardPage) ? '#6b7280' : "text.primary",fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <FaCreditCard style={{ color: (isListCardPage) ? '#6b7280' 
+      : theme.palette.mode === 'dark' 
+      ? '#ffffff' 
+      : '#004e92', fontSize: '24px',fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
         <Typography variant="caption" sx={{ color: (isListCardPage) ? '#6b7280' : "text.primary", fontSize: '12px' }}>{isAdminPage ? "لیست کاربران" : "کارت‌ها"}</Typography>
       </Box>
       
@@ -103,8 +107,11 @@ const BottomMenu = () => {
       }}
       onClick={() => navigate('/cp')}
       >
-        <FaHome style={{ color: isCPPageAdmin ? '#6b7280' : "text.primary",fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
-        <Typography variant="caption" sx={{ color: isCPPageAdmin ? '#6b7280' : "text.primary", fontSize: '12px' }}>خانه</Typography>
+        <FaHome style={{ color: location.pathname === '/cp' ? '#6b7280' 
+      : theme.palette.mode === 'dark' 
+      ? '#ffffff' 
+      : '#004e92', fontSize: '24px',fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <Typography variant="caption" sx={{ color: (isCPPageAdmin) ? '#6b7280' : "text.primary", fontSize: '12px' }}>خانه</Typography>
       </Box>
 
       {/* Menu Item: پروفایل */}
@@ -118,7 +125,10 @@ const BottomMenu = () => {
       }}
       onClick={() => navigate('/cp/profile-view')}
       >
-        <FaUserCircle style={{ color:(isProfilePage) ? '#6b7280' : "text.primary", fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
+        <FaUserCircle  style={{ color:(isProfilePage) ? '#6b7280' 
+      : theme.palette.mode === 'dark' 
+      ? '#ffffff' 
+      : '#004e92', fontSize: '24px', fontSize: '24px', transition: 'color 0.3s', marginBottom: '4px' }} />
         <Typography variant="caption" sx={{ color: (isProfilePage) ? '#6b7280' : "text.primary", fontSize: '12px' }}>پروفایل</Typography>
       </Box>
 
@@ -133,8 +143,11 @@ const BottomMenu = () => {
       }}
       onClick={() => navigate('/cp/setting')}
       >
-        <FaCog style={{
-          color: (isSettingsPage) ? '#6b7280' : theme.palette.text.primary,
+        <IoSettings style={{
+          color: (isSettingsPage) ? '#6b7280' 
+          : theme.palette.mode === 'dark' 
+          ? '#ffffff' 
+          : '#004e92', fontSize: '24px',
           fontSize: '24px',
           transition: 'color 0.3s',
           marginBottom: '4px'

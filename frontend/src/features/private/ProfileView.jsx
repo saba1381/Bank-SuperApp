@@ -36,7 +36,7 @@ const isAdminPage = location.pathname === '/admin/profile-view';
         <Button
           variant="contained"
           color="primary"
-          onClick={() => navigate("/cp/")}
+          onClick={() => navigate("/cp")}
           endIcon={<KeyboardBackspaceIcon />}
           sx={{fontSize:'0.9rem'}}
         >

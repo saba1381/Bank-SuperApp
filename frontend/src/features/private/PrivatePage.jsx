@@ -21,13 +21,14 @@ import { motion } from "framer-motion";
 import ProfileEdit from "../private/ProfileEdit";
 import { useNavigate } from "react-router-dom";
 import Notification from "./Notification";
+import { LuSmartphoneNfc } from "react-icons/lu";
 
 
 const systems = [
   { title: "لیست کارت ها", icon: BsCreditCard, color: "#1976d2" },
   { title: "سوابق تراکنش", icon: MdHistory, color: "#388e3c" },
   { title: "ویرایش پروفایل", icon: ImProfile, color: "#f57c00" },
-  { title: "حساب کاربری", icon: CgProfile, color: "#7b1fa2" },
+  { title: "پرداخت مبتنی بر NFC", icon: LuSmartphoneNfc, color: "#7b1fa2" },
   { title: "کارت به کارت", icon: TbCreditCardPay, color: "#d32f2f" },
   { title: "خرید شارژ", icon: RiSimCard2Line, color: "#0288d1" },
 ];
@@ -78,6 +79,9 @@ const PrivatePage = () => {
     }
     else if (title === "خرید شارژ"){
       navigate("/cp/charge" , {state : {from : '/cp'}});
+    }
+    else if (title === "پرداخت مبتنی بر NFC"){
+      navigate("/cp/NFC-payment" , {state : {from : '/cp'}});
     }
   };
   
