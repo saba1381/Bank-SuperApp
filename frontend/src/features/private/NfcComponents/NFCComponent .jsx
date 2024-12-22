@@ -1,299 +1,186 @@
-import React, { useState } from "react";
-import {
-  TextField,
-  Button,
-  Box,
-  Typography,
-  CircularProgress,
-  useTheme,
-} from "@mui/material";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
-import { FaArrowLeftLong } from "react-icons/fa6";
-import { QRCodeCanvas } from "qrcode.react";
+import React from "react";
+import { Box, Button, TextField, Typography, useTheme } from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { motion } from "framer-motion";
+import { Formik, Form, Field } from "formik";
+import * as Yup from "yup";
+import { toPersianNumbers } from "../../../util/util";
 
-const NFCForm = () => {
-  const navigate = useNavigate();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState(null);
+const formatAmount = (amount) => {
+  if (!amount) return "";
+  const cleaned = amount.replace(/[^\d]/g, "");
+  return cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
+const AmountInput = () => {
   const theme = useTheme();
-
-  const validationSchema = Yup.object({
-    amount: Yup.string()
-      .required("مبلغ الزامی است")
-      .matches(/^[1-9]\d*$/, "مبلغ باید عددی مثبت باشد و با صفر شروع نشود."),
-    cardNumber: Yup.string()
-      .required("شماره کارت مبدا الزامی است")
-      .matches(/^\d{16}$/, "شماره کارت باید 16 رقم باشد"),
-    destinationCardNumber: Yup.string()
-      .required("شماره کارت مقصد الزامی است")
-      .matches(/^\d{16}$/, "شماره کارت باید 16 رقم باشد"),
-  });
-
-  const formik = useFormik({
-    initialValues: {
-      amount: "",
-      cardNumber: "",
-      destinationCardNumber: "",
-    },
-    validationSchema: validationSchema,
-    validateOnBlur: false,
-    validateOnChange: false,
-    onSubmit: async (values) => {
-      setIsProcessing(true);
-      setPaymentStatus(null);
-
-      // Mock NFC payment process
-      setTimeout(() => {
-        setIsProcessing(false);
-        const success = Math.random() > 0.3; // 70% chance of success
-        setPaymentStatus(success ? "success" : "failure");
-      }, 3000);
-    },
-  });
-
-  const formatCardNumber = (value) => {
-    return (
-      value
-        .replace(/\D/g, "")
-        .match(/.{1,4}/g)
-        ?.join("-") || ""
-    );
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-
-    if (name === "amount") {
-      if (/^\d*$/.test(value)) {
-        formik.setFieldValue(name, value);
-      }
-    } else if (name === "cardNumber" || name === "destinationCardNumber") {
-      const sanitizedValue = value.replace(/-/g, "");
-      if (/^\d*$/.test(sanitizedValue) && sanitizedValue.length <= 16) {
-        formik.setFieldValue(name, sanitizedValue);
-      }
-    }
-  };
-
-  const generateQRCodeData = () => {
-    return JSON.stringify({
-      amount: formik.values.amount,
-      cardNumber: formik.values.destinationCardNumber,
-    });
-  };
-  const pageVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-  };
-
-  const pageTransition = {
-    type: "spring",
-    stiffness: 50,
-    damping: 20,
-  };
-
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={pageVariants}
-      transition={pageTransition}
-    >
+
       <Box
         sx={{
-          maxWidth: 400,
-          mx: "auto",
-          mt: 5,
-          p: 3,
-          mb: 14,
-          border: "1px solid #ccc",
-          borderRadius: 2,
-          height: "auto",
-          boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          px: 2,
+          paddingBottom:20,
+          
         }}
       >
-        <Typography variant="h5" align="center" mb={3}>
-          پرداخت مبتنی بر NFC
-        </Typography>
+        <motion.div
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          style={{
+            width: "100%",
+            maxWidth: 400,
+            background: "linear-gradient(135deg, #4A90E2, #81D4FA)",
+            
+            borderRadius: "20px",
+            boxShadow: "0 10px 20px rgba(0, 0, 0, 0.2)",
+            padding: "20px",
+          }}
+        >
+          <Typography
+            variant="h5"
+            sx={{
+              mb: 2,
+              textAlign: "center",
+              fontWeight: "bold",
+              color: "#fff",
+            }}
+          >
+            مبلغ
+          </Typography>
+          <Formik
+            initialValues={{ amount: "" }}
+            validationSchema={Yup.object({
+              amount: Yup.string()
+                .required("لطفاً مبلغ را وارد کنید")
+                .matches(/^\d+$/, "مبلغ فقط باید شامل اعداد باشد")
+                .test(
+                  "maxAmount",
+                  "مبلغ نباید بیشتر از سه میلیون ریال باشد",
+                  (value) => {
+                    return parseInt(value) <= 3000000;
+                  }
+                ),
+            })}
+            onSubmit={(values, { resetForm }) => {
+              alert(`مبلغ وارد شده: ${values.amount}`);
+              resetForm();
+            }}
+          >
+            {({ values, handleChange, handleBlur, errors, touched }) => (
+              <Form>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    bgcolor: "#fff",
+                    borderRadius: 2,
 
-        {isProcessing ? (
-          <Box display="flex" flexDirection="column" alignItems="center" mt={3}>
-            <CircularProgress />
-            <Typography mt={2}>در حال پردازش...</Typography>
-          </Box>
-        ) : paymentStatus ? (
-          <Box textAlign="center" mt={3}>
-            <Typography
-              variant="h6"
-              color={
-                paymentStatus === "success" ? "success.main" : "error.main"
-              }
-            >
-              {paymentStatus === "success"
-                ? "پرداخت موفق بود!"
-                : "پرداخت ناموفق بود."}
-            </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                setPaymentStatus(null);
-                formik.resetForm();
-              }}
-              sx={{
-                textAlign: "center",
-                width: "50%",
-                py: 1,
-                borderRadius: 7,
-                border: 1,
-                borderColor:
-                  theme.palette.mode === "dark" ? "grey.400" : "grey.700",
-                justifyContent: "center",
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                ":hover": {
-                  color:
-                    theme.palette.mode === "dark"
-                      ? "grey.400"
-                      : "grey.600",
-                },
-                fontSize: "0.9rem",
-                color:
-                  theme.palette.mode === "dark" ? "white" : "primary",
-              }}
-            >
-              بازگشت به فرم
-            </Button>
-          </Box>
-        ) : (
-          <form onSubmit={(e) => formik.handleSubmit(e)}>
-            <Box mb={3}>
-              <TextField
-                fullWidth
-                id="amount"
-                name="amount"
-                label="مبلغ (ریال)"
-                variant="outlined"
-                value={formik.values.amount}
-                onChange={handleInputChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.amount && Boolean(formik.errors.amount)}
-                helperText={formik.touched.amount && formik.errors.amount}
-                InputLabelProps={{
-                  style: { color: "#9e9e9e" },
-                }}
-              />
-            </Box>
+                    py: 2,
+                    px: 3,
+                    mb: 2,
+                  }}
+                >
+                  <Field
+                    name="amount"
+                    as={TextField}
+                    variant="outlined"
+                    fullWidth
+                    placeholder="مبلغ را وارد کنید"
+                    value={formatAmount(values.amount)}
+                    onChange={(e) => {
 
-            <Box mb={3}>
-              <TextField
-                fullWidth
-                id="cardNumber"
-                name="cardNumber"
-                label="شماره کارت مبدا"
-                variant="outlined"
-                value={formatCardNumber(formik.values.cardNumber)}
-                onChange={handleInputChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.cardNumber && Boolean(formik.errors.cardNumber)
-                }
-                helperText={
-                  formik.touched.cardNumber && formik.errors.cardNumber
-                }
-                InputLabelProps={{
-                  style: { color: "#9e9e9e" },
-                }}
-              />
-            </Box>
+                      let value = e.target.value.replace(/[^\d]/g, "");
 
-            <Box mb={3}>
-              <TextField
-                fullWidth
-                id="destinationCardNumber"
-                name="destinationCardNumber"
-                label="شماره کارت مقصد"
-                variant="outlined"
-                value={formatCardNumber(formik.values.destinationCardNumber)}
-                onChange={handleInputChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.destinationCardNumber &&
-                  Boolean(formik.errors.destinationCardNumber)
-                }
-                helperText={
-                  formik.touched.destinationCardNumber &&
-                  formik.errors.destinationCardNumber
-                }
-                InputLabelProps={{
-                  style: { color: "#9e9e9e" },
-                }}
-              />
-            </Box>
+                      if (parseInt(value) > 3000000) {
+                        value = "3000000";
+                      }
+                      handleChange({
+                        target: {
+                          name: "amount",
+                          value,
+                        },
+                      });
+                    }}
+                    onBlur={handleBlur}
+                    error={touched.amount && !!errors.amount}
+                    helperText={touched.amount && errors.amount}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "25px",
+                        fontSize: "1.2rem",
+                        color: "#333",
+                        bgcolor: "#f9f9f9",
+                        direction: "rtl",
+                      },
+                      "& .MuiInputAdornment-root": { marginLeft: "10px" },
+                      "& .MuiInputBase-input": {
+                        textAlign: "left",
+                        direction: "ltr",
+                      },
+                      mb: 1,
+                      mt: 1,
+                      alignItems: "left",
+                    }}
+                  />
 
-            {formik.values.destinationCardNumber.length === 16 && (
-              <Box mb={3} display="flex" justifyContent="center">
-                <QRCodeCanvas value={generateQRCodeData()} size={128} />
-              </Box>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      mt: 1,
+                      color: "#333",
+                      fontWeight: "bold",
+                      fontSize: "1.5rem",
+                    }}
+                  >
+                    {toPersianNumbers(
+                      values.amount ? formatAmount(values.amount) : "۰"
+                    )}{" "}
+                    ریال
+                  </Typography>
+                </Box>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    fullWidth
+                    sx={{
+                      background: "linear-gradient(135deg, #4A90E2, #81D4FA)",
+                      color: "#fff",
+                      py: 1.5,
+                      fontSize: "1.2rem",
+                      fontWeight: "bold",
+                      borderRadius: "30px",
+                      boxShadow: "0 8px 15px rgba(0,0,0,0.2)",
+                      transition: "all 0.3s ease",
+                      "&:hover": {
+                        background: "linear-gradient(135deg, #81D4FA, #4A90E2)",
+                      },
+                    }}
+                  >
+                    تایید
+                  </Button>
+                </motion.div>
+              </Form>
             )}
-
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                gap: 1,
-                mt: 3,
-              }}
-            >
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                sx={{ py: 1.5, width: "50%" }}
-              >
-                ادامه
-              </Button>
-              <Button
-                type="button"
-                variant="outlined"
-                color="secondary"
-                sx={{
-                  textAlign: "center",
-                  width: "50%",
-                  py: 1,
-                  borderRadius: 7,
-                  border: 1,
-                  borderColor:
-                    theme.palette.mode === "dark" ? "grey.400" : "grey.700",
-                  justifyContent: "center",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                  ":hover": {
-                    color:
-                      theme.palette.mode === "dark"
-                        ? "grey.400"
-                        : "grey.600",
-                  },
-                  fontSize: "0.9rem",
-                  color:
-                    theme.palette.mode === "dark" ? "white" : "primary",
-                }}
-                onClick={() => navigate("/cp")}
-              >
-                بازگشت
-                <FaArrowLeftLong style={{ marginRight: 4 }} />
-              </Button>
-            </Box>
-          </form>
-        )}
+          </Formik>
+        </motion.div>
       </Box>
-    </motion.div>
+
   );
 };
 
-export default NFCForm;
+export default AmountInput;
