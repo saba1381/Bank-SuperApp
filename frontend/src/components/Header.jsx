@@ -88,9 +88,7 @@ const Header = () => {
     else if (path === "/cp/ads") {
       setHeaderTitle("اعلانات");
     } 
-    else if (path === "/cp/NFC-payment") {
-      setHeaderTitle("پرداخت مبتنی بر NFC");
-    }else {
+    else {
       setHeaderTitle(" ");
     }
   }, [setHeaderTitle, location.pathname]);
