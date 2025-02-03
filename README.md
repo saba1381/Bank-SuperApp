@@ -1,0 +1,3 @@
+This project is my bachelor's thesis, developed as a comprehensive banking application in the form of a PWA. In this project, efforts have been made to enable financial transactions and services such as purchasing mobile credit, transferring funds, and more. Additionally, users can edit and manage their profiles and bank cards. This project also includes an administrative panel for the system administrator.  
+
+The front-end of this project is built using React, Material UI, JavaScript, and TypeScript, while the back-end is implemented with the Django framework. The database structure and design have been developed using MySQL.
