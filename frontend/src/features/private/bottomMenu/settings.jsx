@@ -223,7 +223,7 @@ const Settings = () => {
                 {[
                   {
                     icon: <MdLock size={20} />,
-                    label: "تغییر رمز",
+                    label: "تغییر رمز عبور",
                     action: handleChangePasswordClick,
                   },
                   // ...(isSettingPage

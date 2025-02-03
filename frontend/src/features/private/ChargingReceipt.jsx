@@ -136,11 +136,11 @@ const ChargingReciept = ({initailCard , amount ,transactionDate, transactionStat
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
     
           <Typography sx={{fontSize:'1.1rem'}}>{toPersianNumbers(mobileNum)}</Typography>
-          <Box sx={{ marginLeft: '4px' }}>
+          <Box sx={{ marginLeft: '0px' }}>
           <img src={operatorInfo.logo}
                   alt={`${operatorInfo.name} logo`}
                   style={{
-                    width:'35px',
+                    width:'46px',
                     height:'35px',
                     borderRadius:'10px'
                   }}

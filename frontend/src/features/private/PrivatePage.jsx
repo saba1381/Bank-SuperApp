@@ -22,13 +22,14 @@ import ProfileEdit from "../private/ProfileEdit";
 import { useNavigate } from "react-router-dom";
 import Notification from "./Notification";
 import { LuSmartphoneNfc } from "react-icons/lu";
+import { MdNotificationsActive } from "react-icons/md";
 
 
 const systems = [
-  { title: "لیست کارت ها", icon: BsCreditCard, color: "#1976d2" },
-  { title: "سوابق تراکنش", icon: MdHistory, color: "#388e3c" },
   { title: "ویرایش پروفایل", icon: ImProfile, color: "#f57c00" },
-  { title: "حساب کاربری", icon: CgProfile, color: "#7b1fa2" },
+  { title: "اعلانات", icon: MdNotificationsActive, color: "#7b1fa2" },
+  { title: "لیست کارت‌ها", icon: BsCreditCard, color: "#1976d2" },
+  { title: "سوابق تراکنش", icon: MdHistory, color: "#388e3c" },
   { title: "کارت به کارت", icon: TbCreditCardPay, color: "#d32f2f" },
   { title: "خرید شارژ", icon: RiSimCard2Line, color: "#0288d1" },
 ];
@@ -69,7 +70,7 @@ const PrivatePage = () => {
       } else {
         handleProfileEditClick();
       }
-    } else if (title === "لیست کارت ها") {
+    } else if (title === "لیست کارت‌ها") {
       setNotificationOpen(false)
       navigate("/cp/user-cards" ,{ state :{from :'/cp'}});
     } else if (title === "کارت به کارت") {
@@ -79,6 +80,9 @@ const PrivatePage = () => {
     }
     else if (title === "خرید شارژ"){
       navigate("/cp/charge" , {state : {from : '/cp'}});
+    }
+    else if (title === "اعلانات"){
+      navigate("/cp/ads" , {state : {from : '/cp'}});
     }
     
   };
@@ -182,7 +186,8 @@ const PrivatePage = () => {
                     sx={{
                       width: getPaperSize(),
                       height: getPaperSize(),
-                      p: 3,
+                      paddingY: 3,
+                      paddingX:0,
                       textAlign: "center",
                       cursor: "pointer",
                       transition: "0.3s",
@@ -230,6 +235,7 @@ const PrivatePage = () => {
                         sx={{
                           fontSize: getTitleFontSize(),
                           "&:hover": { color: "primary.main" },
+                          fontSize:16.6
                         }}
                       >
                         {system.title}

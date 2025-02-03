@@ -293,7 +293,7 @@ const RechargeReciept = ({
               }}
             >
               <Typography sx={{ fontSize: "1.2rem" }}>شماره موبایل:</Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center' , gap:1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' , gap:0.8 }}>
               <Typography sx={{ fontSize: "1.1rem" }}>
                 {toPersianNumbers(mobileNumber)}
               </Typography>
@@ -301,8 +301,8 @@ const RechargeReciept = ({
           <img src={operatorInfo.logo}
                   alt={`${operatorInfo.name} logo`}
                   style={{
-                    width:'35px',
-                    height:'35px',
+                    width:'40px',
+                    height:'40px',
                     borderRadius:'10px'
                   }}
                   />

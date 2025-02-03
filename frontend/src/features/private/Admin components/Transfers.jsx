@@ -398,7 +398,7 @@ const Transfers = () => {
                       height: "100%",
                       "& fieldset": {
                         borderColor: (theme) =>
-                          theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f", // رنگ border در حالت عادی
+                          theme.palette.mode === "dark" ? "#ffffff" : "#4f4f4f", 
                       },
                       "&:hover fieldset": {
                         borderColor: (theme) =>
@@ -410,10 +410,10 @@ const Transfers = () => {
                       },
                     },
                     borderColor: (theme) =>
-                      theme.palette.mode === "dark" ? "white" : "grey", // حالت دارک
+                      theme.palette.mode === "dark" ? "white" : "grey", 
                     "& fieldset": {
                       borderColor: (theme) =>
-                        theme.palette.mode === "dark" ? "white" : "grey", // برای حالت فوکوس
+                        theme.palette.mode === "dark" ? "white" : "grey", 
                     },
                     "& .MuiInputLabel-root": {
                   color: (theme) =>
