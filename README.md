@@ -1,3 +1,36 @@
-This project is my bachelor's thesis, developed as a comprehensive banking application in the form of a PWA. In this project, efforts have been made to enable financial transactions and services such as purchasing mobile credit, transferring funds, and more. Additionally, users can edit and manage their profiles and bank cards. This project also includes an administrative panel for the system administrator.  
+# **Design and Implementation of Banking Super Application** 
 
-The front-end of this project is built using React, Material UI, JavaScript, and TypeScript, while the back-end is implemented with the Django framework. The database structure and design have been developed using MySQL.
+## **Screenshots**
+https://github.com/saba1381/Bank-SuperApp/issues/1#issue-2909329194
+
+## **Technologies Used**
+### **Frontend:**
+* React.js
+* Material-UI
+* JavaScript
+* TypeScript
+### **Backend:**
+* Django Framework
+
+## **Features**
+* Developed as a comprehensive banking application in the form of a PWA
+* Supports financial transactions and services, including:
+  * Mobile credit purchase
+  * Fund transfers
+  * And more...
+* User profile and bank card management
+* Administrative panel for system administrators
+
+## **How to Run the Project**
+### **Frontend**
+```sh
+cd frontend
+npm start
+```
+### **Backend**
+```sh
+cd backend
+venv\Scripts\activate
+cd BankSAP
+python manage.py runserver
+```   
